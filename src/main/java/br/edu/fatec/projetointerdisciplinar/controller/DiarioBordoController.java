@@ -3,26 +3,26 @@ package br.edu.fatec.projetointerdisciplinar.controller;
 import br.edu.fatec.projetointerdisciplinar.model.DiarioBordoEntity;
 import br.edu.fatec.projetointerdisciplinar.service.DiarioBordoService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.stereotype.Controller;
-import org.springframework.ui.Model;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-@Controller
-@RequestMapping("/diarios-bordo")
+import java.util.List;
+
+@RestController
+@RequestMapping("/api/diarios-bordo")
 @RequiredArgsConstructor
 public class DiarioBordoController {
 
     private final DiarioBordoService diarioBordoService;
 
     @GetMapping
-    public String listarDiariosBordo(Model model) {
-        model.addAttribute("listaDiariosBordo", diarioBordoService.listarTodos());
-        return "diarios-bordo/lista";
+    public ResponseEntity<List<DiarioBordoEntity>> listarTodos() {
+        return ResponseEntity.ok(diarioBordoService.listarTodos());
     }
 
     @PostMapping("/salvar")
-    public String salvarDiarioBordo(@ModelAttribute DiarioBordoEntity diarioBordo) {
-        diarioBordoService.salvar(diarioBordo);
-        return "redirect:/diarios-bordo";
+    public ResponseEntity<DiarioBordoEntity> salvar(@RequestBody DiarioBordoEntity diarioBordo) {
+        return ResponseEntity.status(HttpStatus.CREATED).body(diarioBordoService.salvar(diarioBordo));
     }
 }

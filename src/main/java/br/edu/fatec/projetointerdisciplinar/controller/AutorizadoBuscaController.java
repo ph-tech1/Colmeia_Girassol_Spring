@@ -3,26 +3,26 @@ package br.edu.fatec.projetointerdisciplinar.controller;
 import br.edu.fatec.projetointerdisciplinar.model.AutorizadoBuscaEntity;
 import br.edu.fatec.projetointerdisciplinar.service.AutorizadoBuscaService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.stereotype.Controller;
-import org.springframework.ui.Model;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-@Controller
-@RequestMapping("/autorizados-busca")
+import java.util.List;
+
+@RestController
+@RequestMapping("/api/autorizados-busca")
 @RequiredArgsConstructor
 public class AutorizadoBuscaController {
 
     private final AutorizadoBuscaService autorizadoBuscaService;
 
     @GetMapping
-    public String listarAutorizadosBusca(Model model) {
-        model.addAttribute("listaAutorizadosBusca", autorizadoBuscaService.listarTodos());
-        return "autorizados-busca/lista";
+    public ResponseEntity<List<AutorizadoBuscaEntity>> listarTodos() {
+        return ResponseEntity.ok(autorizadoBuscaService.listarTodos());
     }
 
     @PostMapping("/salvar")
-    public String salvarAutorizadoBusca(@ModelAttribute AutorizadoBuscaEntity autorizadoBusca) {
-        autorizadoBuscaService.salvar(autorizadoBusca);
-        return "redirect:/autorizados-busca";
+    public ResponseEntity<AutorizadoBuscaEntity> salvar(@RequestBody AutorizadoBuscaEntity autorizadoBusca) {
+        return ResponseEntity.status(HttpStatus.CREATED).body(autorizadoBuscaService.salvar(autorizadoBusca));
     }
 }

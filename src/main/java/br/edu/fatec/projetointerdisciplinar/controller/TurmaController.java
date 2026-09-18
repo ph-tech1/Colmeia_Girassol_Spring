@@ -3,26 +3,26 @@ package br.edu.fatec.projetointerdisciplinar.controller;
 import br.edu.fatec.projetointerdisciplinar.model.TurmaEntity;
 import br.edu.fatec.projetointerdisciplinar.service.TurmaService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.stereotype.Controller;
-import org.springframework.ui.Model;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-@Controller
-@RequestMapping("/turmas")
+import java.util.List;
+
+@RestController
+@RequestMapping("/api/turmas")
 @RequiredArgsConstructor
 public class TurmaController {
 
     private final TurmaService turmaService;
 
     @GetMapping
-    public String listarTurmas(Model model) {
-        model.addAttribute("listaTurmas", turmaService.listarTodos());
-        return "turmas/lista";
+    public ResponseEntity<List<TurmaEntity>> listarTodos() {
+        return ResponseEntity.ok(turmaService.listarTodos());
     }
 
     @PostMapping("/salvar")
-    public String salvarTurma(@ModelAttribute TurmaEntity turma) {
-        turmaService.salvar(turma);
-        return "redirect:/turmas";
+    public ResponseEntity<TurmaEntity> salvar(@RequestBody TurmaEntity turma) {
+        return ResponseEntity.status(HttpStatus.CREATED).body(turmaService.salvar(turma));
     }
 }
