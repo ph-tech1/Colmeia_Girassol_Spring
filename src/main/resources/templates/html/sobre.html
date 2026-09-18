@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Sobre Nós - Escola Infantil Colmeia Girassol</title>
     <!--Icone do site-->
-    <link rel="icon" href="/images/abelha.png">
+    <link rel="icon" th:href="@{/images/abelha.png}">
     <!-- Fontes do Google -->
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700&display=swap" rel="stylesheet">
     <!-- CSS do Bootstrap -->
@@ -15,14 +15,14 @@
     <!-- CSS da Biblioteca de Animação AOS -->
     <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
     <!-- CSS Customizado -->
-    <link rel="stylesheet" href="/css/style.css?v=1.0.3">
+    <link rel="stylesheet" th:href="@{/css/style.css(v='1.0.3')}">
 </head>
 <body>
 
     <!-- Cabeçalho Interno -->
     <header class="bg-yellow-main py-4 text-center position-relative shadow-sm" data-aos="fade-down">
         <div class="container d-flex justify-content-between align-items-center">
-            <a href="/" class="text-dark-blue fs-3" style="transition: transform 0.3s;" onmouseover="this.style.transform='scale(1.2)'" onmouseout="this.style.transform='scale(1)'"><i class="fa-solid fa-arrow-left"></i></a>
+            <a th:href="@{/}" class="text-dark-blue fs-3" style="transition: transform 0.3s;" onmouseover="this.style.transform='scale(1.2)'" onmouseout="this.style.transform='scale(1)'"><i class="fa-solid fa-arrow-left"></i></a>
             <h2 class="fw-bold text-dark-blue m-0">Nossa Essência</h2>
             <div style="width: 30px;"></div> <!-- Spacer para centralizar o título -->
         </div>
@@ -39,7 +39,7 @@
                     <p class="text-muted">Acreditamos que os primeiros anos de vida são a base de todo o desenvolvimento humano. Por isso, nossa pedagogia é focada no afeto, no brincar livre e na construção de vínculos sólidos. Aqui, cada criança é tratada como um girassol único: regada com atenção, iluminada com conhecimento e orientada a crescer sempre em direção à luz.</p>
                 </div>
                 <div class="col-lg-6 text-center" data-aos="fade-left">
-                    <img src="/images/sobre_principal.png" alt="Crianças brincando na escola" class="img-fluid rounded-4 shadow-lg floating-slow" style="max-height: 450px; object-fit: cover; border: 8px solid #fff;">
+                    <img th:src="@{/images/sobre_principal.png}" alt="Crianças brincando na escola" class="img-fluid rounded-4 shadow-lg floating-slow" style="max-height: 450px; object-fit: cover; border: 8px solid #fff;">
                 </div>
             </div>
         </div>
@@ -105,7 +105,7 @@
                     </ul>
                 </div>
                 <div class="col-lg-6 text-center" data-aos="fade-right">
-                    <img src="/images/sobre_escola.png" alt="Estrutura da Escola" class="img-fluid rounded-4 shadow-lg floating" style="max-height: 450px; object-fit: cover; border: 8px solid #fff;">
+                    <img th:src="@{/images/sobre_escola.png}" alt="Estrutura da Escola" class="img-fluid rounded-4 shadow-lg floating" style="max-height: 450px; object-fit: cover; border: 8px solid #fff;">
                 </div>
             </div>
         </div>
@@ -115,7 +115,7 @@
     <div id="footer-placeholder"></div>
 
     <!-- Carregador de Componentes (Rodapé) -->
-    <script src="/js/components.js?v=1.0.3"></script>
+    <script th:src="@{/js/components.js(v='1.0.3')}"></script>
 
     <!-- JS do Bootstrap -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>

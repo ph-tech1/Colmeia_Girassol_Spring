@@ -1,6 +1,7 @@
 // Carregar componentes quando a página HTML estiver pronta
 document.addEventListener("DOMContentLoaded", function() {
     const footerEl = document.getElementById("footer-placeholder");
+    const contextPath = window.location.pathname.startsWith("/api/") ? "/api" : "";
     
     // Detecta se a página atual está dentro da pasta 'html'
     const appFooter = `
@@ -9,7 +10,7 @@ document.addEventListener("DOMContentLoaded", function() {
         <div class="container">
             <div class="row align-items-center text-center text-md-start g-4">
                 <div class="col-md-4 text-center">
-                    <img src="/images/logo.png" alt="Logo Colmeia Girassol" class="img-fluid" style="max-width: 220px; height: auto; filter: drop-shadow(0 5px 10px rgba(0,0,0,0.1));">
+                    <img src="${contextPath}/images/logo.png" alt="Logo Colmeia Girassol" class="img-fluid" style="max-width: 220px; height: auto; filter: drop-shadow(0 5px 10px rgba(0,0,0,0.1));">
                 </div>
                 <div class="col-md-4 text-center">
                     <h5 class="fw-bold mb-3 text-white">Fale Conosco</h5>

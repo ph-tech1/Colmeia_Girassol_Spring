@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Escola Infantil Colmeia Girassol</title>
     <!--Icone do site-->
-    <link rel="icon" href="../static/images/abelha.png">
+    <link rel="icon" th:href="@{/images/abelha.png}">
     <!-- Fontes do Google -->
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700&display=swap" rel="stylesheet">
     <!-- CSS do Bootstrap -->
@@ -15,7 +15,7 @@
     <!-- CSS da Biblioteca de Animação AOS -->
     <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
     <!-- CSS Customizado -->
-    <link rel="stylesheet" href="../static/css/style.css?v=1.0.3">
+    <link rel="stylesheet" th:href="@{/css/style.css(v='1.0.3')}">
 </head>
 <body>
 
@@ -23,7 +23,7 @@
 <header class="hero-section text-center position-relative">
     <div class="hero-bg-curve"></div>
     <div class="container position-relative z-index-1" data-aos="fade-down" data-aos-duration="1000">
-        <img src="../static/images/mascote.png" alt="Mascote Escola Infantil Colmeia Girassol" class="img-fluid mb-4 floating" style="max-width: 250px; height: auto; filter: drop-shadow(0 10px 15px rgba(0,0,0,0.15)); mix-blend-mode: multiply;">
+        <img th:src="@{/images/mascote.png}" alt="Mascote Escola Infantil Colmeia Girassol" class="img-fluid mb-4 floating" style="max-width: 250px; height: auto; filter: drop-shadow(0 10px 15px rgba(0,0,0,0.15)); mix-blend-mode: multiply;">
         <h1 class="display-4 fw-bold hero-title mb-5">Bem-vindo à Escola Infantil Colmeia Girassol</h1>
 
         <div class="d-flex justify-content-center gap-3 flex-wrap hero-buttons">
@@ -42,11 +42,11 @@
                 <h2 class="fw-bold mb-4">Muito mais do que uma escola, um segundo lar.</h2>
                 <p class="mb-3">Seja bem-vindo à Colmeia Girassol. Aqui, acreditamos que a educação começa com o afeto.</p>
                 <p class="mb-4">Nossa estrutura foi cuidadosamente planejada para oferecer segurança, conforto e liberdade para o seu filho brincar e aprender. Nossa equipe pedagógica atua com um olhar atento e carinhoso, respeitando o tempo e a individualidade de cada criança</p>
-                <a href="/html/sobre.html" class="btn btn-outline-dark-blue rounded-pill px-4 py-2">Saiba mais sobre nós</a>
+                <a th:href="@{/Sobre}" class="btn btn-outline-dark-blue rounded-pill px-4 py-2">Saiba mais sobre nós</a>
             </div>
             <div class="col-lg-6" data-aos="fade-left" data-aos-duration="1000">
                 <div class="image-placeholder bg-light rounded shadow-sm d-flex align-items-center justify-content-center">
-                    <img src="../static/images/escola_cartoon.png" alt="Escola" class="img-fluid w-100 h-100 rounded" style="object-fit: cover;">
+                    <img th:src="@{/images/escola_cartoon.png}" alt="Escola" class="img-fluid w-100 h-100 rounded" style="object-fit: cover;">
                 </div>
             </div>
         </div>
@@ -119,7 +119,7 @@
             </div>
             <div class="col-lg-6" data-aos="fade-left" data-aos-duration="1000">
                 <div class="image-placeholder bg-light rounded shadow-sm d-flex align-items-center justify-content-center">
-                    <img src="../static/images/trajetoria_escola.png" alt="Nossa Trajetória" class="img-fluid w-100 h-100 rounded" style="object-fit: cover;">
+                    <img th:src="@{/images/trajetoria_escola.png}" alt="Nossa Trajetória" class="img-fluid w-100 h-100 rounded" style="object-fit: cover;">
                 </div>
             </div>
         </div>
@@ -242,8 +242,8 @@
             </div>
             <div class="modal-body text-center pt-3 pb-4 px-4">
                 <div class="d-grid gap-3">
-                    <a href="/html/login.html" class="btn rounded-3 fw-bold py-2 shadow-sm btn-perfil text-decoration-none">RESPONSÁVEL</a>
-                    <a href="/html/login.html?tab=prof" class="btn rounded-3 fw-bold py-2 shadow-sm btn-perfil text-decoration-none">PROFESSOR</a>
+                    <a th:href="@{/Login}" class="btn rounded-3 fw-bold py-2 shadow-sm btn-perfil text-decoration-none">RESPONSÁVEL</a>
+                    <a th:href="@{/Login(tab='prof')}" class="btn rounded-3 fw-bold py-2 shadow-sm btn-perfil text-decoration-none">PROFESSOR</a>
                 </div>
             </div>
         </div>
@@ -251,7 +251,7 @@
 </div>
 
 <!-- Carregador de Componentes (Cabeçalho e Rodapé) -->
-<script src="../static/js/components.js?v=1.0.3"></script>
+<script th:src="@{/js/components.js(v='1.0.3')}"></script>
 
 <!-- JS do Bootstrap -->
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>

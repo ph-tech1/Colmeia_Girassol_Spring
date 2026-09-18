@@ -29,6 +29,6 @@ public class AlunoEntity {
     @Column(name = "restricoes_alimentar",   nullable = false, length = 50)
     private String restricoesAlimentar;
 
-    @Column(name = "necessidade_especiais",   nullable = false, length = 50)
-    private String necessidadeEspeciais;
+    @Column(name = "necessidades_especiais")
+    private String necessidadesEspeciais;
 }

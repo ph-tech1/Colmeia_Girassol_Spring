@@ -4,12 +4,12 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Painel Administrativo - Colmeia Girassol</title>
-    <link rel="icon" href="/images/abelha.png">
+    <link rel="icon" th:href="@{/images/abelha.png}">
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700&display=swap" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
     <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
-    <link rel="stylesheet" href="/css/style.css?v=1.0.3">
+    <link rel="stylesheet" th:href="@{/css/style.css(v='1.0.3')}">
     <style>
         .dashboard-section { display: none; }
         .dashboard-section.active { display: block; }
@@ -23,7 +23,7 @@
         <nav class="navbar navbar-dark bg-dark-blue d-lg-none py-3 px-3 shadow-sm w-100 position-sticky top-0 z-3">
             <div class="container-fluid d-flex justify-content-between align-items-center">
                 <a class="navbar-brand d-flex align-items-center gap-2" href="#">
-                    <img src="/images/logo.png" alt="Logo" style="height: 35px;">
+                    <img th:src="@{/images/logo.png}" alt="Logo" style="height: 35px;">
                     <span class="fw-bold text-white small">Colmeia Girassol</span>
                 </a>
                 <div class="dropdown">
@@ -39,7 +39,7 @@
                         <li><a class="dropdown-item nav-link-custom py-2" data-section="responsaveis-lista"><i class="fa-solid fa-users me-2"></i>Responsáveis</a></li>
                         <li><a class="dropdown-item nav-link-custom py-2" data-section="diarios-lista"><i class="fa-solid fa-book me-2"></i>Diário de Bordo</a></li>
                         <li><hr class="dropdown-divider"></li>
-                        <li><a href="/html/login.html" class="dropdown-item text-danger py-2"><i class="fa-solid fa-right-from-bracket me-2"></i>Sair</a></li>
+                        <li><a th:href="@{/html/login.html}" class="dropdown-item text-danger py-2"><i class="fa-solid fa-right-from-bracket me-2"></i>Sair</a></li>
                     </ul>
                 </div>
             </div>
@@ -48,7 +48,7 @@
         <!-- Sidebar -->
         <aside class="sidebar d-none d-lg-block">
             <div class="sidebar-logo">
-                <img src="/images/logo.png" alt="Logo" class="img-fluid mb-2" style="max-width: 120px;">
+                <img th:src="@{/images/logo.png}" alt="Logo" class="img-fluid mb-2" style="max-width: 120px;">
                 <h6 class="fw-bold text-white mb-0">Colmeia Girassol</h6>
             </div>
             <nav class="nav-menu">
@@ -59,7 +59,7 @@
                 <li class="nav-item"><a class="nav-link-custom" data-section="alunos-lista"><i class="fa-solid fa-user-graduate"></i><span>Alunos</span></a></li>
                 <li class="nav-item"><a class="nav-link-custom" data-section="responsaveis-lista"><i class="fa-solid fa-users"></i><span>Responsáveis</span></a></li>
                 <li class="nav-item"><a class="nav-link-custom" data-section="diarios-lista"><i class="fa-solid fa-book"></i><span>Diário de Bordo</span></a></li>
-                <li class="nav-item mt-5"><a href="/html/login.html" class="nav-link-custom text-danger"><i class="fa-solid fa-right-from-bracket"></i><span>Sair</span></a></li>
+                <li class="nav-item mt-5"><a th:href="@{/html/login.html}" class="nav-link-custom text-danger"><i class="fa-solid fa-right-from-bracket"></i><span>Sair</span></a></li>
             </nav>
         </aside>
 
@@ -389,8 +389,8 @@
         </div>
     </div>
 
-    <script src="/js/database.js?v=1.0.3"></script>
-    <script src="/js/render.js?v=1.0.3"></script>
+    <script th:src="@{/js/database.js(v='1.0.3')}"></script>
+    <script th:src="@{/js/render.js(v='1.0.3')}"></script>
     <script>
         function validarCampo(id) {
             const el = document.getElementById(id);
