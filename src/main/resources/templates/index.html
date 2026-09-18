@@ -1,0 +1,268 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Escola Infantil Colmeia Girassol</title>
+    <!--Icone do site-->
+    <link rel="icon" href="../static/images/abelha.png">
+    <!-- Fontes do Google -->
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <!-- CSS do Bootstrap -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Ícones do FontAwesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+    <!-- CSS da Biblioteca de Animação AOS -->
+    <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
+    <!-- CSS Customizado -->
+    <link rel="stylesheet" href="../static/css/style.css?v=1.0.3">
+</head>
+<body>
+
+<!-- Seção Principal (Hero) -->
+<header class="hero-section text-center position-relative">
+    <div class="hero-bg-curve"></div>
+    <div class="container position-relative z-index-1" data-aos="fade-down" data-aos-duration="1000">
+        <img src="../static/images/mascote.png" alt="Mascote Escola Infantil Colmeia Girassol" class="img-fluid mb-4 floating" style="max-width: 250px; height: auto; filter: drop-shadow(0 10px 15px rgba(0,0,0,0.15)); mix-blend-mode: multiply;">
+        <h1 class="display-4 fw-bold hero-title mb-5">Bem-vindo à Escola Infantil Colmeia Girassol</h1>
+
+        <div class="d-flex justify-content-center gap-3 flex-wrap hero-buttons">
+            <a href="#historia" class="btn btn-custom btn-light-blue rounded-pill px-4 py-2 shadow-sm">História</a>
+            <a href="#localizacao" class="btn btn-custom btn-light-blue rounded-pill px-4 py-2 shadow-sm">Localização</a>
+            <button class="btn btn-custom btn-dark-blue rounded-pill px-4 py-2 shadow-sm" data-bs-toggle="modal" data-bs-target="#modalCadastro">Cadastro</button>
+        </div>
+    </div>
+</header>
+
+<!-- Seção Sobre -->
+<section class="about-section py-5 bg-light-blue-pale" id="sobre">
+    <div class="container">
+        <div class="row align-items-center g-5">
+            <div class="col-lg-6" data-aos="fade-right" data-aos-duration="1000">
+                <h2 class="fw-bold mb-4">Muito mais do que uma escola, um segundo lar.</h2>
+                <p class="mb-3">Seja bem-vindo à Colmeia Girassol. Aqui, acreditamos que a educação começa com o afeto.</p>
+                <p class="mb-4">Nossa estrutura foi cuidadosamente planejada para oferecer segurança, conforto e liberdade para o seu filho brincar e aprender. Nossa equipe pedagógica atua com um olhar atento e carinhoso, respeitando o tempo e a individualidade de cada criança</p>
+                <a href="/html/sobre.html" class="btn btn-outline-dark-blue rounded-pill px-4 py-2">Saiba mais sobre nós</a>
+            </div>
+            <div class="col-lg-6" data-aos="fade-left" data-aos-duration="1000">
+                <div class="image-placeholder bg-light rounded shadow-sm d-flex align-items-center justify-content-center">
+                    <img src="../static/images/escola_cartoon.png" alt="Escola" class="img-fluid w-100 h-100 rounded" style="object-fit: cover;">
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Seção de Turmas -->
+<section class="classes-section py-5 bg-white text-center" id="turmas">
+    <div class="container" data-aos="fade-up" data-aos-duration="1000">
+        <p class="text-muted text-uppercase fw-bold mb-1 small">Fases de desenvolvimento</p>
+        <h2 class="fw-bold mb-3">Nossas Turmas</h2>
+        <p class="mb-5">Atividades pedagógicas desenvolvidas com carinho para cada idade</p>
+
+        <div class="row justify-content-center g-4">
+            <!-- Berçário -->
+            <div class="col-md-4 col-sm-6" data-aos="zoom-in" data-aos-delay="100">
+                <div class="card h-100 border-0 shadow-sm custom-card">
+                    <div class="card-body py-4">
+                        <div class="icon-circle bg-yellow-light mx-auto mb-3">
+                            <i class="fa-solid fa-heart text-warning"></i>
+                        </div>
+                        <h4 class="fw-bold text-dark-blue">Berçário</h4>
+                        <p class="small text-muted mb-0">De 4 meses a 1 ano</p>
+                        <p class="small mt-2">Cuidado integral, estímulos sensoriais, solidário e muito afeto para os primeiros passos do bebê.</p>
+                    </div>
+                </div>
+            </div>
+            <!-- Maternal -->
+            <div class="col-md-4 col-sm-6" data-aos="zoom-in" data-aos-delay="200">
+                <div class="card h-100 border-0 shadow-sm custom-card">
+                    <div class="card-body py-4">
+                        <div class="icon-circle bg-blue-light mx-auto mb-3">
+                            <i class="fa-solid fa-puzzle-piece text-primary"></i>
+                        </div>
+                        <h4 class="fw-bold text-dark-blue">Maternal</h4>
+                        <p class="small text-muted mb-0">De 2 a 3 anos</p>
+                        <p class="small mt-2">Foco na socialização, desenvolvimento da fala, coordenação motora e descoberta do mundo através do brincar.</p>
+                    </div>
+                </div>
+            </div>
+            <!-- Pré-Escola -->
+            <div class="col-md-4 col-sm-6" data-aos="zoom-in" data-aos-delay="300">
+                <div class="card h-100 border-0 shadow-sm custom-card">
+                    <div class="card-body py-4">
+                        <div class="icon-circle bg-red-light mx-auto mb-3">
+                            <i class="fa-solid fa-pencil text-danger"></i>
+                        </div>
+                        <h4 class="fw-bold text-dark-blue">Pré-Escola</h4>
+                        <p class="small text-muted mb-0">De 4 a 5 anos</p>
+                        <p class="small mt-2">Preparação lúdica para o ensino fundamental, com iniciação à alfabetização, números e raciocínio lógico</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Seção Nossa Trajetória -->
+<section class="history-section py-5 position-relative" id="historia">
+    <div class="container">
+        <div class="row align-items-center g-5">
+            <div class="col-lg-6" data-aos="fade-right" data-aos-duration="1000">
+                <p class="text-dark-blue text-uppercase fw-bold mb-2 small tracking-wide">Nossa Trajetória</p>
+                <h2 class="fw-bold mb-4 display-6">De um espaço de brincar para uma escola de aprender</h2>
+                <p class="mb-3">Nossa história começou em 2023, não como uma escola, mas como um espaço de Recreação Infantil dedicado à alegria e ao lúdico.</p>
+                <p class="mb-3">Ao acompanhar o desenvolvimento dos pequenos, surgiu no coração de nossa fundadora e de sua sócia o desejo de ir além. Elas sonharam em expandir aquele carinho da recreação para a sala de aula, criando um ambiente onde a educação de qualidade fosse a prioridade.</p>
+                <div class="quote-box p-3 border-start border-4 border-dark-blue rounded-end">
+                    <i class="text-dark-blue fw-bold">"Nosso maior objetivo é oferecer uma educação de qualidade, onde a criança aprende sendo feliz."</i>
+                </div>
+            </div>
+            <div class="col-lg-6" data-aos="fade-left" data-aos-duration="1000">
+                <div class="image-placeholder bg-light rounded shadow-sm d-flex align-items-center justify-content-center">
+                    <img src="../static/images/trajetoria_escola.png" alt="Nossa Trajetória" class="img-fluid w-100 h-100 rounded" style="object-fit: cover;">
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Seção de Qualidades -->
+<section class="features-section py-5 bg-white text-center" id="qualidade">
+    <div class="container" data-aos="fade-up" data-aos-duration="1000">
+        <p class="text-muted fw-bold mb-2 small">O que estamos preparando</p>
+        <h2 class="fw-bold mb-3">Qualidade e carinho em cada detalhe</h2>
+        <p class="mb-5">Pensamos em toda a estrutura para acolher seu filho com a melhor educação.</p>
+
+        <div class="row justify-content-center g-4 mt-2">
+            <div class="col-md-3 col-6" data-aos="zoom-in" data-aos-delay="100">
+                <div class="custom-card p-3 h-100">
+                    <div class="feature-icon mx-auto mb-3 bg-red-light rounded-circle d-flex align-items-center justify-content-center" style="width: 70px; height: 70px;">
+                        <i class="fa-solid fa-heart text-danger fs-3"></i>
+                    </div>
+                    <h6 class="fw-bold">Pedagogos Afetiva</h6>
+                    <p class="small text-muted">Aprendizado que respeita as emoções. Aqui o acolhimento é a base para o desenvolvimento cognitivo.</p>
+                </div>
+            </div>
+            <div class="col-md-3 col-6" data-aos="zoom-in" data-aos-delay="200">
+                <div class="custom-card p-3 h-100">
+                    <div class="feature-icon mx-auto mb-3 bg-purple-light rounded-circle d-flex align-items-center justify-content-center" style="width: 70px; height: 70px;">
+                        <i class="fa-solid fa-shield-halved text-purple fs-3" style="color: #6f42c1;"></i>
+                    </div>
+                    <h6 class="fw-bold">Ambiente Seguro</h6>
+                    <p class="small text-muted">Monitoramento e estrutura adaptada para garantir que as brincadeiras sejam livres de riscos.</p>
+                </div>
+            </div>
+            <div class="col-md-3 col-6" data-aos="zoom-in" data-aos-delay="300">
+                <div class="custom-card p-3 h-100">
+                    <div class="feature-icon mx-auto mb-3 bg-green-light rounded-circle d-flex align-items-center justify-content-center" style="width: 70px; height: 70px;">
+                        <i class="fa-solid fa-book-open text-success fs-3"></i>
+                    </div>
+                    <h6 class="fw-bold">Estimulo Criativo</h6>
+                    <p class="small text-muted">Herdamos da nossa recreação o foco em artes, música e o aprender fazendo (mão na massa).</p>
+                </div>
+            </div>
+            <div class="col-md-3 col-6" data-aos="zoom-in" data-aos-delay="400">
+                <div class="custom-card p-3 h-100">
+                    <div class="feature-icon mx-auto mb-3 bg-yellow-light rounded-circle d-flex align-items-center justify-content-center" style="width: 70px; height: 70px;">
+                        <i class="fa-solid fa-star text-warning fs-3"></i>
+                    </div>
+                    <h6 class="fw-bold">Desenvolvimento Integral</h6>
+                    <p class="small text-muted">Apoio em todas as fases de crescimento, valorizando cada pequena conquista do seu filho.</p>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</section>
+
+<!-- Seção de Localização -->
+<section class="location-section py-5 bg-light-blue-pale" id="localizacao">
+    <div class="container" data-aos="fade-up" data-aos-duration="1000">
+        <div class="text-center mb-5">
+            <p class="text-muted text-uppercase fw-bold mb-1 small">Onde Estamos</p>
+            <h2 class="fw-bold text-dark-blue">Nossa Localização</h2>
+            <p class="mb-4">Fácil acesso para a sua rotina com tranquilidade.</p>
+        </div>
+
+        <div class="row g-0 align-items-stretch bg-white rounded-4 shadow-sm overflow-hidden mx-auto custom-card" style="max-width: 1000px;">
+            <!-- Informações de Contato -->
+            <div class="col-lg-5 p-4 p-md-5 d-flex flex-column justify-content-center text-start">
+                <h4 class="fw-bold mb-4 text-dark-blue">Venha nos fazer uma visita!</h4>
+                <p class="text-muted mb-4 small">Estamos de portas abertas para receber você e sua família em nosso espaço acolhedor.</p>
+
+                <div class="d-flex align-items-start mb-4">
+                    <div class="bg-red-light rounded-circle d-flex align-items-center justify-content-center me-3" style="width: 48px; height: 48px; flex-shrink: 0;">
+                        <i class="fa-solid fa-location-dot text-danger fs-5"></i>
+                    </div>
+                    <div>
+                        <h6 class="fw-bold mb-1">Endereço</h6>
+                        <p class="small text-muted mb-0">Rua Olício Bernadino Vianna, 58<br>Parque Residencial Covizzi<br>Tanabi - SP</p>
+                    </div>
+                </div>
+
+                <div class="d-flex align-items-start mb-4">
+                    <div class="bg-yellow-light rounded-circle d-flex align-items-center justify-content-center me-3" style="width: 48px; height: 48px; flex-shrink: 0;">
+                        <i class="fa-regular fa-clock text-warning fs-5"></i>
+                    </div>
+                    <div>
+                        <h6 class="fw-bold mb-1">Horário de Funcionamento</h6>
+                        <p class="small text-muted mb-0">Segunda a Sexta: 07h às 18h</p>
+                    </div>
+                </div>
+
+                <a href="https://maps.google.com/maps?q=Recreação+Infantil+Girassol,+Tanabi+-+SP" target="_blank" class="btn btn-outline-dark-blue rounded-pill px-4 mt-2 align-self-start">
+                    <i class="fa-solid fa-map-location-dot me-2"></i>Traçar Rota no Mapa
+                </a>
+            </div>
+
+            <!-- Mapa Iframe -->
+            <div class="col-lg-7 position-relative" style="min-height: 400px;">
+                <iframe
+                        src="https://maps.google.com/maps?q=Recrea%C3%A7%C3%A3o+Infantil+Girassol,+Tanabi+-+SP&t=&z=15&ie=UTF8&iwloc=&output=embed"
+                        class="position-absolute w-100 h-100"
+                        style="border:0; top:0; left:0;"
+                        allowfullscreen=""
+                        loading="lazy">
+                </iframe>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Espaço reservado para o Rodapé (Carregado via JS) -->
+<div id="footer-placeholder"></div>
+
+<!-- Modal de Cadastro -->
+<div class="modal fade" id="modalCadastro" tabindex="-1" aria-labelledby="modalCadastroLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered" style="max-width: 350px;">
+        <div class="modal-content border-0 shadow-lg" style="border-radius: 20px; padding: 10px;">
+            <div class="modal-header border-0 position-relative d-flex justify-content-center align-items-center pb-2 pt-3">
+                <h6 class="modal-title fw-bold m-0" style="color: #4a5a6a;" id="modalCadastroLabel">Selecione seu perfil</h6>
+                <button type="button" class="btn-close position-absolute end-0 me-3" style="font-size: 10px;" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body text-center pt-3 pb-4 px-4">
+                <div class="d-grid gap-3">
+                    <a href="/html/login.html" class="btn rounded-3 fw-bold py-2 shadow-sm btn-perfil text-decoration-none">RESPONSÁVEL</a>
+                    <a href="/html/login.html?tab=prof" class="btn rounded-3 fw-bold py-2 shadow-sm btn-perfil text-decoration-none">PROFESSOR</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Carregador de Componentes (Cabeçalho e Rodapé) -->
+<script src="../static/js/components.js?v=1.0.3"></script>
+
+<!-- JS do Bootstrap -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+<!-- JS da Biblioteca de Animação AOS -->
+<script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+<script>
+    // Inicializar o AOS
+    AOS.init({
+        once: true, // define se a animação deve acontecer apenas uma vez - ao rolar para baixo
+        offset: 100 // deslocamento (em px) do ponto de gatilho original
+    });
+</script>
+</body>
+</html>

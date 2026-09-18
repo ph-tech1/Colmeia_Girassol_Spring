@@ -1,0 +1,325 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login - Escola Infantil Colmeia Girassol</title>
+    <link rel="icon" href="/images/abelha.png">
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+    <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
+    <link rel="stylesheet" href="/css/style.css?v=1.0.3">
+    <style>
+        .login-hint-box {
+            background: #f8f9fa;
+            border-left: 4px solid var(--light-blue);
+            border-radius: 8px;
+            padding: 12px 16px;
+            font-size: 0.8rem;
+        }
+        .role-badge {
+            display: inline-block;
+            padding: 2px 10px;
+            border-radius: 20px;
+            font-weight: 600;
+            font-size: 0.75rem;
+            margin-right: 4px;
+        }
+        .hint-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 4px 0;
+            color: #555;
+        }
+        .alert-error {
+            background-color: #fff3f3;
+            border-left: 4px solid #dc3545;
+            border-radius: 8px;
+            padding: 12px 16px;
+            font-size: 0.85rem;
+            color: #842029;
+        }
+        .btn-entrar {
+            background: linear-gradient(135deg, var(--dark-blue), #3a5a78);
+            color: #fff;
+            border: none;
+            transition: all 0.3s ease;
+            letter-spacing: 0.5px;
+        }
+        .btn-entrar:hover:not(:disabled) {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 15px rgba(45, 68, 89, 0.4);
+            color: #fff;
+        }
+        .btn-entrar:disabled {
+            opacity: 0.7;
+            cursor: not-allowed;
+        }
+        .form-control:focus {
+            border-color: var(--light-blue);
+            box-shadow: 0 0 0 0.2rem rgba(126, 200, 217, 0.3);
+        }
+        .card-header-strip {
+            background: linear-gradient(90deg, var(--dark-blue), var(--light-blue));
+            height: 5px;
+        }
+        .spinner-sm {
+            width: 1rem;
+            height: 1rem;
+            border-width: 2px;
+        }
+    </style>
+</head>
+<body class="bg-light-blue-pale d-flex align-items-center justify-content-center" style="min-height: 100vh;">
+
+    <!-- Botão Voltar -->
+    <a href="/" class="position-absolute top-0 start-0 m-4 text-dark-blue fs-6 fw-bold text-decoration-none back-link d-inline-block" style="z-index: 10;">
+        <i class="fa-solid fa-arrow-left me-2"></i>Voltar ao Início
+    </a>
+
+    <div class="container py-5">
+        <div class="row justify-content-center">
+            <div class="col-md-6 col-lg-5" data-aos="zoom-in" data-aos-duration="800">
+
+                <div class="text-center mb-4">
+                    <img src="/images/mascote_login.png" alt="Mascote Login" class="img-fluid floating" style="max-width: 150px; filter: drop-shadow(0 5px 10px rgba(0,0,0,0.1));">
+                </div>
+
+                <div class="card border-0 shadow-lg rounded-4 overflow-hidden">
+                    <div class="card-header-strip"></div>
+
+                    <div class="card-header bg-white border-0 px-4 pt-4 pb-0">
+                        <div class="text-center fw-bold text-dark-blue" style="font-size: 1rem; letter-spacing: 0.5px;">
+                            <i class="fa-solid fa-school me-2"></i>Portal Escolar
+                        </div>
+                    </div>
+
+                    <div class="card-body p-4 p-md-5">
+
+                        <div class="text-center mb-4">
+                            <h4 class="fw-bold text-dark-blue">Bem-vindo(a)!</h4>
+                            <p class="text-muted small">Entre com seu CPF e senha para acessar o portal.</p>
+                        </div>
+
+                        <!-- Mensagem de erro -->
+                        <div id="errorMsg" class="alert-error mb-4 d-none">
+                            <i class="fa-solid fa-circle-exclamation me-2"></i>
+                            <span id="errorText">CPF ou senha incorretos.</span>
+                        </div>
+
+                        <!-- Campo CPF -->
+                        <div class="mb-3">
+                            <label for="cpfInput" class="form-label fw-bold small text-dark-blue">CPF</label>
+                            <div class="input-group">
+                                <span class="input-group-text bg-white border-end-0">
+                                    <i class="fa-solid fa-id-card text-muted"></i>
+                                </span>
+                                <input type="text" class="form-control border-start-0 ps-0" id="cpfInput"
+                                       placeholder="000.000.000-00" maxlength="14" autocomplete="username">
+                            </div>
+                        </div>
+
+                        <!-- Campo Senha -->
+                        <div class="mb-4">
+                            <label for="senhaInput" class="form-label fw-bold small text-dark-blue">Senha</label>
+                            <div class="input-group">
+                                <span class="input-group-text bg-white border-end-0">
+                                    <i class="fa-solid fa-lock text-muted"></i>
+                                </span>
+                                <input type="password" class="form-control border-start-0 ps-0" id="senhaInput"
+                                       placeholder="Sua senha" autocomplete="current-password">
+                                <button class="btn btn-outline-secondary border-start-0" type="button" id="toggleSenha" tabindex="-1">
+                                    <i class="fa-solid fa-eye" id="eyeIcon"></i>
+                                </button>
+                            </div>
+                        </div>
+
+                        <div class="text-end mb-4">
+                            <a href="/html/redefinir_senha.html" class="small text-decoration-none text-dark-blue fw-bold">
+                                <i class="fa-solid fa-key me-1"></i>Esqueceu a senha?
+                            </a>
+                        </div>
+
+                        <!-- Botão único de entrar -->
+                        <div class="d-grid mb-3">
+                            <button id="btnEntrar" class="btn btn-entrar btn-custom btn-animated w-100 rounded-pill py-2 fw-bold shadow-sm">
+                                <span id="btnText"><i class="fa-solid fa-right-to-bracket me-2"></i>Entrar</span>
+                                <span id="btnLoading" class="d-none">
+                                    <span class="spinner-border spinner-sm me-2" role="status"></span>Verificando...
+                                </span>
+                            </button>
+                        </div>
+
+                        <!-- Dica de acesso para demonstração -->
+                        <div class="login-hint-box mt-3">
+                            <p class="fw-bold text-dark-blue mb-2" style="font-size:0.8rem;">
+                                <i class="fa-solid fa-circle-info me-1"></i>Contas de demonstração — senha: <code>123</code>
+                            </p>
+                            <div class="hint-item">
+                                <span class="role-badge" style="background:#d4edda;color:#155724;">Responsável</span>
+                                CPF: <code>111.111.1</code>
+                            </div>
+                            <div class="hint-item">
+                                <span class="role-badge" style="background:#cce5ff;color:#004085;">Professor</span>
+                                CPF: <code>111.222.333-01</code>
+                            </div>
+                            <div class="hint-item">
+                                <span class="role-badge" style="background:#fff3cd;color:#856404;">Admin</span>
+                                CPF: <code>admin</code>
+                            </div>
+                        </div>
+
+                        <div class="text-center mt-4 pt-3 border-top">
+                            <p class="small text-muted mb-0">É responsável e ainda não tem conta?</p>
+                            <a href="/html/cadastro.html" class="btn btn-outline-dark-blue btn-animated w-100 rounded-pill py-2 fw-bold mt-2">
+                                <i class="fa-solid fa-clipboard-list me-2"></i>Faça a Pré-Matrícula aqui
+                            </a>
+                        </div>
+
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+    <!-- Database precisa ser carregado antes da lógica de autenticação -->
+    <script src="/js/database.js?v=1.0.3"></script>
+
+    <script>
+        // =========================================================
+        // Máscara de CPF automática
+        // =========================================================
+        const cpfInput = document.getElementById('cpfInput');
+        cpfInput.addEventListener('input', function () {
+            // Não aplica máscara se for "admin"
+            if (this.value.toLowerCase().startsWith('a')) return;
+            let v = this.value.replace(/\D/g, '');
+            if (v.length <= 11) {
+                v = v.replace(/(\d{3})(\d)/, '$1.$2');
+                v = v.replace(/(\d{3})(\d)/, '$1.$2');
+                v = v.replace(/(\d{3})(\d{1,2})$/, '$1-$2');
+            }
+            this.value = v;
+        });
+
+        // =========================================================
+        // Mostrar/ocultar senha
+        // =========================================================
+        document.getElementById('toggleSenha').addEventListener('click', function () {
+            const senhaEl = document.getElementById('senhaInput');
+            const eyeIcon = document.getElementById('eyeIcon');
+            if (senhaEl.type === 'password') {
+                senhaEl.type = 'text';
+                eyeIcon.classList.replace('fa-eye', 'fa-eye-slash');
+            } else {
+                senhaEl.type = 'password';
+                eyeIcon.classList.replace('fa-eye-slash', 'fa-eye');
+            }
+        });
+
+        // =========================================================
+        // Autenticação contra database.js
+        // =========================================================
+        function autenticar(cpfDigitado, senhaDigitada) {
+            const cpf   = cpfDigitado.trim();
+            const senha = senhaDigitada.trim();
+
+            if (!cpf || !senha) {
+                return { ok: false, msg: 'Preencha o CPF e a senha para continuar.' };
+            }
+
+            // Senha única de demonstração
+            const SENHA_DEMO = '123';
+            if (senha !== SENHA_DEMO) {
+                return { ok: false, msg: 'Senha incorreta. Use a senha de demonstração: 123' };
+            }
+
+            // Admin fixo
+            if (cpf.toLowerCase() === 'admin') {
+                return { ok: true, perfil: 'admin', destino: 'dashboard_admin.html' };
+            }
+
+            // Verifica professores
+            const professor = window.Database.get('professores').find(p => p.cpf === cpf);
+            if (professor) {
+                return { ok: true, perfil: 'professor', nome: professor.nome, destino: 'dashboard_professor.html' };
+            }
+
+            // Verifica responsáveis
+            const responsavel = window.Database.get('responsaveis').find(r => r.cpf === cpf);
+            if (responsavel) {
+                return { ok: true, perfil: 'responsavel', nome: responsavel.nome, destino: 'dashboard_responsavel.html' };
+            }
+
+            return { ok: false, msg: 'CPF não encontrado. Verifique os dados e tente novamente.' };
+        }
+
+        function mostrarErro(msg) {
+            document.getElementById('errorText').textContent = msg;
+            document.getElementById('errorMsg').classList.remove('d-none');
+            cpfInput.classList.add('is-invalid');
+            document.getElementById('senhaInput').classList.add('is-invalid');
+        }
+
+        function esconderErro() {
+            document.getElementById('errorMsg').classList.add('d-none');
+            cpfInput.classList.remove('is-invalid');
+            document.getElementById('senhaInput').classList.remove('is-invalid');
+        }
+
+        function setLoading(on) {
+            document.getElementById('btnEntrar').disabled = on;
+            document.getElementById('btnText').classList.toggle('d-none', on);
+            document.getElementById('btnLoading').classList.toggle('d-none', !on);
+        }
+
+        function entrar() {
+            esconderErro();
+            const cpf   = cpfInput.value.trim();
+            const senha = document.getElementById('senhaInput').value;
+
+            setLoading(true);
+
+            // Pequeno delay para feedback visual
+            setTimeout(function () {
+                const resultado = autenticar(cpf, senha);
+                setLoading(false);
+
+                if (resultado.ok) {
+                    // Salva perfil na sessão para os dashboards usarem (opcional)
+                    try {
+                        sessionStorage.setItem('cg_perfil', resultado.perfil);
+                        if (resultado.nome) sessionStorage.setItem('cg_nome', resultado.nome);
+                    } catch(e) {}
+
+                    window.location.href = '/html/' + resultado.destino;
+                } else {
+                    mostrarErro(resultado.msg);
+                }
+            }, 600);
+        }
+
+        // Botão entrar
+        document.getElementById('btnEntrar').addEventListener('click', entrar);
+
+        // Tecla Enter nos campos
+        cpfInput.addEventListener('keydown', function (e) {
+            if (e.key === 'Enter') document.getElementById('senhaInput').focus();
+        });
+        document.getElementById('senhaInput').addEventListener('keydown', function (e) {
+            if (e.key === 'Enter') entrar();
+        });
+
+        // Limpa erro ao digitar
+        cpfInput.addEventListener('input', esconderErro);
+        document.getElementById('senhaInput').addEventListener('input', esconderErro);
+    </script>
+
+    <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+    <script>AOS.init();</script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

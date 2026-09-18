@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Portal do Responsável - Colmeia Girassol</title>
+    <link rel="icon" href="/images/abelha.png">
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+    <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
+    <link rel="stylesheet" href="/css/style.css?v=1.0.3">
+</head>
+<body class="bg-light-blue-pale">
+
+    <!-- Topbar -->
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark-blue shadow-sm py-3 mb-4">
+        <div class="container">
+            <a class="navbar-brand d-flex align-items-center gap-2" href="#">
+                <img src="/images/logo.png" alt="Logo" style="height: 40px;">
+                <span class="fw-bold">Colmeia Girassol</span>
+            </a>
+            <button class="navbar-toggler border-0" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto align-items-center gap-3">
+                    <li class="nav-item"><a class="nav-link active fw-bold" href="#">Meu Filho</a></li>
+                    <li class="nav-item"><a class="nav-link" href="#autorizados">Autorizados</a></li>
+                    <li class="nav-item ms-lg-4">
+                        <div class="d-flex align-items-center gap-2 text-white">
+                            <div class="text-end d-none d-md-block">
+                                <small class="d-block opacity-75">Responsável</small>
+                                <span class="fw-bold" id="header-resp-nome">—</span>
+                            </div>
+                            <img id="header-resp-avatar"
+                                 src="https://ui-avatars.com/api/?name=Responsavel&background=F2D544&color=2D4459"
+                                 class="rounded-circle shadow-sm" style="width: 40px;" alt="Responsável">
+                        </div>
+                    </li>
+                    <li class="nav-item">
+                        <a href="/html/login.html" class="btn btn-outline-light btn-sm rounded-pill px-3">Sair</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container pb-5">
+        <div class="row g-4">
+
+            <!-- Coluna Esquerda: Dados do Aluno -->
+            <div class="col-lg-4" data-aos="fade-right">
+                <div class="stat-card text-center py-5">
+                    <img id="aluno-avatar"
+                         src="https://ui-avatars.com/api/?name=Aluno&background=7EC8D9&color=fff&size=128"
+                         class="rounded-circle shadow mb-4" style="width: 120px;" alt="Aluno">
+                    <h3 class="fw-bold text-dark-blue mb-1" id="aluno-nome">—</h3>
+                    <p class="text-muted" id="aluno-turma-prof">—</p>
+                    <div class="d-flex justify-content-center gap-2 mt-4">
+                        <span class="badge bg-green-light text-success px-3 py-2 rounded-pill">Presente Hoje</span>
+                    </div>
+                    
+                    <div class="px-3 mt-3">
+                        <button class="btn btn-outline-primary btn-sm rounded-pill w-100 fw-bold py-2 shadow-sm" data-bs-toggle="modal" data-bs-target="#modalPreMatricula">
+                            <i class="fa-solid fa-plus me-1"></i> Matricular Outro Filho
+                        </button>
+                    </div>
+
+                    <hr class="my-4 opacity-10">
+
+                    <div class="text-start px-3">
+                        <h6 class="fw-bold text-dark-blue mb-3">Informações Rápidas</h6>
+                        <div class="mb-2 d-flex align-items-start gap-2">
+                            <i class="fa-solid fa-shield-virus text-warning mt-1"></i>
+                            <span class="small">Alergias: <strong id="aluno-alergias">—</strong></span>
+                        </div>
+                        <div class="mb-2 d-flex align-items-start gap-2">
+                            <i class="fa-solid fa-utensils text-primary mt-1"></i>
+                            <span class="small">Restrições: <strong id="aluno-restricoes">—</strong></span>
+                        </div>
+                        <div class="d-flex align-items-start gap-2">
+                            <i class="fa-solid fa-heart-pulse text-danger mt-1"></i>
+                            <span class="small">Necessidades: <strong id="aluno-necessidades">—</strong></span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Coluna Direita -->
+            <div class="col-lg-8">
+
+                <!-- Diário de Bordo -->
+                <section id="diario" class="mb-4" data-aos="fade-up">
+                    <div class="form-card p-4">
+                        <!-- render.js preenche este conteúdo -->
+                        <div class="text-center py-4 text-muted">
+                            <span class="spinner-border spinner-border-sm me-2"></span>Carregando diário...
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Autorizados a Buscar -->
+                <section id="autorizados" class="mb-4" data-aos="fade-up">
+                    <div class="form-card p-4">
+                        <div class="d-flex justify-content-between align-items-center mb-4">
+                            <h4 class="fw-bold text-dark-blue mb-0">
+                                <i class="fa-solid fa-user-check text-light-blue me-2"></i>Pessoas Autorizadas a Buscar
+                            </h4>
+                        </div>
+                        <div class="table-responsive">
+                            <table class="table table-hover align-middle mb-0">
+                                <thead class="table-light">
+                                    <tr>
+                                        <th>Nome</th>
+                                        <th>Parentesco</th>
+                                        <th>Telefone</th>
+                                        <th class="text-end">Ação</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <!-- render.js preenche com dados reais -->
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </section>
+
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal Adicionar Autorizado -->
+    <div class="modal fade" id="modalAutorizado" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content border-0 rounded-4 shadow">
+                <div class="modal-header border-0 pb-0">
+                    <h5 class="fw-bold text-dark-blue">Autorizar Nova Pessoa</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body p-4">
+                    <div class="mb-3">
+                        <label class="form-label fw-bold">Nome Completo</label>
+                        <input type="text" class="form-control rounded-3" id="aut-nome" placeholder="Ex: Maria de Souza">
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label fw-bold">CPF</label>
+                            <input type="text" class="form-control rounded-3" id="aut-cpf" placeholder="000.000.000-00">
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label fw-bold">Parentesco</label>
+                            <input type="text" class="form-control rounded-3" id="aut-parentesco" placeholder="Ex: Avó, Tio...">
+                        </div>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label fw-bold">Telefone</label>
+                        <input type="text" class="form-control rounded-3" id="aut-telefone" placeholder="(00) 00000-0000">
+                    </div>
+                    <button class="btn btn-yellow-main w-100 rounded-pill py-2 fw-bold mt-2 shadow-sm" onclick="salvarAutorizado()">
+                        Confirmar Autorização
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal Pré-Matrícula de Novo Filho -->
+    <div class="modal fade" id="modalPreMatricula" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content border-0 rounded-4 shadow">
+                <div class="modal-header border-0 pb-0">
+                    <h5 class="fw-bold text-dark-blue"><i class="fa-solid fa-baby-carriage me-2 text-warning"></i>Pré-Matrícula de Novo Filho</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body p-4">
+                    <p class="text-muted small mb-4">Como você já está logado(a), os dados de responsável serão vinculados automaticamente.</p>
+                    <form id="preMatriculaForm">
+                        <div class="mb-3">
+                            <label class="form-label fw-bold">Nome do Filho(a)</label>
+                            <input type="text" class="form-control rounded-3" id="filho-nome" placeholder="Ex: Lucas Silva" required>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label fw-bold">Data de Nascimento</label>
+                            <input type="date" class="form-control rounded-3" id="filho-nascimento" required>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label fw-bold">Alergias</label>
+                            <input type="text" class="form-control rounded-3" id="filho-alergias" placeholder="Deixe em branco se não houver">
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label fw-bold">Restrições Alimentares</label>
+                            <input type="text" class="form-control rounded-3" id="filho-restricoes" placeholder="Deixe em branco se não houver">
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label fw-bold">Necessidades Especiais</label>
+                            <textarea class="form-control rounded-3" id="filho-necessidades" rows="2" placeholder="Descreva se houver alguma necessidade especial"></textarea>
+                        </div>
+                        <button type="button" class="btn btn-yellow-main w-100 rounded-pill py-2 fw-bold mt-3 shadow-sm" onclick="enviarPreMatriculaFilho()">
+                            Enviar Pré-Matrícula
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal sucesso -->
+    <div class="modal fade" id="modalSucesso" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered modal-sm">
+            <div class="modal-content border-0 rounded-4 shadow text-center p-4">
+                <i class="fa-solid fa-circle-check text-success fs-1 mb-3"></i>
+                <h5 class="fw-bold text-dark-blue" id="modal-sucesso-msg">Salvo com sucesso!</h5>
+                <button class="btn btn-dark-blue rounded-pill px-4 mt-2" data-bs-dismiss="modal">OK</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="/js/database.js?v=1.0.3"></script>
+    <script src="/js/render.js?v=1.0.3"></script>
+    <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+    <script>AOS.init();</script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

@@ -1,0 +1,283 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Portal do Professor - Colmeia Girassol</title>
+    <link rel="icon" href="/images/abelha.png">
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+    <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
+    <link rel="stylesheet" href="/css/style.css?v=1.0.3">
+</head>
+<body>
+
+    <div class="dashboard-container">
+        <!-- Mobile Top Navbar -->
+        <nav class="navbar navbar-dark bg-dark-blue d-lg-none py-3 px-3 shadow-sm w-100 position-sticky top-0 z-3">
+            <div class="container-fluid d-flex justify-content-between align-items-center">
+                <a class="navbar-brand d-flex align-items-center gap-2" href="#">
+                    <img src="/images/logo.png" alt="Logo" style="height: 35px;">
+                    <span class="fw-bold text-white small">Colmeia Girassol</span>
+                </a>
+                <div class="dropdown">
+                    <button class="btn btn-outline-light dropdown-toggle rounded-pill px-3 py-1 btn-sm" type="button" id="mobileMenuDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+                        <i class="fa-solid fa-bars me-1"></i> Menu
+                    </button>
+                    <ul class="dropdown-menu dropdown-menu-end shadow border-0 rounded-3 mt-2" aria-labelledby="mobileMenuDropdown">
+                        <li><a class="dropdown-item nav-link-custom py-2 active" data-section="inicio"><i class="fa-solid fa-house me-2"></i>Início</a></li>
+                        <li><a class="dropdown-item nav-link-custom py-2" data-section="planejamento-section"><i class="fa-solid fa-calendar-check me-2"></i>Planejamento</a></li>
+                        <li><a class="dropdown-item nav-link-custom py-2" data-section="minha-turma-section"><i class="fa-solid fa-users me-2"></i>Minha Turma</a></li>
+                        <li><hr class="dropdown-divider"></li>
+                        <li><a href="/html/login.html" class="dropdown-item text-danger py-2"><i class="fa-solid fa-right-from-bracket me-2"></i>Sair</a></li>
+                    </ul>
+                </div>
+            </div>
+        </nav>
+
+        <!-- Sidebar -->
+        <aside class="sidebar d-none d-lg-block">
+            <div class="sidebar-logo">
+                <img src="/images/logo.png" alt="Logo" class="img-fluid mb-2" style="max-width: 120px;">
+                <h6 class="fw-bold text-white mb-0">Colmeia Girassol</h6>
+            </div>
+            <nav class="nav-menu">
+                <li class="nav-item mb-2">
+                    <a href="#" class="nav-link nav-link-custom active" data-section="inicio">
+                        <i class="fa-solid fa-house me-3"></i>Início
+                    </a>
+                </li>
+                <li class="nav-item mb-2">
+                    <a href="#" class="nav-link nav-link-custom" data-section="planejamento-section">
+                        <i class="fa-solid fa-calendar-check me-3"></i>Planejamento
+                    </a>
+                </li>
+                <li class="nav-item mb-2">
+                    <a href="#" class="nav-link nav-link-custom" data-section="minha-turma-section">
+                        <i class="fa-solid fa-users me-3"></i>Minha Turma
+                    </a>
+                </li>
+                <li class="nav-item mt-5"><a href="/html/login.html" class="nav-link-custom text-danger"><i class="fa-solid fa-right-from-bracket"></i><span>Sair</span></a></li>
+            </nav>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <header class="dashboard-header" data-aos="fade-down">
+                <div>
+                    <h2 class="fw-bold text-dark-blue mb-0" id="saudacao-prof">Olá, Professor(a)</h2>
+                    <p class="text-muted">Tenha um ótimo dia de aula com seus pequenos!</p>
+                </div>
+                <div class="d-flex align-items-center gap-3">
+                    <div class="text-end d-none d-md-block">
+                        <h6 class="fw-bold text-dark-blue mb-0" id="header-prof-nome">—</h6>
+                        <small class="text-muted" id="header-prof-info">—</small>
+                    </div>
+                    <img id="header-prof-avatar"
+                         src="https://ui-avatars.com/api/?name=Professor&background=7EC8D9&color=fff"
+                         alt="Professor" class="rounded-circle shadow-sm" style="width: 45px;">
+                </div>
+            </header>
+
+            <!-- Seção Início -->
+            <section id="inicio" class="dashboard-section active">
+                <!-- Stats rápidos -->
+                <div class="row g-4 mb-5" data-aos="fade-up">
+                    <div class="col-md-4">
+                        <div class="stat-card">
+                            <div class="stat-icon bg-blue-light text-primary"><i class="fa-solid fa-user-graduate"></i></div>
+                            <h3 class="fw-bold mb-0" id="stat-prof-alunos">0</h3>
+                            <p class="text-muted small mb-0">Alunos na Minha Turma</p>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="stat-card">
+                            <div class="stat-icon bg-yellow-light text-warning"><i class="fa-solid fa-calendar-check"></i></div>
+                            <h3 class="fw-bold mb-0" id="stat-prof-planos">0</h3>
+                            <p class="text-muted small mb-0">Aulas Planejadas</p>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="stat-card">
+                            <div class="stat-icon bg-green-light text-success"><i class="fa-solid fa-book-open"></i></div>
+                            <h3 class="fw-bold mb-0">10</h3>
+                            <p class="text-muted small mb-0">Registros no Diário</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Formulário Rápido de Diário -->
+                <div class="form-card" data-aos="fade-up">
+                    <div class="d-flex align-items-center gap-3 mb-4">
+                        <div class="stat-icon bg-yellow-light text-warning mb-0"><i class="fa-solid fa-book"></i></div>
+                        <h4 class="fw-bold text-dark-blue mb-0">Novo Registro no Diário de Bordo</h4>
+                    </div>
+                    <div class="row g-3">
+                        <div class="col-md-6">
+                            <label class="form-label fw-bold">Selecionar Aluno</label>
+                            <select class="form-select rounded-3 shadow-sm" id="select-aluno-diario">
+                                <!-- render.js preenche -->
+                            </select>
+                        </div>
+                        <div class="col-md-3">
+                            <label class="form-label fw-bold">Humor</label>
+                            <select class="form-select rounded-3 shadow-sm" id="diario-humor">
+                                <option>Feliz</option>
+                                <option>Tranquilo</option>
+                                <option>Agitado</option>
+                                <option>Choroso</option>
+                            </select>
+                        </div>
+                        <div class="col-md-3">
+                            <label class="form-label fw-bold">Alimentação</label>
+                            <select class="form-select rounded-3 shadow-sm" id="diario-alimentacao">
+                                <option>Comeu tudo</option>
+                                <option>Comeu bem</option>
+                                <option>Comeu pouco</option>
+                                <option>Recusou</option>
+                            </select>
+                        </div>
+                        <div class="col-md-4">
+                            <label class="form-label fw-bold">Sono</label>
+                            <input type="text" class="form-control rounded-3 shadow-sm" id="diario-sono" placeholder="Ex: Dormiu 1h30">
+                        </div>
+                        <div class="col-md-4">
+                            <label class="form-label fw-bold">Troca / Banheiro</label>
+                            <input type="text" class="form-control rounded-3 shadow-sm" id="diario-fraldas" placeholder="Ex: Normal / 3 trocas">
+                        </div>
+                        <div class="col-md-4">
+                            <label class="form-label fw-bold">Saúde / Medicamento</label>
+                            <input type="text" class="form-control rounded-3 shadow-sm" placeholder="Nenhuma observação">
+                        </div>
+                        <div class="col-12">
+                            <label class="form-label fw-bold">Observações do Dia</label>
+                            <textarea class="form-control rounded-3 shadow-sm" rows="3" id="diario-obs" placeholder="Conte como foi o desenvolvimento da criança hoje..."></textarea>
+                        </div>
+                        <div class="col-12 text-end mt-2">
+                            <button class="btn btn-custom btn-dark-blue rounded-pill px-5 shadow" onclick="salvarDiario()">
+                                <i class="fa-solid fa-paper-plane me-2"></i>Enviar para os Pais
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Seção Planejamento -->
+            <section id="planejamento-section" class="dashboard-section" data-aos="fade-up">
+                <div class="d-flex justify-content-between align-items-center mb-4">
+                    <h4 class="fw-bold text-dark-blue mb-0">Planejamento de Aulas</h4>
+                    <button class="btn btn-light-blue rounded-pill px-4 shadow-sm" data-bs-toggle="modal" data-bs-target="#modalPlanejamento">
+                        <i class="fa-solid fa-plus me-2"></i>Nova Atividade
+                    </button>
+                </div>
+                <div class="row g-4" id="planejamentos-lista-prof">
+                    <!-- render.js preenche -->
+                </div>
+            </section>
+
+            <!-- Seção Minha Turma -->
+            <section id="minha-turma-section" class="dashboard-section" data-aos="fade-up">
+                <h4 class="fw-bold text-dark-blue mb-4">Minha Turma</h4>
+                <div class="form-card" id="minhas-turmas-lista">
+                    <div class="text-center py-4 text-muted">
+                        <span class="spinner-border spinner-border-sm me-2"></span>Carregando...
+                    </div>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <!-- Modal Planejamento -->
+    <div class="modal fade" id="modalPlanejamento" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content border-0 rounded-4 shadow">
+                <div class="modal-header border-0 pb-0">
+                    <h5 class="fw-bold text-dark-blue">Planejar Nova Aula</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body p-4">
+                    <div class="mb-3">
+                        <label class="form-label fw-bold">Atividade / Título</label>
+                        <input type="text" class="form-control rounded-3" id="plano-titulo" placeholder="Ex: Aula de Artes">
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label fw-bold">Descrição da Dinâmica</label>
+                        <textarea class="form-control rounded-3" rows="3" id="plano-desc"></textarea>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label fw-bold">Data</label>
+                            <input type="date" class="form-control rounded-3" id="plano-data">
+                        </div>
+                    </div>
+                    <button class="btn btn-yellow-main w-100 rounded-pill py-2 fw-bold mt-2" onclick="salvarPlanejamento()">
+                        Salvar Planejamento
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- Modal Autorizados -->
+    <div class="modal fade" id="modalAutorizados" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content border-0 rounded-4 shadow">
+                <div class="modal-header border-0 pb-0">
+                    <h5 class="fw-bold text-dark-blue" id="modalAutorizadosTitulo">Pessoas Autorizadas</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body p-4">
+                    <div id="lista-autorizados-modal">
+                        <!-- preenchido pelo render.js -->
+                    </div>
+                </div>
+                <div class="modal-footer border-0">
+                    <button type="button" class="btn btn-light rounded-pill px-4" data-bs-dismiss="modal">Fechar</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal Chamada -->
+    <div class="modal fade" id="modalChamada" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content border-0 rounded-4 shadow">
+                <div class="modal-header border-0 bg-dark-blue text-white">
+                    <h5 class="fw-bold mb-0" id="modalChamadaTitulo">Chamada</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body p-0">
+                    <div class="table-responsive">
+                        <table class="table table-hover align-middle mb-0">
+                            <thead class="table-light">
+                                <tr><th>Aluno</th><th class="text-center">Presença</th><th>Status</th></tr>
+                            </thead>
+                            <tbody id="listaChamadaAlunos"></tbody>
+                        </table>
+                    </div>
+                </div>
+                <div class="modal-footer border-0">
+                    <button class="btn btn-dark-blue w-100 rounded-pill" data-bs-dismiss="modal">Finalizar Chamada</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal de sucesso -->
+    <div class="modal fade" id="modalSucesso" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered modal-sm">
+            <div class="modal-content border-0 rounded-4 shadow text-center p-4">
+                <i class="fa-solid fa-circle-check text-success fs-1 mb-3"></i>
+                <h5 class="fw-bold text-dark-blue" id="modal-sucesso-msg">Salvo com sucesso!</h5>
+                <button class="btn btn-dark-blue rounded-pill px-4 mt-2" data-bs-dismiss="modal">OK</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="/js/database.js?v=1.0.3"></script>
+    <script src="/js/render.js?v=1.0.3"></script>
+    <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+    <script>AOS.init();</script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

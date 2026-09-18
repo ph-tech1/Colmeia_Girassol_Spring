@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Redefinir Senha - Escola Infantil Colmeia Girassol</title>
+    <link rel="icon" href="/images/abelha.png">
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+    <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
+    <link rel="stylesheet" href="/css/style.css">
+</head>
+<body class="bg-light-blue-pale d-flex align-items-center justify-content-center" style="min-height: 100vh;">
+
+    <!-- Botão Voltar -->
+    <a href="/html/login.html" class="position-absolute top-0 start-0 m-4 text-dark-blue fs-6 fw-bold text-decoration-none back-link d-inline-block" style="z-index: 10;">
+        <i class="fa-solid fa-arrow-left me-2"></i>Voltar ao Login
+    </a>
+
+    <div class="container py-5">
+        <div class="row justify-content-center">
+            <div class="col-md-6 col-lg-5" data-aos="zoom-in" data-aos-duration="800">
+                
+                <div class="text-center mb-4">
+                    <img src="/images/mascote_senha.png" alt="Mascote Senha" class="img-fluid floating" style="max-width: 150px; filter: drop-shadow(0 5px 10px rgba(0,0,0,0.1));">
+                </div>
+
+                <div class="card border-0 shadow-lg rounded-4 overflow-hidden">
+                    <div class="card-body p-4 p-md-5">
+                        <div class="text-center mb-4">
+                            <h4 class="fw-bold text-dark-blue">Esqueceu sua senha?</h4>
+                            <p class="text-muted small">Não se preocupe! Digite seu CPF ou E-mail cadastrado e enviaremos as instruções para redefinição.</p>
+                        </div>
+                        <form action="#">
+                            <div class="form-floating mb-3">
+                                <input type="text" class="form-control" id="cpfRecuperar" placeholder="CPF">
+                                <label for="cpfRecuperar">Seu CPF</label>
+                            </div>
+                            <div class="form-floating mb-4">
+                                <input type="email" class="form-control" id="emailRecuperar" placeholder="E-mail">
+                                <label for="emailRecuperar">Seu E-mail cadastrado</label>
+                            </div>
+                            <button type="button" class="btn btn-custom btn-yellow-main btn-animated w-100 rounded-pill py-2 fw-bold text-dark-blue shadow-sm mb-3">
+                                <i class="fa-solid fa-envelope-circle-check me-2"></i>Enviar Link de Recuperação
+                            </button>
+                        </form>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+    <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+    <script>
+        AOS.init();
+    </script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

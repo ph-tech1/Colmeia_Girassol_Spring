@@ -1,0 +1,310 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pré-Matrícula - Escola Infantil Colmeia Girassol</title>
+    <link rel="icon" href="/images/abelha.png">
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+    <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
+    <link rel="stylesheet" href="/css/style.css?v=1.0.3">
+    <style>
+        .step-header {
+            background-color: var(--dark-blue);
+            color: #fff;
+            padding: 15px 20px;
+            border-radius: 12px 12px 0 0;
+            margin-bottom: 0;
+        }
+
+        .step-body {
+            background-color: #fff;
+            border: 1px solid #e9ecef;
+            border-top: none;
+            border-radius: 0 0 12px 12px;
+            padding: 30px;
+            margin-bottom: 40px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.03);
+        }
+
+        .form-floating>.form-control:focus,
+        .form-floating>.form-select:focus {
+            .floating {
+                animation: floating 3s ease-in-out infinite;
+            }
+
+            @keyframes floating {
+                0% {
+                    transform: translateY(0px);
+                }
+
+                50% {
+                    transform: translateY(-10px);
+                }
+
+                100% {
+                    transform: translateY(0px);
+                }
+            }
+        }
+    </style>
+</head>
+
+<body class="bg-light-blue-pale">
+
+    <!-- Header Simples -->
+    <header class="bg-white py-3 shadow-sm mb-5" data-aos="fade-down" data-aos-duration="600">
+        <div class="container d-flex justify-content-between align-items-center">
+            <a href="/html/login.html" class="text-dark-blue fs-6 text-decoration-none fw-bold back-link d-inline-block"><i
+                    class="fa-solid fa-arrow-left me-2"></i> Voltar ao Login</a>
+            <div style="width: 80px;"></div>
+        </div>
+    </header>
+
+    <div class="container pb-5">
+        <div class="row justify-content-center">
+            <div class="col-lg-8" data-aos="fade-up" data-aos-duration="800">
+
+                <div class="text-center mb-5">
+                    <h2 class="fw-bold text-dark-blue">Pré-Matrícula</h2>
+                    <p class="text-secondary">Preencha os dados abaixo para iniciar o processo de matrícula do seu
+                        filho.</p>
+                </div>
+
+                <form id="matriculaForm" action="#">
+
+                    <!-- Passo 1 -->
+                    <h5 class="step-header fw-bold"><i class="fa-solid fa-user me-2 text-yellow-main"></i> 1. Dados do
+                        Responsável</h5>
+                    <div class="step-body">
+                        <div class="row g-3">
+                            <div class="col-md-12">
+                                <div class="form-floating">
+                                    <input type="text" class="form-control" id="nomeResp" placeholder="Nome Completo">
+                                    <label for="nomeResp">Nome Completo</label>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-floating">
+                                    <input type="text" class="form-control" id="cpfResp" placeholder="CPF">
+                                    <label for="cpfResp">CPF</label>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-floating">
+                                    <input type="text" class="form-control" id="rgResp" placeholder="RG">
+                                    <label for="rgResp">RG</label>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-floating">
+                                    <input type="date" class="form-control" id="dataNascResp" placeholder="Data Nasc">
+                                    <label for="dataNascResp">Data de Nascimento</label>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-floating">
+                                    <select class="form-select" id="estadoCivilResp" aria-label="Estado Civil">
+                                        <option selected disabled>Selecione...</option>
+                                        <option value="1">Solteiro(a)</option>
+                                        <option value="2">Casado(a)</option>
+                                        <option value="3">Divorciado(a)</option>
+                                        <option value="4">Viúvo(a)</option>
+                                    </select>
+                                    <label for="estadoCivilResp">Estado Civil</label>
+                                </div>
+                            </div>
+                            <div class="col-md-12 mt-4">
+                                <div class="form-floating">
+                                    <input type="password" class="form-control" id="senhaResp" placeholder="Senha">
+                                    <label for="senhaResp">Crie uma Senha para acesso ao portal</label>
+                                </div>
+                                <div class="form-text text-muted small">Essa será a senha usada com seu CPF para logar
+                                    no sistema depois.</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Passo 2 -->
+                    <h5 class="step-header fw-bold"><i class="fa-solid fa-location-dot me-2 text-yellow-main"></i> 2.
+                        Endereço e Contato</h5>
+                    <div class="step-body">
+                        <div class="row g-3">
+                            <div class="col-md-4">
+                                <div class="form-floating">
+                                    <input type="text" class="form-control" id="cepResp" placeholder="CEP">
+                                    <label for="cepResp">CEP</label>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-floating">
+                                    <input type="text" class="form-control" id="cidadeResp" placeholder="Cidade">
+                                    <label for="cidadeResp">Cidade</label>
+                                </div>
+                            </div>
+                            <div class="col-md-2">
+                                <div class="form-floating">
+                                    <input type="text" class="form-control" id="ufResp" placeholder="UF">
+                                    <label for="ufResp">UF</label>
+                                </div>
+                            </div>
+                            <div class="col-md-12 mt-4">
+                                <div class="form-floating">
+                                    <input type="email" class="form-control" id="emailResp" placeholder="E-mail">
+                                    <label for="emailResp">E-mail de Contato</label>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-floating">
+                                    <input type="text" class="form-control" id="celResp"
+                                        placeholder="Celular (WhatsApp)">
+                                    <label for="celResp">Celular (WhatsApp)</label>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-floating">
+                                    <input type="text" class="form-control" id="telTrabResp"
+                                        placeholder="Telefone do Trabalho">
+                                    <label for="telTrabResp">Telefone Secundário/Trabalho (Opcional)</label>
+                                </div>
+                            </div>
+                            <div class="col-md-12">
+                                <div class="form-floating">
+                                    <input type="text" class="form-control" id="localTrabResp"
+                                        placeholder="Local de Trabalho">
+                                    <label for="localTrabResp">Local de Trabalho</label>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Passo 3 -->
+                    <h5 class="step-header fw-bold"><i class="fa-solid fa-child-reaching me-2 text-yellow-main"></i> 3.
+                        Dados do Aluno</h5>
+                    <div class="step-body">
+                        <div class="row g-3">
+                            <div class="col-md-12">
+                                <div class="form-floating">
+                                    <input type="text" class="form-control" id="nomeAluno"
+                                        placeholder="Nome Completo do Aluno">
+                                    <label for="nomeAluno">Nome Completo do Aluno</label>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-floating">
+                                    <input type="date" class="form-control" id="dataNascAluno" placeholder="Data Nasc">
+                                    <label for="dataNascAluno">Data de Nascimento</label>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-floating">
+                                    <select class="form-select" id="grauParentesco" aria-label="Grau de Parentesco">
+                                        <option selected disabled>Selecione...</option>
+                                        <option value="1">Mãe</option>
+                                        <option value="2">Pai</option>
+                                        <option value="3">Avô/Avó</option>
+                                        <option value="4">Tio(a)</option>
+                                        <option value="5">Responsável Legal</option>
+                                    </select>
+                                    <label for="grauParentesco">Grau de Parentesco</label>
+                                </div>
+                            </div>
+
+                            <div class="col-md-12 mt-4">
+                                <h6 class="fw-bold text-dark-blue mb-3 border-bottom pb-2">Informações Médicas
+                                    Importantes</h6>
+                            </div>
+                            <div class="col-md-12">
+                                <div class="form-floating">
+                                    <input type="text" class="form-control" id="alergias" placeholder="Alergias">
+                                    <label for="alergias">Alergias (Deixe em branco se não houver)</label>
+                                </div>
+                            </div>
+                            <div class="col-md-12">
+                                <div class="form-floating">
+                                    <input type="text" class="form-control" id="restricoes"
+                                        placeholder="Restrições Alimentares">
+                                    <label for="restricoes">Restrições Alimentares (Deixe em branco se não
+                                        houver)</label>
+                                </div>
+                            </div>
+                            <div class="col-md-12">
+                                <div class="form-floating">
+                                    <textarea class="form-control" placeholder="Necessidades Especiais"
+                                        id="necessidades" style="height: 100px"></textarea>
+                                    <label for="necessidades">Necessidades Especiais</label>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+
+
+                    <!-- Submit -->
+                    <div class="text-center mt-5 mb-5">
+                        <button type="button" onclick="concluirMatricula()"
+                            class="btn btn-custom btn-dark-blue btn-animated rounded-pill px-5 py-3 fw-bold fs-5 shadow-sm text-white border-0">
+                            <i class="fa-solid fa-paper-plane me-2"></i> Concluir Pré-Matrícula
+                        </button>
+                    </div>
+
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+    <script>
+        AOS.init();
+    </script>
+    <!-- JS do Bootstrap -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+
+    <script>
+        function validarCampo(campo) {
+            if (campo.value.trim() === "" || (campo.tagName === "SELECT" && campo.value === "Selecione...")) {
+                campo.classList.add('is-invalid');
+                return false;
+            } else {
+                campo.classList.remove('is-invalid');
+                return true;
+            }
+        }
+
+        // Adiciona ouvintes de evento para validar enquanto o usuário digita
+        document.querySelectorAll('input, select, textarea').forEach(el => {
+            el.addEventListener('blur', () => validarCampo(el));
+            el.addEventListener('input', () => {
+                if (el.classList.contains('is-invalid')) validarCampo(el);
+            });
+        });
+
+        function concluirMatricula() {
+            // Seleciona todos os campos de entrada do formulário
+            const campos = document.querySelectorAll('#matriculaForm input, #matriculaForm select, #matriculaForm textarea');
+            let formValido = true;
+
+            campos.forEach(el => {
+                // Ignora campos que não são obrigatórios por natureza (como observações opcionais se desejar)
+                // Mas aqui vamos validar todos que estiverem vazios para o efeito visual solicitado
+                if (!validarCampo(el)) {
+                    formValido = false;
+                }
+            });
+
+            if (!formValido) {
+                // Rola para o primeiro campo inválido
+                const primeiroInvalido = document.querySelector('.is-invalid');
+                if (primeiroInvalido) primeiroInvalido.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                return;
+            }
+
+            alert("Validação concluída com sucesso! (Demonstração)");
+        }
+    </script>
+</body>
+
+</html>
