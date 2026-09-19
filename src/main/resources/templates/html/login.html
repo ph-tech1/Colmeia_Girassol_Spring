@@ -3,13 +3,13 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Login - Escola Infantil Colmeia Girassol</title>
+    <title>Portal Colmeia Girassol | Entrar</title>
     <link rel="icon" th:href="@{/images/abelha.png}">
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700&display=swap" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
     <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
-    <link rel="stylesheet" th:href="@{/css/style.css(v='1.0.3')}">
+    <link rel="stylesheet" th:href="@{/css/style.css(v='1.2.0')}">
     <style>
         .login-hint-box {
             background: #f8f9fa;
@@ -72,35 +72,46 @@
         }
     </style>
 </head>
-<body class="bg-light-blue-pale d-flex align-items-center justify-content-center" style="min-height: 100vh;">
+<body class="login-shell d-flex align-items-center justify-content-center">
 
     <!-- Botão Voltar -->
-    <a th:href="@{/}" class="position-absolute top-0 start-0 m-4 text-dark-blue fs-6 fw-bold text-decoration-none back-link d-inline-block" style="z-index: 10;">
-        <i class="fa-solid fa-arrow-left me-2"></i>Voltar ao Início
+    <a th:href="@{/}" class="login-back position-absolute top-0 start-0 m-4 text-dark-blue text-decoration-none back-link d-inline-block" style="z-index: 10;">
+        <i class="fa-solid fa-arrow-left me-2"></i><span>Voltar à colmeia</span>
     </a>
 
     <div class="container py-5">
-        <div class="row justify-content-center">
-            <div class="col-md-6 col-lg-5" data-aos="zoom-in" data-aos-duration="800">
+        <div class="row align-items-center justify-content-center g-5">
+            <div class="col-lg-5 login-welcome" data-aos="fade-right" data-aos-duration="800">
+                <div class="login-orbit"><span class="orbit-dot"></span><img th:src="@{/images/abelha.png}" alt="Abelhinha" class="login-bee"></div>
+                <div class="hive-eyebrow"><span></span> Portal Colmeia Girassol</div>
+                <h1>Seu lugar de<br><em>cuidar e florescer.</em></h1>
+                <p>Uma ponte entre a família e a escola, feita para acompanhar cada pequeno voo com presença e carinho.</p>
+                <div class="login-door-list"><span><i class="fa-solid fa-house-user"></i> Família</span><span><i class="fa-solid fa-chalkboard-user"></i> Equipe pedagógica</span></div>
+            </div>
+            <div class="col-md-8 col-lg-5" data-aos="zoom-in" data-aos-duration="800">
 
                 <div class="text-center mb-4">
                     <img th:src="@{/images/mascote_login.png}" alt="Mascote Login" class="img-fluid floating" style="max-width: 150px; filter: drop-shadow(0 5px 10px rgba(0,0,0,0.1));">
                 </div>
 
-                <div class="card border-0 shadow-lg rounded-4 overflow-hidden">
+                <div class="card login-card border-0 shadow-lg rounded-4 overflow-hidden">
                     <div class="card-header-strip"></div>
 
                     <div class="card-header bg-white border-0 px-4 pt-4 pb-0">
                         <div class="text-center fw-bold text-dark-blue" style="font-size: 1rem; letter-spacing: 0.5px;">
-                            <i class="fa-solid fa-school me-2"></i>Portal Escolar
+                            <i class="fa-solid fa-hive me-2"></i>Escolha sua entrada
+                        </div>
+                        <div class="login-roles" role="tablist" aria-label="Tipo de acesso">
+                            <a href="#responsavel" class="login-role active" role="tab"><i class="fa-solid fa-house-user"></i><span>Responsável<small>Acompanhar a criança</small></span></a>
+                            <a href="#professor" class="login-role" role="tab"><i class="fa-solid fa-chalkboard-user"></i><span>Professor<small>Espaço pedagógico</small></span></a>
                         </div>
                     </div>
 
                     <div class="card-body p-4 p-md-5">
 
                         <div class="text-center mb-4">
-                            <h4 class="fw-bold text-dark-blue">Bem-vindo(a)!</h4>
-                            <p class="text-muted small">Entre com seu CPF e senha para acessar o portal.</p>
+                            <h4 class="fw-bold text-dark-blue">Bem-vindo de volta</h4>
+                            <p class="text-muted small">Entre com seu CPF e senha para abrir sua colmeia.</p>
                         </div>
 
                         <!-- Mensagem de erro -->
@@ -130,7 +141,7 @@
                                 </span>
                                 <input type="password" class="form-control border-start-0 ps-0" id="senhaInput"
                                        placeholder="Sua senha" autocomplete="current-password">
-                                <button class="btn btn-outline-secondary border-start-0" type="button" id="toggleSenha" tabindex="-1">
+                                <button class="btn password-toggle border-start-0" type="button" id="toggleSenha" tabindex="-1">
                                     <i class="fa-solid fa-eye" id="eyeIcon"></i>
                                 </button>
                             </div>
@@ -150,25 +161,6 @@
                                     <span class="spinner-border spinner-sm me-2" role="status"></span>Verificando...
                                 </span>
                             </button>
-                        </div>
-
-                        <!-- Dica de acesso para demonstração -->
-                        <div class="login-hint-box mt-3">
-                            <p class="fw-bold text-dark-blue mb-2" style="font-size:0.8rem;">
-                                <i class="fa-solid fa-circle-info me-1"></i>Contas de demonstração — senha: <code>123</code>
-                            </p>
-                            <div class="hint-item">
-                                <span class="role-badge" style="background:#d4edda;color:#155724;">Responsável</span>
-                                CPF: <code>111.111.1</code>
-                            </div>
-                            <div class="hint-item">
-                                <span class="role-badge" style="background:#cce5ff;color:#004085;">Professor</span>
-                                CPF: <code>111.222.333-01</code>
-                            </div>
-                            <div class="hint-item">
-                                <span class="role-badge" style="background:#fff3cd;color:#856404;">Admin</span>
-                                CPF: <code>admin</code>
-                            </div>
                         </div>
 
                         <div class="text-center mt-4 pt-3 border-top">
@@ -319,7 +311,17 @@
     </script>
 
     <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
-    <script>AOS.init();</script>
+    <script>
+        document.querySelectorAll('.login-role').forEach(function (role) {
+            role.addEventListener('click', function () {
+                document.querySelectorAll('.login-role').forEach(function (item) {
+                    item.classList.remove('active');
+                });
+                role.classList.add('active');
+            });
+        });
+        AOS.init();
+    </script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>
