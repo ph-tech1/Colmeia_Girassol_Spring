@@ -135,25 +135,25 @@
                         <div class="row g-3">
                             <div class="col-md-4">
                                 <div class="form-floating">
-                                    <input type="text" class="form-control cep-mask" id="cepResp" placeholder="CEP" required>
-                                    <label for="cep">CEP</label>
+                                    <input type="text" class="form-control cep-mask" id="cepResp" data-cep placeholder="CEP" required>
+                                    <label for="cepResp">CEP</label>
                                 </div>
                             </div>
                             <div class="col-md-8">
                                 <div class="form-floating">
-                                    <input type="text" class="form-control" id="enderecoResp" placeholder="Endereço" required>
+                                    <input type="text" class="form-control" id="enderecoResp" data-cep-field="logradouro" placeholder="Endereço" required>
                                     <label for="enderecoResp">Endereço</label>
                                 </div>
                             </div>
                             <div class="col-md-6">
                                 <div class="form-floating">
-                                    <input type="text" class="form-control" id="cidadeResp" placeholder="Cidade" required>
+                                    <input type="text" class="form-control" id="cidadeResp" data-cep-field="localidade" placeholder="Cidade" required>
                                     <label for="cidadeResp">Cidade</label>
                                 </div>
                             </div>
                             <div class="col-md-2">
                                 <div class="form-floating">
-                                    <input type="text" class="form-control uf-field" id="ufResp" placeholder="UF" required maxlength="2">
+                                    <input type="text" class="form-control uf-field" id="ufResp" data-cep-field="uf" placeholder="UF" required maxlength="2">
                                     <label for="ufResp">UF</label>
                                 </div>
                             </div>

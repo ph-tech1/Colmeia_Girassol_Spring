@@ -123,5 +123,57 @@
         $('#cpfRecuperar').mask('000.000.000-00');
     });
 
-    
+    async function buscarCEP(cep) {
+        const cepNumerico = digits(cep);
+        if (!/^\d{8}$/.test(cepNumerico)) {
+            return { erro: true, mensagem: 'CEP deve conter 8 dígitos.' };
+        }
+
+        try {
+            const response = await fetch(`https://viacep.com.br/ws/${cepNumerico}/json/`);
+            if (!response.ok) {
+                throw new Error('Falha na consulta ao ViaCEP.');
+            }
+
+            const data = await response.json();
+            if (data.erro) {
+                return { erro: true, mensagem: 'CEP não localizado.' };
+            }
+            return data;
+        } catch (error) {
+            console.error('Erro ao consultar o CEP:', error);
+            return { erro: true, mensagem: 'Não foi possível consultar o CEP. Você pode preencher o endereço manualmente.' };
+        }
+    }
+
+    document.addEventListener('focusout', async function (event) {
+        const input = event.target;
+        if (!(input instanceof HTMLInputElement) || !input.matches('[data-cep]')) return;
+
+        const cepConsultado = digits(input.value);
+        const resultado = await buscarCEP(cepConsultado);
+        if (digits(input.value) !== cepConsultado) return;
+
+        if (resultado.erro) {
+            input.dispatchEvent(new CustomEvent('cepError', { detail: resultado.mensagem }));
+            setFieldState(input, false, resultado.mensagem);
+            return;
+        }
+
+        const form = input.closest('form') || document;
+        const camposEndereco = {
+            logradouro: 'logradouro',
+            localidade: 'localidade',
+            uf: 'uf'
+        };
+        Object.entries(camposEndereco).forEach(([campo, chaveViaCep]) => {
+            const el = form.querySelector(`[data-cep-field="${campo}"]`);
+            if (el && resultado[chaveViaCep]) {
+                el.value = resultado[chaveViaCep];
+                el.dispatchEvent(new Event('input', { bubbles: true }));
+                el.dispatchEvent(new Event('change', { bubbles: true }));
+            }
+        });
+        validateField(input);
+    });
 })(window, window.jQuery);
