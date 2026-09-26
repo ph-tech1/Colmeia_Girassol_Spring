@@ -9,7 +9,7 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
     <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
-    <link rel="stylesheet" th:href="@{/css/style.css(v='1.1.0')}">
+    <link rel="stylesheet" th:href="@{/css/style.css(v='1.3.0')}">
     <style>
         .dashboard-section { display: none; }
         .dashboard-section.active { display: block; }
@@ -126,27 +126,27 @@
                         <div class="row g-3">
                             <div class="col-md-6">
                                 <label class="form-label fw-bold">Nome Completo</label>
-                                <input type="text" class="form-control rounded-3" id="novo-prof-nome" placeholder="Ex: Marcos Silva">
+                                <input type="text" class="form-control rounded-3" id="novo-prof-nome" placeholder="Ex: Marcos Silva" required minlength="3">
                             </div>
                             <div class="col-md-3">
                                 <label class="form-label fw-bold">CPF</label>
-                                <input type="text" class="form-control rounded-3" id="novo-prof-cpf" placeholder="000.000.000-00">
+                                <input type="text" class="form-control rounded-3 cpf-mask" id="novo-prof-cpf" placeholder="000.000.000-00" required>
                             </div>
                             <div class="col-md-3">
                                 <label class="form-label fw-bold">Data de Nascimento</label>
-                                <input type="date" class="form-control rounded-3" id="novo-prof-nasc">
+                                <input type="date" class="form-control rounded-3" id="novo-prof-nasc" required>
                             </div>
                             <div class="col-md-6">
                                 <label class="form-label fw-bold">E-mail</label>
-                                <input type="email" class="form-control rounded-3" id="novo-prof-email" placeholder="professor@email.com">
+                                <input type="email" class="form-control rounded-3" id="novo-prof-email" placeholder="professor@email.com" required>
                             </div>
                             <div class="col-md-3">
                                 <label class="form-label fw-bold">Formação</label>
-                                <input type="text" class="form-control rounded-3" id="novo-prof-formacao" placeholder="Ex: Pedagogia">
+                                <input type="text" class="form-control rounded-3" id="novo-prof-formacao" placeholder="Ex: Pedagogia" required>
                             </div>
                             <div class="col-md-3">
                                 <label class="form-label fw-bold">Data de Admissão</label>
-                                <input type="date" class="form-control rounded-3" id="novo-prof-admissao">
+                                <input type="date" class="form-control rounded-3" id="novo-prof-admissao" required>
                             </div>
                             <div class="col-12 text-end mt-2">
                                 <button class="btn btn-custom btn-yellow-main rounded-pill px-5" onclick="salvarProfessor()">Salvar Professor</button>
@@ -183,11 +183,11 @@
                         <div class="row g-3">
                             <div class="col-md-4">
                                 <label class="form-label fw-bold">Nome da Turma</label>
-                                <input type="text" class="form-control rounded-3" id="nova-turma-nome" placeholder="Ex: Berçário I">
+                                <input type="text" class="form-control rounded-3" id="nova-turma-nome" placeholder="Ex: Berçário I" required>
                             </div>
                             <div class="col-md-2">
                                 <label class="form-label fw-bold">Ano</label>
-                                <input type="number" class="form-control rounded-3" id="nova-turma-ano" value="2024">
+                                <input type="number" class="form-control rounded-3" id="nova-turma-ano" value="2024" required min="2024" max="2100">
                             </div>
                             <div class="col-md-3">
                                 <label class="form-label fw-bold">Nível</label>
@@ -272,11 +272,11 @@
                         <div class="row g-3">
                             <div class="col-md-8">
                                 <label class="form-label fw-bold">Nome do Aluno</label>
-                                <input type="text" class="form-control rounded-3" id="novo-aluno-nome" placeholder="Ex: Lucas Silva">
+                                <input type="text" class="form-control rounded-3" id="novo-aluno-nome" placeholder="Ex: Lucas Silva" required minlength="3">
                             </div>
                             <div class="col-md-4">
                                 <label class="form-label fw-bold">Data de Nascimento</label>
-                                <input type="date" class="form-control rounded-3" id="novo-aluno-nasc">
+                                <input type="date" class="form-control rounded-3" id="novo-aluno-nasc" required>
                             </div>
                             <div class="col-md-6">
                                 <label class="form-label fw-bold">Responsável Principal</label>
@@ -286,7 +286,7 @@
                             </div>
                             <div class="col-md-6">
                                 <label class="form-label fw-bold">Necessidades Especiais</label>
-                                <input type="text" class="form-control rounded-3" id="novo-aluno-needs" placeholder="Ex: TDAH ou Nenhuma">
+                                <input type="text" class="form-control rounded-3" id="novo-aluno-needs" placeholder="Ex: TDAH ou Nenhuma" required>
                             </div>
                             <div class="col-12 text-end mt-2">
                                 <button class="btn btn-custom btn-yellow-main rounded-pill px-5" onclick="salvarAluno()">Cadastrar Aluno</button>
@@ -389,25 +389,26 @@
         </div>
     </div>
 
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.mask/1.14.16/jquery.mask.min.js"></script>
+    <script th:src="@{/js/validation.js(v='1.0.0')}"></script>
     <script th:src="@{/js/database.js(v='1.0.3')}"></script>
     <script th:src="@{/js/render.js(v='1.0.3')}"></script>
     <script>
         function validarCampo(id) {
             const el = document.getElementById(id);
-            if (!el.value.trim()) {
-                el.classList.add('is-invalid');
-                return false;
-            }
-            el.classList.remove('is-invalid');
-            return true;
+            return el && window.FormValidator.validateField(el);
         }
 
         function salvarProfessor() {
             const v1 = validarCampo('novo-prof-nome');
             const v2 = validarCampo('novo-prof-cpf');
             const v3 = validarCampo('novo-prof-email');
+            const v4 = validarCampo('novo-prof-nasc');
+            const v5 = validarCampo('novo-prof-formacao');
+            const v6 = validarCampo('novo-prof-admissao');
             
-            if (!v1 || !v2 || !v3) {
+            if (![v1, v2, v3, v4, v5, v6].every(Boolean)) {
                 alert('Por favor, preencha todos os campos obrigatórios em vermelho.');
                 return;
             }
@@ -428,6 +429,7 @@
 
         function salvarTurma() {
             const v1 = validarCampo('nova-turma-nome');
+            const v2 = validarCampo('nova-turma-ano');
             const profSelect = document.getElementById('select-prof-turma');
             const profId = profSelect.value;
             
@@ -437,7 +439,7 @@
                 profSelect.classList.remove('is-invalid');
             }
             
-            if (!v1 || !profId) {
+            if (!v1 || !v2 || !profId) {
                 alert('Por favor, informe o nome da turma e selecione um professor.');
                 return;
             }
@@ -455,6 +457,7 @@
 
         function salvarAluno() {
             const v1 = validarCampo('novo-aluno-nome');
+            const v2 = validarCampo('novo-aluno-nasc');
             const respSelect = document.getElementById('select-aluno-resp');
             const respId = respSelect.value;
             
@@ -464,7 +467,7 @@
                 respSelect.classList.remove('is-invalid');
             }
             
-            if (!v1 || !respId) {
+            if (!v1 || !v2 || !respId) {
                 alert('Por favor, informe o nome do aluno e selecione um responsável.');
                 return;
             }

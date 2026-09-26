@@ -671,16 +671,8 @@ document.addEventListener("DOMContentLoaded", function () {
     window.enviarPreMatriculaFilho = function() {
         const nome = document.getElementById('filho-nome').value.trim();
         const nascimento = document.getElementById('filho-nascimento').value;
-        
-        let valido = true;
-        if (!nome) {
-            document.getElementById('filho-nome').classList.add('is-invalid');
-            valido = false;
-        }
-        if (!nascimento) {
-            document.getElementById('filho-nascimento').classList.add('is-invalid');
-            valido = false;
-        }
+        const formulario = document.getElementById('preMatriculaForm');
+        const valido = window.FormValidator.validateForm(formulario);
 
         if (!valido) {
             alert("Por favor, preencha o Nome e a Data de Nascimento.");
@@ -750,28 +742,7 @@ document.addEventListener("DOMContentLoaded", function () {
         const descTextarea = document.getElementById('plano-desc');
         const dataInput = document.getElementById('plano-data');
         
-        let valido = true;
-        
-        if (!tituloInput || !tituloInput.value.trim()) {
-            if (tituloInput) tituloInput.classList.add('is-invalid');
-            valido = false;
-        } else {
-            if (tituloInput) tituloInput.classList.remove('is-invalid');
-        }
-
-        if (!descTextarea || !descTextarea.value.trim()) {
-            if (descTextarea) descTextarea.classList.add('is-invalid');
-            valido = false;
-        } else {
-            if (descTextarea) descTextarea.classList.remove('is-invalid');
-        }
-
-        if (!dataInput || !dataInput.value) {
-            if (dataInput) dataInput.classList.add('is-invalid');
-            valido = false;
-        } else {
-            if (dataInput) dataInput.classList.remove('is-invalid');
-        }
+        const valido = [tituloInput, descTextarea, dataInput].every(field => field && window.FormValidator.validateField(field));
 
         if (!valido) {
             alert("Por favor, preencha todos os campos obrigatórios em vermelho.");
@@ -803,35 +774,7 @@ document.addEventListener("DOMContentLoaded", function () {
         const parentescoInput = document.getElementById('aut-parentesco');
         const telInput = document.getElementById('aut-telefone');
         
-        let valido = true;
-        
-        if (!nomeInput || !nomeInput.value.trim()) {
-            if (nomeInput) nomeInput.classList.add('is-invalid');
-            valido = false;
-        } else {
-            if (nomeInput) nomeInput.classList.remove('is-invalid');
-        }
-
-        if (!cpfInput || !cpfInput.value.trim()) {
-            if (cpfInput) cpfInput.classList.add('is-invalid');
-            valido = false;
-        } else {
-            if (cpfInput) cpfInput.classList.remove('is-invalid');
-        }
-
-        if (!parentescoInput || !parentescoInput.value.trim()) {
-            if (parentescoInput) parentescoInput.classList.add('is-invalid');
-            valido = false;
-        } else {
-            if (parentescoInput) parentescoInput.classList.remove('is-invalid');
-        }
-
-        if (!telInput || !telInput.value.trim()) {
-            if (telInput) telInput.classList.add('is-invalid');
-            valido = false;
-        } else {
-            if (telInput) telInput.classList.remove('is-invalid');
-        }
+        const valido = [nomeInput, cpfInput, parentescoInput, telInput].every(field => field && window.FormValidator.validateField(field));
 
         if (!valido) {
             alert("Por favor, preencha todos os campos obrigatórios em vermelho.");

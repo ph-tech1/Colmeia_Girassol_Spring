@@ -10,7 +10,7 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
     <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
-    <link rel="stylesheet" th:href="@{/css/style.css(v='1.1.0')}">
+    <link rel="stylesheet" th:href="@{/css/style.css(v='1.3.0')}">
     <style>
         .step-header {
             background-color: var(--dark-blue);
@@ -74,7 +74,7 @@
                         filho.</p>
                 </div>
 
-                <form id="matriculaForm" action="/api/matricula" method="POST">
+                <form id="matriculaForm" action="/api/pre-matriculas" method="POST">
 
                     <!-- Passo 1 -->
                     <h5 class="step-header fw-bold"><i class="fa-solid fa-user me-2 text-yellow-main"></i> 1. Dados do
@@ -83,43 +83,43 @@
                         <div class="row g-3">
                             <div class="col-md-12">
                                 <div class="form-floating">
-                                    <input type="text" class="form-control" id="nomeResp" placeholder="Nome Completo">
+                                    <input type="text" class="form-control" id="nomeResp" placeholder="Nome Completo" required minlength="3">
                                     <label for="nomeResp">Nome Completo</label>
                                 </div>
                             </div>
                             <div class="col-md-6">
                                 <div class="form-floating">
-                                    <input type="text" class="form-control" id="cpfResp" placeholder="CPF">
+                                    <input type="text" class="form-control cpf-mask" id="cpfResp" placeholder="CPF" required maxlength="14">
                                     <label for="cpfResp">CPF</label>
                                 </div>
                             </div>
                             <div class="col-md-6">
                                 <div class="form-floating">
-                                    <input type="text" class="form-control" id="rgResp" placeholder="RG">
+                                    <input type="text" class="form-control rg-mask" id="rgResp" placeholder="RG" required>
                                     <label for="rgResp">RG</label>
                                 </div>
                             </div>
                             <div class="col-md-6">
                                 <div class="form-floating">
-                                    <input type="date" class="form-control" id="dataNascResp" placeholder="Data Nasc">
+                                    <input type="date" class="form-control" id="dataNascResp" placeholder="Data Nasc" required>
                                     <label for="dataNascResp">Data de Nascimento</label>
                                 </div>
                             </div>
                             <div class="col-md-6">
                                 <div class="form-floating">
-                                    <select class="form-select" id="estadoCivilResp" aria-label="Estado Civil">
-                                        <option selected disabled>Selecione...</option>
-                                        <option value="1">Solteiro(a)</option>
-                                        <option value="2">Casado(a)</option>
-                                        <option value="3">Divorciado(a)</option>
-                                        <option value="4">Viúvo(a)</option>
+                                    <select class="form-select" id="estadoCivilResp" aria-label="Estado Civil" required>
+                                        <option value="" selected disabled>Selecione...</option>
+                                        <option value="Solteiro(a)">Solteiro(a)</option>
+                                        <option value="Casado(a)">Casado(a)</option>
+                                        <option value="Divorciado(a)">Divorciado(a)</option>
+                                        <option value="Viúvo(a)">Viúvo(a)</option>
                                     </select>
                                     <label for="estadoCivilResp">Estado Civil</label>
                                 </div>
                             </div>
                             <div class="col-md-12 mt-4">
                                 <div class="form-floating">
-                                    <input type="password" class="form-control" id="senhaResp" placeholder="Senha">
+                                    <input type="password" class="form-control" id="senhaResp" placeholder="Senha" required minlength="6">
                                     <label for="senhaResp">Crie uma Senha para acesso ao portal</label>
                                 </div>
                                 <div class="form-text text-muted small">Essa será a senha usada com seu CPF para logar
@@ -135,46 +135,52 @@
                         <div class="row g-3">
                             <div class="col-md-4">
                                 <div class="form-floating">
-                                    <input type="text" class="form-control" id="cepResp" placeholder="CEP">
-                                    <label for="cepResp">CEP</label>
+                                    <input type="text" class="form-control cep-mask" id="cepResp" placeholder="CEP" required>
+                                    <label for="cep">CEP</label>
+                                </div>
+                            </div>
+                            <div class="col-md-8">
+                                <div class="form-floating">
+                                    <input type="text" class="form-control" id="enderecoResp" placeholder="Endereço" required>
+                                    <label for="enderecoResp">Endereço</label>
                                 </div>
                             </div>
                             <div class="col-md-6">
                                 <div class="form-floating">
-                                    <input type="text" class="form-control" id="cidadeResp" placeholder="Cidade">
+                                    <input type="text" class="form-control" id="cidadeResp" placeholder="Cidade" required>
                                     <label for="cidadeResp">Cidade</label>
                                 </div>
                             </div>
                             <div class="col-md-2">
                                 <div class="form-floating">
-                                    <input type="text" class="form-control" id="ufResp" placeholder="UF">
+                                    <input type="text" class="form-control uf-field" id="ufResp" placeholder="UF" required maxlength="2">
                                     <label for="ufResp">UF</label>
                                 </div>
                             </div>
                             <div class="col-md-12 mt-4">
                                 <div class="form-floating">
-                                    <input type="email" class="form-control" id="emailResp" placeholder="E-mail">
+                                    <input type="email" class="form-control" id="emailResp" placeholder="E-mail" required>
                                     <label for="emailResp">E-mail de Contato</label>
                                 </div>
                             </div>
                             <div class="col-md-6">
                                 <div class="form-floating">
-                                    <input type="text" class="form-control" id="celResp"
-                                        placeholder="Celular (WhatsApp)">
+                                    <input type="text" class="form-control phone-mask" id="celResp"
+                                        placeholder="Celular (WhatsApp)" required>
                                     <label for="celResp">Celular (WhatsApp)</label>
                                 </div>
                             </div>
                             <div class="col-md-6">
                                 <div class="form-floating">
-                                    <input type="text" class="form-control" id="telTrabResp"
-                                        placeholder="Telefone do Trabalho">
-                                    <label for="telTrabResp">Telefone Secundário/Trabalho (Opcional)</label>
+                                    <input type="text" class="form-control phone-mask" id="telTrabResp"
+                                        placeholder="Telefone do Trabalho" required>
+                                        <label for="telTrabResp">Telefone Secundário/Trabalho</label>
                                 </div>
                             </div>
                             <div class="col-md-12">
                                 <div class="form-floating">
                                     <input type="text" class="form-control" id="localTrabResp"
-                                        placeholder="Local de Trabalho">
+                                        placeholder="Local de Trabalho" required>
                                     <label for="localTrabResp">Local de Trabalho</label>
                                 </div>
                             </div>
@@ -189,25 +195,25 @@
                             <div class="col-md-12">
                                 <div class="form-floating">
                                     <input type="text" class="form-control" id="nomeAluno"
-                                        placeholder="Nome Completo do Aluno">
+                                        placeholder="Nome Completo do Aluno" required minlength="3">
                                     <label for="nomeAluno">Nome Completo do Aluno</label>
                                 </div>
                             </div>
                             <div class="col-md-6">
                                 <div class="form-floating">
-                                    <input type="date" class="form-control" id="dataNascAluno" placeholder="Data Nasc">
+                                    <input type="date" class="form-control" id="dataNascAluno" placeholder="Data Nasc" required>
                                     <label for="dataNascAluno">Data de Nascimento</label>
                                 </div>
                             </div>
                             <div class="col-md-6">
                                 <div class="form-floating">
-                                    <select class="form-select" id="grauParentesco" aria-label="Grau de Parentesco">
-                                        <option selected disabled>Selecione...</option>
-                                        <option value="1">Mãe</option>
-                                        <option value="2">Pai</option>
-                                        <option value="3">Avô/Avó</option>
-                                        <option value="4">Tio(a)</option>
-                                        <option value="5">Responsável Legal</option>
+                                    <select class="form-select" id="grauParentesco" aria-label="Grau de Parentesco" required>
+                                        <option value="" selected disabled>Selecione...</option>
+                                        <option value="Mãe">Mãe</option>
+                                        <option value="Pai">Pai</option>
+                                        <option value="Avô/Avó">Avô/Avó</option>
+                                        <option value="Tio(a)">Tio(a)</option>
+                                        <option value="Responsável Legal">Responsável Legal</option>
                                     </select>
                                     <label for="grauParentesco">Grau de Parentesco</label>
                                 </div>
@@ -244,8 +250,9 @@
 
 
                     <!-- Submit -->
+                    <div id="cadastroFeedback" class="alert d-none" role="alert"></div>
                     <div class="text-center mt-5 mb-5">
-                        <button type="button" onclick="concluirMatricula()"
+                        <button type="button" id="btnConcluirMatricula" onclick="concluirMatricula()"
                             class="btn btn-custom btn-dark-blue btn-animated rounded-pill px-5 py-3 fw-bold fs-5 shadow-sm text-white border-0">
                             <i class="fa-solid fa-paper-plane me-2"></i> Concluir Pré-Matrícula
                         </button>
@@ -256,6 +263,9 @@
         </div>
     </div>
 
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.mask/1.14.16/jquery.mask.min.js"></script>
+    <script th:src="@{/js/validation.js(v='1.0.0')}"></script>
     <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
     <script>
         AOS.init();
@@ -264,45 +274,60 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
 
     <script>
-        function validarCampo(campo) {
-            if (campo.value.trim() === "" || (campo.tagName === "SELECT" && campo.value === "Selecione...")) {
-                campo.classList.add('is-invalid');
-                return false;
-            } else {
-                campo.classList.remove('is-invalid');
-                return true;
+        async function concluirMatricula() {
+            if (!window.FormValidator.validateForm(document.getElementById('matriculaForm'))) return;
+
+            const form = document.getElementById('matriculaForm');
+            const button = document.getElementById('btnConcluirMatricula');
+            const feedback = document.getElementById('cadastroFeedback');
+            const dados = {
+                nomeResponsavel: document.getElementById('nomeResp').value.trim(),
+                cpfResponsavel: document.getElementById('cpfResp').value,
+                rgResponsavel: document.getElementById('rgResp').value,
+                dataNascimentoResponsavel: document.getElementById('dataNascResp').value,
+                senha: document.getElementById('senhaResp').value,
+                cep: document.getElementById('cepResp').value,
+                cidade: document.getElementById('cidadeResp').value.trim(),
+                uf: document.getElementById('ufResp').value.trim().toUpperCase(),
+                endereco: document.getElementById('enderecoResp').value.trim(),
+                telefone: document.getElementById('celResp').value,
+                localTrabalho: document.getElementById('localTrabResp').value.trim(),
+                telefoneTrabalho: document.getElementById('telTrabResp').value,
+                estadoCivil: document.getElementById('estadoCivilResp').value,
+                email: document.getElementById('emailResp').value.trim(),
+                nomeAluno: document.getElementById('nomeAluno').value.trim(),
+                dataNascimentoAluno: document.getElementById('dataNascAluno').value,
+                grauParentesco: document.getElementById('grauParentesco').value,
+                alergias: document.getElementById('alergias').value.trim(),
+                restricoesAlimentares: document.getElementById('restricoes').value.trim(),
+                necessidadesEspeciais: document.getElementById('necessidades').value.trim()
+            };
+
+            button.disabled = true;
+            button.innerHTML = '<span class="spinner-border spinner-border-sm me-2" role="status"></span>Enviando...';
+            feedback.className = 'alert d-none';
+
+            try {
+                const response = await fetch(form.action, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
+                    body: JSON.stringify(dados)
+                });
+                const resultado = await response.json().catch(() => ({}));
+                if (!response.ok) throw new Error(resultado.mensagem || 'Não foi possível concluir o cadastro.');
+
+                feedback.textContent = resultado.mensagem || 'Pré-matrícula cadastrada com sucesso.';
+                feedback.className = 'alert alert-success';
+                form.reset();
+                form.querySelectorAll('.is-valid').forEach(field => field.classList.remove('is-valid'));
+            } catch (error) {
+                feedback.textContent = error.message;
+                feedback.className = 'alert alert-danger';
+            } finally {
+                button.disabled = false;
+                button.innerHTML = '<i class="fa-solid fa-paper-plane me-2"></i> Concluir Pré-Matrícula';
+                feedback.scrollIntoView({ behavior: 'smooth', block: 'center' });
             }
-        }
-
-        // Adiciona ouvintes de evento para validar enquanto o usuário digita
-        document.querySelectorAll('input, select, textarea').forEach(el => {
-            el.addEventListener('blur', () => validarCampo(el));
-            el.addEventListener('input', () => {
-                if (el.classList.contains('is-invalid')) validarCampo(el);
-            });
-        });
-
-        function concluirMatricula() {
-            // Seleciona todos os campos de entrada do formulário
-            const campos = document.querySelectorAll('#matriculaForm input, #matriculaForm select, #matriculaForm textarea');
-            let formValido = true;
-
-            campos.forEach(el => {
-                // Ignora campos que não são obrigatórios por natureza (como observações opcionais se desejar)
-                // Mas aqui vamos validar todos que estiverem vazios para o efeito visual solicitado
-                if (!validarCampo(el)) {
-                    formValido = false;
-                }
-            });
-
-            if (!formValido) {
-                // Rola para o primeiro campo inválido
-                const primeiroInvalido = document.querySelector('.is-invalid');
-                if (primeiroInvalido) primeiroInvalido.scrollIntoView({ behavior: 'smooth', block: 'center' });
-                return;
-            }
-
-            alert("Validação concluída com sucesso! (Demonstração)");
         }
     </script>
 </body>
