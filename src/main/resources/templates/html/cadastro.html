@@ -74,7 +74,7 @@
                         filho.</p>
                 </div>
 
-                <form id="matriculaForm" action="/api/pre-matriculas" method="POST">
+                <form id="matriculaForm">
 
                     <!-- Passo 1 -->
                     <h5 class="step-header fw-bold"><i class="fa-solid fa-user me-2 text-yellow-main"></i> 1. Dados do
@@ -252,9 +252,9 @@
                     <!-- Submit -->
                     <div id="cadastroFeedback" class="alert d-none" role="alert"></div>
                     <div class="text-center mt-5 mb-5">
-                        <button type="button" id="btnConcluirMatricula" onclick="concluirMatricula()"
+                        <button type="button" disabled
                             class="btn btn-custom btn-dark-blue btn-animated rounded-pill px-5 py-3 fw-bold fs-5 shadow-sm text-white border-0">
-                            <i class="fa-solid fa-paper-plane me-2"></i> Concluir Pré-Matrícula
+                            <i class="fa-solid fa-paper-plane me-2"></i> Envio indisponível
                         </button>
                     </div>
 
@@ -266,6 +266,7 @@
     <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.mask/1.14.16/jquery.mask.min.js"></script>
     <script th:src="@{/js/validation.js(v='1.0.0')}"></script>
+    <script th:src="@{/js/cep.js(v='1.0.0')}"></script>
     <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
     <script>
         AOS.init();
@@ -274,61 +275,13 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
 
     <script>
-        async function concluirMatricula() {
-            if (!window.FormValidator.validateForm(document.getElementById('matriculaForm'))) return;
-
-            const form = document.getElementById('matriculaForm');
-            const button = document.getElementById('btnConcluirMatricula');
-            const feedback = document.getElementById('cadastroFeedback');
-            const dados = {
-                nomeResponsavel: document.getElementById('nomeResp').value.trim(),
-                cpfResponsavel: document.getElementById('cpfResp').value,
-                rgResponsavel: document.getElementById('rgResp').value,
-                dataNascimentoResponsavel: document.getElementById('dataNascResp').value,
-                senha: document.getElementById('senhaResp').value,
-                cep: document.getElementById('cepResp').value,
-                cidade: document.getElementById('cidadeResp').value.trim(),
-                uf: document.getElementById('ufResp').value.trim().toUpperCase(),
-                endereco: document.getElementById('enderecoResp').value.trim(),
-                telefone: document.getElementById('celResp').value,
-                localTrabalho: document.getElementById('localTrabResp').value.trim(),
-                telefoneTrabalho: document.getElementById('telTrabResp').value,
-                estadoCivil: document.getElementById('estadoCivilResp').value,
-                email: document.getElementById('emailResp').value.trim(),
-                nomeAluno: document.getElementById('nomeAluno').value.trim(),
-                dataNascimentoAluno: document.getElementById('dataNascAluno').value,
-                grauParentesco: document.getElementById('grauParentesco').value,
-                alergias: document.getElementById('alergias').value.trim(),
-                restricoesAlimentares: document.getElementById('restricoes').value.trim(),
-                necessidadesEspeciais: document.getElementById('necessidades').value.trim()
-            };
-
-            button.disabled = true;
-            button.innerHTML = '<span class="spinner-border spinner-border-sm me-2" role="status"></span>Enviando...';
-            feedback.className = 'alert d-none';
-
-            try {
-                const response = await fetch(form.action, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
-                    body: JSON.stringify(dados)
-                });
-                const resultado = await response.json().catch(() => ({}));
-                if (!response.ok) throw new Error(resultado.mensagem || 'Não foi possível concluir o cadastro.');
-
-                feedback.textContent = resultado.mensagem || 'Pré-matrícula cadastrada com sucesso.';
-                feedback.className = 'alert alert-success';
-                form.reset();
-                form.querySelectorAll('.is-valid').forEach(field => field.classList.remove('is-valid'));
-            } catch (error) {
-                feedback.textContent = error.message;
-                feedback.className = 'alert alert-danger';
-            } finally {
-                button.disabled = false;
-                button.innerHTML = '<i class="fa-solid fa-paper-plane me-2"></i> Concluir Pré-Matrícula';
-                feedback.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        window.CepService.vincular(document.getElementById('matriculaForm'), {
+            onErro({ mensagem }) {
+                const feedback = document.getElementById('cadastroFeedback');
+                feedback.textContent = mensagem;
+                feedback.className = 'alert alert-warning';
             }
-        }
+        });
     </script>
 </body>
 
