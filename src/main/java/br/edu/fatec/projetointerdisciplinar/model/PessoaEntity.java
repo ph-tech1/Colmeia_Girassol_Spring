@@ -22,7 +22,7 @@ public class PessoaEntity {
     @Column(name = "cpf", nullable = false, length = 11, unique = true)
     private String cpf;
 
-    @Column(name = "rg", nullable = false, length = 8, unique = true)
+    @Column(name = "rg", nullable = false, length = 9, unique = true)
     private String rg;
 
     @Column(name = "data_nascimento", nullable = false)

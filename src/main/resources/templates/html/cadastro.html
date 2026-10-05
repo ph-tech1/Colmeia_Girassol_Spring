@@ -4,13 +4,14 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script>try { document.documentElement.dataset.theme = localStorage.getItem('colmeia-theme') === 'dark' ? 'dark' : 'light'; } catch (error) { document.documentElement.dataset.theme = 'light'; }</script>
     <title>Pré-Matrícula - Escola Infantil Colmeia Girassol</title>
     <link rel="icon" th:href="@{/images/abelha.png}">
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700&display=swap" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
     <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
-    <link rel="stylesheet" th:href="@{/css/style.css(v='1.3.0')}">
+    <link rel="stylesheet" th:href="@{/css/style.css(v='1.4.0')}">
     <style>
         .step-header {
             background-color: var(--dark-blue);
@@ -30,37 +31,137 @@
             box-shadow: 0 5px 15px rgba(0, 0, 0, 0.03);
         }
 
-        .form-floating>.form-control:focus,
-        .form-floating>.form-select:focus {
-            .floating {
-                animation: floating 3s ease-in-out infinite;
+        .matricula-step[hidden] {
+            display: none !important;
+        }
+
+        .matricula-step .step-body {
+            margin-bottom: 0;
+        }
+
+        .matricula-step:not([hidden]) {
+            animation: matricula-step-enter 0.3s ease-out both;
+        }
+
+        .matricula-step,
+        .matricula-step .step-body,
+        .matricula-step .form-floating {
+            min-width: 0;
+        }
+
+        .matricula-step .form-control,
+        .matricula-step .form-select {
+            max-width: 100%;
+        }
+
+        .password-input-wrap .password-visibility-toggle {
+            position: absolute;
+            top: 0.45rem;
+            right: 0.5rem;
+            z-index: 5;
+            width: 2.5rem;
+            height: 2.5rem;
+            min-height: 2.5rem;
+            padding: 0;
+            border: 1px solid transparent !important;
+            border-radius: 50%;
+            background: rgba(126, 200, 217, 0.18) !important;
+            color: var(--dark-blue) !important;
+            transition: background-color 0.18s ease, color 0.18s ease, border-color 0.18s ease;
+        }
+
+        .password-input-wrap .password-visibility-toggle:hover,
+        .password-input-wrap .password-visibility-toggle:focus-visible {
+            border-color: var(--dark-blue) !important;
+            background: var(--yellow-main) !important;
+            color: var(--dark-blue) !important;
+        }
+
+        .password-input-wrap .password-visibility-toggle:focus-visible {
+            outline: 3px solid rgba(126, 200, 217, 0.45);
+            outline-offset: 2px;
+        }
+
+        .password-input-wrap .form-control.is-invalid,
+        .password-input-wrap .form-control.is-valid {
+            background-image: none;
+        }
+
+        .password-input-wrap .form-control,
+        .password-input-wrap label {
+            padding-right: 3rem;
+        }
+
+        #matriculaProgress .progress-bar {
+            transition: width 0.35s ease;
+        }
+
+        @keyframes matricula-step-enter {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        @media (max-width: 767.98px) {
+            .matricula-progress > .d-flex {
+                flex-wrap: wrap;
             }
 
-            @keyframes floating {
-                0% {
-                    transform: translateY(0px);
-                }
+            .step-body {
+                padding: 1.25rem;
+                margin-bottom: 1.5rem;
+            }
 
-                50% {
-                    transform: translateY(-10px);
-                }
+            .step-header {
+                display: flex;
+                align-items: flex-start;
+                line-height: 1.35;
+                padding: 0.9rem 1rem;
+            }
 
-                100% {
-                    transform: translateY(0px);
-                }
+            .matricula-step-actions .btn,
+            #btnConcluirMatricula {
+                min-height: 46px;
+            }
+
+            #btnConcluirMatricula {
+                width: 100%;
+                padding-right: 1rem !important;
+                padding-left: 1rem !important;
+                font-size: 1rem !important;
             }
         }
+
+        @media (max-width: 380px) {
+            .step-body {
+                padding: 0.875rem;
+            }
+
+            .matricula-progress > .d-flex {
+                align-items: flex-start !important;
+                gap: 0.25rem 0.75rem !important;
+            }
+
+            #stepName {
+                text-align: left !important;
+            }
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+            .matricula-step:not([hidden]) { animation: none; }
+            #matriculaProgress .progress-bar { transition: none; }
+        }
+
     </style>
 </head>
 
-<body class="bg-light-blue-pale">
+<body class="bg-light-blue-pale cadastro-page">
 
     <!-- Header Simples -->
     <header class="bg-white py-3 shadow-sm mb-5" data-aos="fade-down" data-aos-duration="600">
         <div class="container d-flex justify-content-between align-items-center">
             <a th:href="@{/html/login.html}" class="text-dark-blue fs-6 text-decoration-none fw-bold back-link d-inline-block"><i
                     class="fa-solid fa-arrow-left me-2"></i> Voltar ao Login</a>
-            <div style="width: 80px;"></div>
+            <button class="btn btn-outline-dark-blue theme-toggle" type="button" data-theme-toggle aria-label="Ativar modo escuro" aria-pressed="false" title="Ativar modo escuro"><i class="fa-solid fa-moon" aria-hidden="true"></i></button>
         </div>
     </header>
 
@@ -74,10 +175,25 @@
                         filho.</p>
                 </div>
 
+<<<<<<< HEAD
                 <form id="matriculaForm">
+=======
+                    <div class="matricula-progress mb-4">
+                        <div class="d-flex justify-content-between align-items-center gap-3 mb-2">
+                            <span id="stepCounter" class="fw-bold text-dark-blue" aria-live="polite">Etapa 1 de 3</span>
+                            <span id="stepName" class="small text-secondary text-end">Dados do responsável</span>
+                        </div>
+                        <div id="matriculaProgress" class="progress" role="progressbar" aria-label="Progresso da pré-matrícula" aria-valuemin="1" aria-valuemax="3" aria-valuenow="1" style="height: 7px;">
+                            <div id="matriculaProgressBar" class="progress-bar bg-yellow-main" style="width: 33.33%;"></div>
+                        </div>
+                    </div>
+
+                <form id="matriculaForm" action="/api/pre-matriculas" method="POST">
+>>>>>>> 24ddc15 (alteração geral)
 
                     <!-- Passo 1 -->
-                    <h5 class="step-header fw-bold"><i class="fa-solid fa-user me-2 text-yellow-main"></i> 1. Dados do
+                        <section class="matricula-step" data-step-title="Dados do responsável">
+                        <h5 class="step-header fw-bold" tabindex="-1"><i class="fa-solid fa-user me-2 text-yellow-main"></i> 1. Dados do
                         Responsável</h5>
                     <div class="step-body">
                         <div class="row g-3">
@@ -89,7 +205,7 @@
                             </div>
                             <div class="col-md-6">
                                 <div class="form-floating">
-                                    <input type="text" class="form-control cpf-mask" id="cpfResp" placeholder="CPF" required maxlength="14">
+                                    <input type="text" class="form-control cpf-mask" id="cpfResp" placeholder="CPF" required maxlength="14" data-skip-cpf-validation>
                                     <label for="cpfResp">CPF</label>
                                 </div>
                             </div>
@@ -118,18 +234,36 @@
                                 </div>
                             </div>
                             <div class="col-md-12 mt-4">
-                                <div class="form-floating">
-                                    <input type="password" class="form-control" id="senhaResp" placeholder="Senha" required minlength="6">
-                                    <label for="senhaResp">Crie uma Senha para acesso ao portal</label>
+                                <div class="form-floating password-input-wrap">
+                                    <input type="password" class="form-control pe-5" id="senhaResp" placeholder="Senha" required minlength="6" autocomplete="new-password">
+                                    <label for="senhaResp">Senha de acesso</label>
+                                    <button class="btn password-toggle password-visibility-toggle" type="button" data-toggle-password="senhaResp" aria-label="Mostrar senha" aria-controls="senhaResp" aria-pressed="false">
+                                        <i class="fa-solid fa-eye" aria-hidden="true"></i>
+                                    </button>
                                 </div>
-                                <div class="form-text text-muted small">Essa será a senha usada com seu CPF para logar
-                                    no sistema depois.</div>
+                            </div>
+                            <div class="col-md-12">
+                                <div class="form-floating password-input-wrap">
+                                    <input type="password" class="form-control pe-5" id="confirmaSenhaResp" placeholder="Confirme a senha" required minlength="6" autocomplete="new-password" data-match="senhaResp">
+                                    <label for="confirmaSenhaResp">Confirme a senha</label>
+                                    <button class="btn password-toggle password-visibility-toggle" type="button" data-toggle-password="confirmaSenhaResp" aria-label="Mostrar senha" aria-controls="confirmaSenhaResp" aria-pressed="false">
+                                        <i class="fa-solid fa-eye" aria-hidden="true"></i>
+                                    </button>
+                                </div>
+                                <div class="form-text text-muted small mt-2">Essa será a senha usada com seu CPF para logar no sistema depois.</div>
                             </div>
                         </div>
                     </div>
+                    <div class="matricula-step-actions d-flex justify-content-end mt-3 mb-5">
+                        <button type="button" class="btn btn-dark-blue rounded-pill px-4" data-step-next>
+                            Próximo <i class="fa-solid fa-arrow-right ms-2"></i>
+                        </button>
+                    </div>
+                    </section>
 
                     <!-- Passo 2 -->
-                    <h5 class="step-header fw-bold"><i class="fa-solid fa-location-dot me-2 text-yellow-main"></i> 2.
+                    <section class="matricula-step" data-step-title="Endereço e contato" hidden>
+                    <h5 class="step-header fw-bold" tabindex="-1"><i class="fa-solid fa-location-dot me-2 text-yellow-main"></i> 2.
                         Endereço e Contato</h5>
                     <div class="step-body">
                         <div class="row g-3">
@@ -186,9 +320,19 @@
                             </div>
                         </div>
                     </div>
+                    <div class="matricula-step-actions d-flex justify-content-between mt-3 mb-5">
+                        <button type="button" class="btn btn-outline-dark-blue rounded-pill px-4" data-step-prev>
+                            <i class="fa-solid fa-arrow-left me-2"></i>Voltar
+                        </button>
+                        <button type="button" class="btn btn-dark-blue rounded-pill px-4" data-step-next>
+                            Próximo <i class="fa-solid fa-arrow-right ms-2"></i>
+                        </button>
+                    </div>
+                    </section>
 
                     <!-- Passo 3 -->
-                    <h5 class="step-header fw-bold"><i class="fa-solid fa-child-reaching me-2 text-yellow-main"></i> 3.
+                    <section class="matricula-step" data-step-title="Dados do aluno" hidden>
+                    <h5 class="step-header fw-bold" tabindex="-1"><i class="fa-solid fa-child-reaching me-2 text-yellow-main"></i> 3.
                         Dados do Aluno</h5>
                     <div class="step-body">
                         <div class="row g-3">
@@ -246,13 +390,23 @@
                             </div>
                         </div>
                     </div>
+                    <div class="matricula-step-actions d-flex justify-content-start mt-3 mb-5">
+                        <button type="button" class="btn btn-outline-dark-blue rounded-pill px-4" data-step-prev>
+                            <i class="fa-solid fa-arrow-left me-2"></i>Voltar
+                        </button>
+                    </div>
+                    </section>
 
 
 
                     <!-- Submit -->
                     <div id="cadastroFeedback" class="alert d-none" role="alert"></div>
                     <div class="text-center mt-5 mb-5">
+<<<<<<< HEAD
                         <button type="button" disabled
+=======
+                        <button type="submit" id="btnConcluirMatricula"
+>>>>>>> 24ddc15 (alteração geral)
                             class="btn btn-custom btn-dark-blue btn-animated rounded-pill px-5 py-3 fw-bold fs-5 shadow-sm text-white border-0">
                             <i class="fa-solid fa-paper-plane me-2"></i> Envio indisponível
                         </button>
@@ -263,16 +417,15 @@
         </div>
     </div>
 
+    <script th:src="@{/js/theme.js(v='1.0.0')}"></script>
     <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.mask/1.14.16/jquery.mask.min.js"></script>
     <script th:src="@{/js/validation.js(v='1.0.0')}"></script>
     <script th:src="@{/js/cep.js(v='1.0.0')}"></script>
     <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
-    <script>
-        AOS.init();
-    </script>
     <!-- JS do Bootstrap -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+<<<<<<< HEAD
 
     <script>
         window.CepService.vincular(document.getElementById('matriculaForm'), {
@@ -283,6 +436,9 @@
             }
         });
     </script>
+=======
+    <script th:src="@{/js/cadastro.js(v='1.0.0')}"></script>
+>>>>>>> 24ddc15 (alteração geral)
 </body>
 
 </html>

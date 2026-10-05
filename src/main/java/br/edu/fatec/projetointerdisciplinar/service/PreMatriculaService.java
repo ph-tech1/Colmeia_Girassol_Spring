@@ -41,7 +41,6 @@ public class PreMatriculaService {
         pessoa = pessoaRepository.save(pessoa);
 
         ResponsavelEntity responsavel = new ResponsavelEntity();
-        responsavel.setPessoaCodigo(pessoa.getCodigo());
         responsavel.setPessoa(pessoa);
         responsavel.setLocalTrabalho(request.localTrabalho().trim());
         responsavel.setTelefoneTrabalho(apenasDigitos(request.telefoneTrabalho()));
@@ -86,9 +85,9 @@ public class PreMatriculaService {
         if (apenasDigitos(request.cpfResponsavel()).length() != 11) {
             throw new IllegalArgumentException("CPF inválido.");
         }
-        if (apenasDigitos(request.rgResponsavel()).length() > 8) {
-            throw new IllegalArgumentException("RG inválido.");
-        }
+        // if (apenasDigitos(request.rgResponsavel()).length() != 9) {
+        //     throw new IllegalArgumentException("RG inválido.");
+        // }
         if (apenasDigitos(request.cep()).length() != 8) {
             throw new IllegalArgumentException("CEP inválido.");
         }

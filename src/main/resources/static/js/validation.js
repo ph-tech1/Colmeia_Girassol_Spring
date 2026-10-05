@@ -42,9 +42,11 @@
         let $feedback = $field.siblings('.invalid-feedback');
         if (!$feedback.length) $feedback = $field.closest('.form-floating, .mb-3, .mb-4, .col-md-6, .col-md-12, .col-12').find('.invalid-feedback').first();
         if (!$feedback.length) {
-            $feedback = $('<div class="invalid-feedback"></div>').insertAfter($field);
+            const $inputGroup = $field.closest('.input-group');
+            $feedback = $('<div class="invalid-feedback"></div>').insertAfter($inputGroup.length ? $inputGroup : $field);
         }
         $feedback.text(message || 'Preencha este campo corretamente.');
+        $feedback.toggleClass('d-block', !valid);
         return valid;
     }
 
@@ -63,10 +65,13 @@
         } else if (value && $field.attr('minlength') && value.length < Number($field.attr('minlength'))) {
             valid = false;
             message = `Informe pelo menos ${$field.attr('minlength')} caracteres.`;
+        } else if (value && $field.is('[data-match]') && value !== document.getElementById($field.attr('data-match'))?.value) {
+            valid = false;
+            message = 'As senhas não coincidem.';
         } else if (value && type === 'email' && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value)) {
             valid = false;
             message = 'Informe um e-mail válido.';
-        } else if (value && (id.toLowerCase().includes('cpf') || $field.hasClass('cpf-mask')) && !cpfValido(value)) {
+        } else if (value && !$field.is('[data-skip-cpf-validation]') && (id.toLowerCase().includes('cpf') || $field.hasClass('cpf-mask')) && !cpfValido(value)) {
             valid = false;
             message = 'Informe um CPF válido.';
         } else if (value && $field.hasClass('phone-mask') && digits(value).length < 10) {
@@ -116,6 +121,11 @@
         $('input, select, textarea').on('blur change', function () { validateField(this); });
         $('input, select, textarea').on('input', function () {
             if ($(this).hasClass('is-invalid')) validateField(this);
+            if (this.id) {
+                $(`[data-match="${this.id}"]`).each(function () {
+                    if (this.value || $(this).hasClass('is-invalid')) validateField(this);
+                });
+            }
         });
 
         $('#cpfRecuperar').prop('required', true).addClass('cpf-mask');
