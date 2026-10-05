@@ -9,6 +9,7 @@ import java.util.List;
 @Repository
 public interface MatriculaRepository extends JpaRepository<MatriculaEntity, Integer> {
     List<MatriculaEntity> findByAlunoCodigo(Integer alunoCodigo);
+    List<MatriculaEntity> findByAlunoCodigoOrderByNrDesc(Integer alunoCodigo);
     List<MatriculaEntity> findByTurmaCodigo(Integer turmaCodigo);
     List<MatriculaEntity> findByStatus(Integer status);
 }

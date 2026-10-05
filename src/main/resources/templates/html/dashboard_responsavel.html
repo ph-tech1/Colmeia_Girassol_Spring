@@ -3,229 +3,190 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Portal do Responsável - Colmeia Girassol</title>
+    <script>try { document.documentElement.dataset.theme = localStorage.getItem('colmeia-theme') === 'dark' ? 'dark' : 'light'; } catch (error) { document.documentElement.dataset.theme = 'light'; }</script>
+    <title>Portal da família | Colmeia Girassol</title>
     <link rel="icon" th:href="@{/images/abelha.png}">
-    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&family=Playfair+Display:wght@600;700&display=swap" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
-    <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
-    <link rel="stylesheet" th:href="@{/css/style.css(v='1.3.0')}">
+    <link rel="stylesheet" th:href="@{/css/style.css(v='1.4.0')}">
 </head>
-<body class="bg-light-blue-pale">
-
-    <!-- Topbar -->
-    <nav class="navbar navbar-expand-lg navbar-dark bg-dark-blue shadow-sm py-3 mb-4">
-        <div class="container">
-            <a class="navbar-brand d-flex align-items-center gap-2" href="#">
-                <img th:src="@{/images/logo.png}" alt="Logo" style="height: 40px;">
-                <span class="fw-bold">Colmeia Girassol</span>
-            </a>
-            <button class="navbar-toggler border-0" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
-                <span class="navbar-toggler-icon"></span>
-            </button>
-            <div class="collapse navbar-collapse" id="navbarNav">
-                <ul class="navbar-nav ms-auto align-items-center gap-3">
-                    <li class="nav-item"><a class="nav-link active fw-bold" href="#">Meu Filho</a></li>
-                    <li class="nav-item"><a class="nav-link" href="#autorizados">Autorizados</a></li>
-                    <li class="nav-item ms-lg-4">
-                        <div class="d-flex align-items-center gap-2 text-white">
-                            <div class="text-end d-none d-md-block">
-                                <small class="d-block opacity-75">Responsável</small>
-                                <span class="fw-bold" id="header-resp-nome">—</span>
-                            </div>
-                            <img id="header-resp-avatar"
-                                 src="https://ui-avatars.com/api/?name=Responsavel&background=F2D544&color=2D4459"
-                                 class="rounded-circle shadow-sm" style="width: 40px;" alt="Responsável">
-                        </div>
-                    </li>
-                    <li class="nav-item">
-                        <form th:action="@{/logout}" method="post">
-                            <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}">
-                            <button type="submit" class="btn btn-outline-light btn-sm rounded-pill px-3">Sair</button>
-                        </form>
-                    </li>
-                </ul>
-            </div>
-        </div>
-    </nav>
-
-    <div class="container pb-5">
-        <div class="row g-4">
-
-            <!-- Coluna Esquerda: Dados do Aluno -->
-            <div class="col-lg-4" data-aos="fade-right">
-                <div class="stat-card text-center py-5">
-                    <img id="aluno-avatar"
-                         src="https://ui-avatars.com/api/?name=Aluno&background=7EC8D9&color=fff&size=128"
-                         class="rounded-circle shadow mb-4" style="width: 120px;" alt="Aluno">
-                    <h3 class="fw-bold text-dark-blue mb-1" id="aluno-nome">—</h3>
-                    <p class="text-muted" id="aluno-turma-prof">—</p>
-                    <div class="d-flex justify-content-center gap-2 mt-4">
-                        <span class="badge bg-green-light text-success px-3 py-2 rounded-pill">Presente Hoje</span>
-                    </div>
-                    
-                    <div class="px-3 mt-3">
-                        <button class="btn btn-outline-primary btn-sm rounded-pill w-100 fw-bold py-2 shadow-sm" data-bs-toggle="modal" data-bs-target="#modalPreMatricula">
-                            <i class="fa-solid fa-plus me-1"></i> Matricular Outro Filho
-                        </button>
-                    </div>
-
-                    <hr class="my-4 opacity-10">
-
-                    <div class="text-start px-3">
-                        <h6 class="fw-bold text-dark-blue mb-3">Informações Rápidas</h6>
-                        <div class="mb-2 d-flex align-items-start gap-2">
-                            <i class="fa-solid fa-shield-virus text-warning mt-1"></i>
-                            <span class="small">Alergias: <strong id="aluno-alergias">—</strong></span>
-                        </div>
-                        <div class="mb-2 d-flex align-items-start gap-2">
-                            <i class="fa-solid fa-utensils text-primary mt-1"></i>
-                            <span class="small">Restrições: <strong id="aluno-restricoes">—</strong></span>
-                        </div>
-                        <div class="d-flex align-items-start gap-2">
-                            <i class="fa-solid fa-heart-pulse text-danger mt-1"></i>
-                            <span class="small">Necessidades: <strong id="aluno-necessidades">—</strong></span>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Coluna Direita -->
-            <div class="col-lg-8">
-
-                <!-- Diário de Bordo -->
-                <section id="diario" class="mb-4" data-aos="fade-up">
-                    <div class="form-card p-4">
-                        <!-- render.js preenche este conteúdo -->
-                        <div class="text-center py-4 text-muted">
-                            <span class="spinner-border spinner-border-sm me-2"></span>Carregando diário...
-                        </div>
-                    </div>
-                </section>
-
-                <!-- Autorizados a Buscar -->
-                <section id="autorizados" class="mb-4" data-aos="fade-up">
-                    <div class="form-card p-4">
-                        <div class="d-flex justify-content-between align-items-center mb-4">
-                            <h4 class="fw-bold text-dark-blue mb-0">
-                                <i class="fa-solid fa-user-check text-light-blue me-2"></i>Pessoas Autorizadas a Buscar
-                            </h4>
-                        </div>
-                        <div class="table-responsive">
-                            <table class="table table-hover align-middle mb-0">
-                                <thead class="table-light">
-                                    <tr>
-                                        <th>Nome</th>
-                                        <th>Parentesco</th>
-                                        <th>Telefone</th>
-                                        <th class="text-end">Ação</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    <!-- render.js preenche com dados reais -->
-                                </tbody>
-                            </table>
-                        </div>
-                    </div>
-                </section>
-
-            </div>
-        </div>
-    </div>
-
-    <!-- Modal Adicionar Autorizado -->
-    <div class="modal fade" id="modalAutorizado" tabindex="-1" aria-hidden="true">
-        <div class="modal-dialog modal-dialog-centered">
-            <div class="modal-content border-0 rounded-4 shadow">
-                <div class="modal-header border-0 pb-0">
-                    <h5 class="fw-bold text-dark-blue">Autorizar Nova Pessoa</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-                </div>
-                <div class="modal-body p-4">
-                    <div class="mb-3">
-                        <label class="form-label fw-bold">Nome Completo</label>
-                            <input type="text" class="form-control rounded-3" id="aut-nome" placeholder="Ex: Maria de Souza" required minlength="3">
-                    </div>
-                    <div class="row">
-                        <div class="col-md-6 mb-3">
-                            <label class="form-label fw-bold">CPF</label>
-                            <input type="text" class="form-control rounded-3 cpf-mask" id="aut-cpf" placeholder="000.000.000-00" required>
-                        </div>
-                        <div class="col-md-6 mb-3">
-                            <label class="form-label fw-bold">Parentesco</label>
-                            <input type="text" class="form-control rounded-3" id="aut-parentesco" placeholder="Ex: Avó, Tio..." required>
-                        </div>
-                    </div>
-                    <div class="mb-3">
-                        <label class="form-label fw-bold">Telefone</label>
-                        <input type="text" class="form-control rounded-3 phone-mask" id="aut-telefone" placeholder="(00) 00000-0000" required>
-                    </div>
-                    <button class="btn btn-yellow-main w-100 rounded-pill py-2 fw-bold mt-2 shadow-sm" onclick="salvarAutorizado()">
-                        Confirmar Autorização
+<body class="responsavel-page">
+<nav class="hive-nav navbar navbar-expand-lg" aria-label="Navegação do portal">
+    <div class="container">
+        <a class="navbar-brand hive-brand d-flex align-items-center gap-2" th:href="@{/}">
+            <img th:src="@{/images/logo.png}" alt="" class="hive-brand-mark">
+            <span>Colmeia <strong>Girassol</strong></span>
+        </a>
+        <button class="navbar-toggler border-0 shadow-none" type="button" data-bs-toggle="collapse" data-bs-target="#portalNav" aria-label="Abrir menu">
+            <i class="fa-solid fa-bars text-dark-blue"></i>
+        </button>
+        <div class="collapse navbar-collapse" id="portalNav">
+            <ul class="navbar-nav ms-auto align-items-lg-center gap-lg-3">
+                <li class="nav-item"><a class="nav-link" href="#criancas">Minhas crianças</a></li>
+                <li class="nav-item"><a class="nav-link" href="#autorizados">Autorizados</a></li>
+                <li class="nav-item">
+                    <button class="btn btn-outline-dark-blue theme-toggle" type="button" data-theme-toggle aria-label="Ativar modo escuro" aria-pressed="false" title="Ativar modo escuro">
+                        <i class="fa-solid fa-moon" aria-hidden="true"></i>
                     </button>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- Modal Pré-Matrícula de Novo Filho -->
-    <div class="modal fade" id="modalPreMatricula" tabindex="-1" aria-hidden="true">
-        <div class="modal-dialog modal-dialog-centered">
-            <div class="modal-content border-0 rounded-4 shadow">
-                <div class="modal-header border-0 pb-0">
-                    <h5 class="fw-bold text-dark-blue"><i class="fa-solid fa-baby-carriage me-2 text-warning"></i>Pré-Matrícula de Novo Filho</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-                </div>
-                <div class="modal-body p-4">
-                    <p class="text-muted small mb-4">Como você já está logado(a), os dados de responsável serão vinculados automaticamente.</p>
-                    <form id="preMatriculaForm">
-                        <div class="mb-3">
-                            <label class="form-label fw-bold">Nome do Filho(a)</label>
-                            <input type="text" class="form-control rounded-3" id="filho-nome" placeholder="Ex: Lucas Silva" required minlength="3">
-                        </div>
-                        <div class="mb-3">
-                            <label class="form-label fw-bold">Data de Nascimento</label>
-                            <input type="date" class="form-control rounded-3" id="filho-nascimento" required>
-                        </div>
-                        <div class="mb-3">
-                            <label class="form-label fw-bold">Alergias</label>
-                            <input type="text" class="form-control rounded-3" id="filho-alergias" placeholder="Deixe em branco se não houver">
-                        </div>
-                        <div class="mb-3">
-                            <label class="form-label fw-bold">Restrições Alimentares</label>
-                            <input type="text" class="form-control rounded-3" id="filho-restricoes" placeholder="Deixe em branco se não houver">
-                        </div>
-                        <div class="mb-3">
-                            <label class="form-label fw-bold">Necessidades Especiais</label>
-                            <textarea class="form-control rounded-3" id="filho-necessidades" rows="2" placeholder="Descreva se houver alguma necessidade especial"></textarea>
-                        </div>
-                        <button type="button" class="btn btn-yellow-main w-100 rounded-pill py-2 fw-bold mt-3 shadow-sm" onclick="enviarPreMatriculaFilho()">
-                            Enviar Pré-Matrícula
+                </li>
+                <li class="nav-item ms-lg-2">
+                    <div class="d-flex align-items-center gap-2">
+                        <span class="responsavel-avatar" th:text="${#strings.substring(responsavel.nome, 0, 1)}" aria-hidden="true">R</span>
+                        <span class="fw-semibold text-dark-blue" th:text="${responsavel.nome}">Responsável</span>
+                    </div>
+                </li>
+                <li class="nav-item">
+                    <form th:action="@{/logout}" method="post">
+                        <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}">
+                        <button type="submit" class="btn btn-dark-blue rounded-pill px-3">
+                            <i class="fa-solid fa-arrow-right-from-bracket me-1"></i>Sair
                         </button>
                     </form>
-                </div>
-            </div>
+                </li>
+            </ul>
         </div>
     </div>
+</nav>
 
-    <!-- Modal sucesso -->
-    <div class="modal fade" id="modalSucesso" tabindex="-1" aria-hidden="true">
-        <div class="modal-dialog modal-dialog-centered modal-sm">
-            <div class="modal-content border-0 rounded-4 shadow text-center p-4">
-                <i class="fa-solid fa-circle-check text-success fs-1 mb-3"></i>
-                <h5 class="fw-bold text-dark-blue" id="modal-sucesso-msg">Salvo com sucesso!</h5>
-                <button class="btn btn-dark-blue rounded-pill px-4 mt-2" data-bs-dismiss="modal">OK</button>
+<main class="container py-5">
+    <header class="responsavel-intro mb-4">
+        <div class="hive-eyebrow"><span></span> Portal da família</div>
+        <h1 class="h2 fw-bold text-dark-blue mt-2 mb-2">Acompanhe a jornada da sua criança.</h1>
+        <p class="text-secondary mb-0">Informações atualizadas de acordo com os registros da Colmeia Girassol.</p>
+    </header>
+
+    <section id="criancas" class="mb-5" aria-labelledby="criancasTitulo">
+        <div class="d-flex align-items-center gap-2 mb-3">
+            <span class="responsavel-section-icon"><i class="fa-solid fa-child-reaching"></i></span>
+            <h2 id="criancasTitulo" class="h4 fw-bold text-dark-blue mb-0">Minhas crianças</h2>
+        </div>
+
+        <div th:if="${#lists.isEmpty(alunos)}" class="form-card text-center py-5">
+            <i class="fa-solid fa-seedling fs-2 text-warning mb-3"></i>
+            <p class="fw-semibold text-dark-blue mb-1">Ainda não há crianças vinculadas à sua conta.</p>
+            <p class="text-muted mb-0">Quando o vínculo for cadastrado pela escola, os dados aparecerão aqui.</p>
+        </div>
+
+        <div th:unless="${#lists.isEmpty(alunos)}" class="row g-4">
+            <div class="col-12" th:each="item : ${alunos}">
+                <article class="form-card p-4 p-lg-5">
+                    <div class="row g-4">
+                        <div class="col-lg-4">
+                            <div class="d-flex align-items-center gap-3 mb-4">
+                                <span class="student-avatar" th:text="${#strings.substring(item.aluno.nome, 0, 1)}" aria-hidden="true">C</span>
+                                <div>
+                                    <h3 class="h4 fw-bold text-dark-blue mb-1" th:text="${item.aluno.nome}">Nome da criança</h3>
+                                    <p class="text-muted mb-0">
+                                        <span th:text="${item.grauParentesco}">Parentesco</span>
+                                        <span th:if="${item.matricula != null}">
+                                            <span aria-hidden="true"> · </span>
+                                            <span th:text="${item.matricula.turma.nomeTurma}">Turma</span>
+                                            <span th:if="${item.professorNome != null}">
+                                                <span aria-hidden="true"> · </span>
+                                                Prof. <span th:text="${item.professorNome}">Professor</span>
+                                            </span>
+                                        </span>
+                                        <span th:if="${item.matricula == null}"> · Sem matrícula ativa</span>
+                                    </p>
+                                </div>
+                            </div>
+
+                            <div class="student-details">
+                                <h4 class="small fw-bold text-dark-blue mb-3">Informações importantes</h4>
+                                <p class="mb-2"><i class="fa-solid fa-shield-virus text-warning me-2"></i><strong>Alergias:</strong> <span th:text="${item.aluno.alergias}">—</span></p>
+                                <p class="mb-2"><i class="fa-solid fa-utensils text-primary me-2"></i><strong>Restrições:</strong> <span th:text="${item.aluno.restricoesAlimentar}">—</span></p>
+                                <p class="mb-0"><i class="fa-solid fa-heart-pulse text-danger me-2"></i><strong>Necessidades:</strong> <span th:text="${item.aluno.necessidadesEspeciais ?: 'Nenhuma'}">—</span></p>
+                            </div>
+                        </div>
+
+                        <div class="col-lg-8">
+                            <div class="diary-panel h-100">
+                                <div class="d-flex flex-wrap justify-content-between align-items-center gap-2 mb-3">
+                                    <h4 class="h5 fw-bold text-dark-blue mb-0"><i class="fa-solid fa-book-open text-warning me-2"></i>Diário de bordo</h4>
+                                    <span th:if="${item.diario != null}" class="small text-muted">
+                                        Registro de <time th:text="${item.diario.dataRegistro}">data</time>
+                                    </span>
+                                </div>
+                                <div th:if="${item.diario != null}">
+                                    <span class="badge rounded-pill mb-3"
+                                          th:classappend="${item.diario.compareceu} ? 'text-bg-success' : 'text-bg-secondary'"
+                                          th:text="${item.diario.compareceu} ? 'Compareceu neste registro' : 'Não compareceu neste registro'">Frequência</span>
+                                    <div class="row g-3">
+                                        <div class="col-sm-4">
+                                            <div class="diary-detail">
+                                                <span class="small text-muted d-block">Humor</span>
+                                                <span class="fw-semibold" th:text="${item.diario.humor ?: 'Sem registro'}">—</span>
+                                            </div>
+                                        </div>
+                                        <div class="col-sm-4">
+                                            <div class="diary-detail">
+                                                <span class="small text-muted d-block">Alimentação</span>
+                                                <span class="fw-semibold" th:text="${item.diario.alimentacao ?: 'Sem registro'}">—</span>
+                                            </div>
+                                        </div>
+                                        <div class="col-sm-4">
+                                            <div class="diary-detail">
+                                                <span class="small text-muted d-block">Sono</span>
+                                                <span class="fw-semibold" th:text="${item.diario.sono ?: 'Sem registro'}">—</span>
+                                            </div>
+                                        </div>
+                                        <div class="col-12" th:if="${item.diario.observacoes != null and !#strings.isEmpty(item.diario.observacoes)}">
+                                            <div class="diary-detail">
+                                                <span class="small text-muted d-block mb-1">Observações da equipe</span>
+                                                <p class="mb-0" th:text="${item.diario.observacoes}">Observações</p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <p th:if="${item.diario == null}" class="text-muted mb-0 py-3">
+                                    Ainda não há registros de diário para esta criança.
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </article>
             </div>
         </div>
-    </div>
+    </section>
 
-    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.mask/1.14.16/jquery.mask.min.js"></script>
-    <script th:src="@{/js/validation.js(v='1.0.0')}"></script>
-    <script th:src="@{/js/database.js(v='1.0.3')}"></script>
-    <script th:src="@{/js/render.js(v='1.0.3')}"></script>
-    <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
-    <script>AOS.init();</script>
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    <section id="autorizados" aria-labelledby="autorizadosTitulo">
+        <div class="d-flex align-items-center gap-2 mb-3">
+            <span class="responsavel-section-icon"><i class="fa-solid fa-user-check"></i></span>
+            <div>
+                <h2 id="autorizadosTitulo" class="h4 fw-bold text-dark-blue mb-0">Pessoas autorizadas a buscar</h2>
+                <p class="small text-muted mb-0">Contatos cadastrados para as crianças vinculadas à sua conta.</p>
+            </div>
+        </div>
+        <div class="form-card p-0 overflow-hidden">
+            <div class="table-responsive">
+                <table class="table table-hover align-middle mb-0">
+                    <thead class="table-light">
+                    <tr>
+                        <th class="ps-4">Criança</th>
+                        <th>Nome</th>
+                        <th>Parentesco</th>
+                        <th>Telefone</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr th:each="contato : ${autorizados}">
+                        <td class="ps-4 fw-semibold" th:text="${contato.alunoNome}">Criança</td>
+                        <td th:text="${contato.nome}">Nome</td>
+                        <td th:text="${contato.grauParentesco}">Parentesco</td>
+                        <td th:text="${contato.telefone}">Telefone</td>
+                    </tr>
+                    <tr th:if="${#lists.isEmpty(autorizados)}">
+                        <td colspan="4" class="text-center text-muted py-4">Nenhuma outra pessoa autorizada está cadastrada.</td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </section>
+</main>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+<script th:src="@{/js/theme.js(v='1.0.0')}"></script>
 </body>
 </html>

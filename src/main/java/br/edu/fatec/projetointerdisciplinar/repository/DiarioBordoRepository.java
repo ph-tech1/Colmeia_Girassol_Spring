@@ -9,5 +9,6 @@ import java.util.List;
 @Repository
 public interface DiarioBordoRepository extends JpaRepository<DiarioBordoEntity, Integer> {
     List<DiarioBordoEntity> findByMatriculaNr(Integer matriculaNr);
+    List<DiarioBordoEntity> findByMatriculaNrOrderByCodigoDesc(Integer matriculaNr);
     List<DiarioBordoEntity> findByCompareceu(Boolean compareceu);
 }

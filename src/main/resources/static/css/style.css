@@ -1055,6 +1055,51 @@ html[data-theme="dark"] body.cadastro-page .password-input-wrap .password-visibi
     background: #f2d544 !important;
     color: #2d4459 !important;
 }
+html[data-theme="dark"] body.responsavel-page {
+    color: #e5edf0;
+    background: #172129;
+}
+html[data-theme="dark"] body.responsavel-page .hive-nav {
+    border-color: rgba(229, 237, 240, 0.1);
+    background: rgba(23, 33, 41, 0.92);
+}
+html[data-theme="dark"] body.responsavel-page .hive-brand,
+html[data-theme="dark"] body.responsavel-page .hive-nav .nav-link,
+html[data-theme="dark"] body.responsavel-page .text-dark-blue {
+    color: #e5edf0 !important;
+}
+html[data-theme="dark"] body.responsavel-page .form-card,
+html[data-theme="dark"] body.responsavel-page .diary-detail {
+    border-color: rgba(229, 237, 240, 0.12);
+    background: #26343c;
+    color: #e5edf0;
+}
+html[data-theme="dark"] body.responsavel-page .student-details {
+    border-color: rgba(229, 237, 240, 0.12);
+    background: #1c2931;
+}
+html[data-theme="dark"] body.responsavel-page .responsavel-section-icon {
+    color: var(--yellow-main);
+}
+html[data-theme="dark"] body.responsavel-page .table {
+    --bs-table-bg: #26343c;
+    --bs-table-color: #e5edf0;
+    --bs-table-hover-bg: #34444d;
+    --bs-table-hover-color: #e5edf0;
+    --bs-table-border-color: rgba(229, 237, 240, 0.12);
+}
+html[data-theme="dark"] body.responsavel-page .table-light {
+    --bs-table-bg: #1c2931;
+    --bs-table-color: #e5edf0;
+}
+html[data-theme="dark"] body.responsavel-page .text-secondary,
+html[data-theme="dark"] body.responsavel-page .text-muted {
+    color: #b7c5cb !important;
+}
+html[data-theme="dark"] body.responsavel-page .btn-outline-dark-blue {
+    border-color: #93a8b2;
+    color: #e5edf0;
+}
 html[data-theme="dark"] body .theme-toggle { color: #e5edf0; border-color: #93a8b2; }
 html[data-theme="dark"] body .theme-toggle:hover { background: #e5edf0; color: #172129; }
 html[data-theme="dark"] body.hive-home .btn-outline-dark-blue,
@@ -1072,6 +1117,80 @@ html[data-theme="dark"] body.cadastro-page .btn-outline-dark-blue {
     min-height: 100vh;
     background: var(--cream);
     color: var(--dark-blue);
+}
+
+.responsavel-page {
+    min-height: 100vh;
+    background:
+        radial-gradient(circle at 92% 4%, rgba(126, 200, 217, 0.16), transparent 24rem),
+        linear-gradient(180deg, var(--light-blue-pale) 0, var(--cream) 34rem);
+}
+
+.responsavel-intro {
+    padding: 1rem 0 0.5rem;
+}
+
+.responsavel-avatar,
+.student-avatar,
+.responsavel-section-icon {
+    display: inline-flex;
+    flex: 0 0 auto;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+}
+
+.responsavel-avatar {
+    width: 2.5rem;
+    height: 2.5rem;
+    background: var(--yellow-main);
+    color: var(--dark-blue);
+    font-weight: 700;
+}
+
+.student-avatar {
+    width: 4rem;
+    height: 4rem;
+    background: var(--light-blue-pale);
+    color: var(--dark-blue);
+    font-size: 1.5rem;
+    font-weight: 700;
+}
+
+.responsavel-section-icon {
+    width: 2.5rem;
+    height: 2.5rem;
+    background: rgba(126, 200, 217, 0.22);
+    color: var(--dark-blue);
+}
+
+.responsavel-page .student-details {
+    padding: 1rem;
+    border: 1px solid var(--line-soft);
+    border-radius: 1rem;
+    background: #f8fbfc;
+}
+
+.responsavel-page .diary-panel {
+    padding: 1.25rem;
+    border: 1px solid var(--line-soft);
+    border-radius: 1rem;
+    background: rgba(238, 249, 251, 0.5);
+}
+
+.responsavel-page .diary-detail {
+    height: 100%;
+    padding: 0.9rem;
+    border: 1px solid var(--line-soft);
+    border-radius: 0.75rem;
+    background: #fff;
+}
+
+@media (max-width: 991.98px) {
+    .responsavel-page .navbar-nav {
+        align-items: flex-start !important;
+        padding-top: 1rem;
+    }
 }
 
 .login-main {
@@ -1161,4 +1280,3 @@ html[data-theme="dark"] body.cadastro-page .btn-outline-dark-blue {
         padding: 1.35rem !important;
     }
 }
-
