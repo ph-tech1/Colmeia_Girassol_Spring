@@ -4,6 +4,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="_csrf" th:content="${_csrf.token}">
+    <meta name="_csrf_header" th:content="${_csrf.headerName}">
     <script>try { document.documentElement.dataset.theme = localStorage.getItem('colmeia-theme') === 'dark' ? 'dark' : 'light'; } catch (error) { document.documentElement.dataset.theme = 'light'; }</script>
     <title>Pré-Matrícula - Escola Infantil Colmeia Girassol</title>
     <link rel="icon" th:href="@{/images/abelha.png}">
@@ -175,9 +177,7 @@
                         filho.</p>
                 </div>
 
-<<<<<<< HEAD
-                <form id="matriculaForm">
-=======
+                <form id="matriculaForm" action="/api/pre-matriculas" method="POST">
                     <div class="matricula-progress mb-4">
                         <div class="d-flex justify-content-between align-items-center gap-3 mb-2">
                             <span id="stepCounter" class="fw-bold text-dark-blue" aria-live="polite">Etapa 1 de 3</span>
@@ -187,9 +187,6 @@
                             <div id="matriculaProgressBar" class="progress-bar bg-yellow-main" style="width: 33.33%;"></div>
                         </div>
                     </div>
-
-                <form id="matriculaForm" action="/api/pre-matriculas" method="POST">
->>>>>>> 24ddc15 (alteração geral)
 
                     <!-- Passo 1 -->
                         <section class="matricula-step" data-step-title="Dados do responsável">
@@ -402,13 +399,9 @@
                     <!-- Submit -->
                     <div id="cadastroFeedback" class="alert d-none" role="alert"></div>
                     <div class="text-center mt-5 mb-5">
-<<<<<<< HEAD
-                        <button type="button" disabled
-=======
                         <button type="submit" id="btnConcluirMatricula"
->>>>>>> 24ddc15 (alteração geral)
                             class="btn btn-custom btn-dark-blue btn-animated rounded-pill px-5 py-3 fw-bold fs-5 shadow-sm text-white border-0">
-                            <i class="fa-solid fa-paper-plane me-2"></i> Envio indisponível
+                            <i class="fa-solid fa-paper-plane me-2"></i> Concluir Pré-Matrícula
                         </button>
                     </div>
 
@@ -425,8 +418,6 @@
     <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
     <!-- JS do Bootstrap -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
-<<<<<<< HEAD
-
     <script>
         window.CepService.vincular(document.getElementById('matriculaForm'), {
             onErro({ mensagem }) {
@@ -436,9 +427,7 @@
             }
         });
     </script>
-=======
     <script th:src="@{/js/cadastro.js(v='1.0.0')}"></script>
->>>>>>> 24ddc15 (alteração geral)
 </body>
 
 </html>

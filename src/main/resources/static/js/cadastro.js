@@ -101,19 +101,20 @@ document.addEventListener('DOMContentLoaded', () => {
         feedback.className = 'alert d-none';
 
         try {
+            const csrfToken = document.querySelector('meta[name="_csrf"]')?.content;
+            const csrfHeader = document.querySelector('meta[name="_csrf_header"]')?.content;
+            const headers = { 'Content-Type': 'application/json', 'Accept': 'application/json' };
+            if (csrfToken && csrfHeader) headers[csrfHeader] = csrfToken;
+
             const response = await fetch(form.action, {
                 method: 'POST',
-                headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
+                headers,
                 body: JSON.stringify(dados)
             });
             const resultado = await response.json().catch(() => ({}));
             if (!response.ok) throw new Error(resultado.mensagem || 'Não foi possível concluir o cadastro.');
 
-            feedback.textContent = resultado.mensagem || 'Pré-matrícula cadastrada com sucesso.';
-            feedback.className = 'alert alert-success';
-            form.reset();
-            form.querySelectorAll('.is-valid').forEach(field => field.classList.remove('is-valid'));
-            showStep(0, false);
+            window.location.assign('/html/login.html');
         } catch (error) {
             feedback.textContent = error.message;
             feedback.className = 'alert alert-danger';

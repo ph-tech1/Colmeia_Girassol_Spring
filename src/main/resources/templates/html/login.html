@@ -67,11 +67,14 @@
                         </div>
 
                         <!-- Mensagem de erro -->
-                        <div id="errorMsg" class="alert alert-danger mb-4 d-none" role="alert">
+                        <div id="errorMsg" class="alert alert-danger mb-4"
+                             th:classappend="${param.error == null ? 'd-none' : ''}" role="alert">
                             <i class="fa-solid fa-circle-exclamation me-2"></i>
-                            <span id="errorText">CPF ou senha incorretos.</span>
+                            <span id="errorText">CPF ou senha incorretos ou conta ainda não ativa.</span>
                         </div>
 
+                        <form th:action="@{/login}" method="post" id="loginForm">
+                        <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}">
                         <!-- Campo CPF -->
                         <div class="mb-3">
                             <label for="cpfInput" class="form-label fw-bold small text-dark-blue">CPF</label>
@@ -80,7 +83,7 @@
                                     <i class="fa-solid fa-id-card text-muted"></i>
                                 </span>
                                     <input type="text" class="form-control border-start-0 ps-0 cpf-mask" id="cpfInput"
-                                        placeholder="000.000.000-00" maxlength="14" autocomplete="username" required>
+                                        name="username" placeholder="000.000.000-00" maxlength="14" autocomplete="username" required>
                             </div>
                         </div>
 
@@ -92,7 +95,7 @@
                                     <i class="fa-solid fa-lock text-muted"></i>
                                 </span>
                                     <input type="password" class="form-control border-start-0 ps-0" id="senhaInput"
-                                        placeholder="Sua senha" autocomplete="current-password" required>
+                                        name="password" placeholder="Sua senha" autocomplete="current-password" required>
                                 <button class="btn password-toggle border-start-0" type="button" id="toggleSenha" aria-label="Mostrar senha" aria-controls="senhaInput" aria-pressed="false">
                                     <i class="fa-solid fa-eye" id="eyeIcon"></i>
                                 </button>
@@ -107,13 +110,14 @@
 
                         <!-- Botão único de entrar -->
                         <div class="d-grid mb-3">
-                            <button id="btnEntrar" class="btn btn-dark-blue btn-custom btn-animated w-100 rounded-pill py-2 fw-bold shadow-sm">
+                            <button id="btnEntrar" type="submit" class="btn btn-dark-blue btn-custom btn-animated w-100 rounded-pill py-2 fw-bold shadow-sm">
                                 <span id="btnText"><i class="fa-solid fa-right-to-bracket me-2"></i>Entrar</span>
                                 <span id="btnLoading" class="d-none">
                                     <span class="spinner-border spinner-sm me-2" role="status"></span>Verificando...
                                 </span>
                             </button>
                         </div>
+                        </form>
 
                         <div class="text-center mt-4 pt-3 border-top">
                             <p class="small text-muted mb-0">É responsável e ainda não tem conta?</p>
@@ -135,17 +139,12 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.mask/1.14.16/jquery.mask.min.js"></script>
     <script th:src="@{/js/validation.js(v='1.0.0')}"></script>
 
-    <!-- Database precisa ser carregado antes da lógica de autenticação -->
-    <script th:src="@{/js/database.js(v='1.0.3')}"></script>
-
     <script>
         // =========================================================
         // Máscara de CPF automática
         // =========================================================
         const cpfInput = document.getElementById('cpfInput');
         cpfInput.addEventListener('input', function () {
-            // Não aplica máscara se for "admin"
-            if (this.value.toLowerCase().startsWith('a')) return;
             let v = this.value.replace(/\D/g, '');
             if (v.length <= 11) {
                 v = v.replace(/(\d{3})(\d)/, '$1.$2');
@@ -174,102 +173,20 @@
             }
         });
 
-        // =========================================================
-        // Autenticação contra database.js
-        // =========================================================
-        function autenticar(cpfDigitado, senhaDigitada) {
-            const cpf   = cpfDigitado.trim();
-            const senha = senhaDigitada.trim();
-
-            if (!cpf || !senha) {
-                return { ok: false, msg: 'Preencha o CPF e a senha para continuar.' };
-            }
-
-            // Senha única de demonstração
-            const SENHA_DEMO = '123';
-            if (senha !== SENHA_DEMO) {
-                return { ok: false, msg: 'Senha incorreta. Use a senha de demonstração: 123' };
-            }
-
-            // Admin fixo
-            if (cpf.toLowerCase() === 'admin') {
-                return { ok: true, perfil: 'admin', destino: 'dashboard_admin.html' };
-            }
-
-            // Verifica professores
-            const professor = window.Database.get('professores').find(p => p.cpf === cpf);
-            if (professor) {
-                return { ok: true, perfil: 'professor', nome: professor.nome, destino: 'dashboard_professor.html' };
-            }
-
-            // Verifica responsáveis
-            const responsavel = window.Database.get('responsaveis').find(r => r.cpf === cpf);
-            if (responsavel) {
-                return { ok: true, perfil: 'responsavel', nome: responsavel.nome, destino: 'dashboard_responsavel.html' };
-            }
-
-            return { ok: false, msg: 'CPF não encontrado. Verifique os dados e tente novamente.' };
-        }
-
-        function mostrarErro(msg) {
-            document.getElementById('errorText').textContent = msg;
-            document.getElementById('errorMsg').classList.remove('d-none');
-            cpfInput.classList.add('is-invalid');
-            document.getElementById('senhaInput').classList.add('is-invalid');
-        }
-
-        function esconderErro() {
-            document.getElementById('errorMsg').classList.add('d-none');
-            cpfInput.classList.remove('is-invalid');
-            document.getElementById('senhaInput').classList.remove('is-invalid');
-        }
-
         function setLoading(on) {
             document.getElementById('btnEntrar').disabled = on;
             document.getElementById('btnText').classList.toggle('d-none', on);
             document.getElementById('btnLoading').classList.toggle('d-none', !on);
         }
 
-        function entrar() {
-            esconderErro();
-            const cpf   = cpfInput.value.trim();
-            const senha = document.getElementById('senhaInput').value;
-
+        document.getElementById('loginForm').addEventListener('submit', function () {
             setLoading(true);
-
-            // Pequeno delay para feedback visual
-            setTimeout(function () {
-                const resultado = autenticar(cpf, senha);
-                setLoading(false);
-
-                if (resultado.ok) {
-                    // Salva perfil na sessão para os dashboards usarem (opcional)
-                    try {
-                        sessionStorage.setItem('cg_perfil', resultado.perfil);
-                        if (resultado.nome) sessionStorage.setItem('cg_nome', resultado.nome);
-                    } catch(e) {}
-
-                    window.location.href = '/html/' + resultado.destino;
-                } else {
-                    mostrarErro(resultado.msg);
-                }
-            }, 600);
-        }
-
-        // Botão entrar
-        document.getElementById('btnEntrar').addEventListener('click', entrar);
+        });
 
         // Tecla Enter nos campos
         cpfInput.addEventListener('keydown', function (e) {
             if (e.key === 'Enter') document.getElementById('senhaInput').focus();
         });
-        document.getElementById('senhaInput').addEventListener('keydown', function (e) {
-            if (e.key === 'Enter') entrar();
-        });
-
-        // Limpa erro ao digitar
-        cpfInput.addEventListener('input', esconderErro);
-        document.getElementById('senhaInput').addEventListener('input', esconderErro);
     </script>
 
     <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>

@@ -39,7 +39,10 @@
                         </div>
                     </li>
                     <li class="nav-item">
-                        <a th:href="@{/html/login.html}" class="btn btn-outline-light btn-sm rounded-pill px-3">Sair</a>
+                        <form th:action="@{/logout}" method="post">
+                            <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}">
+                            <button type="submit" class="btn btn-outline-light btn-sm rounded-pill px-3">Sair</button>
+                        </form>
                     </li>
                 </ul>
             </div>

@@ -1,6 +1,7 @@
 package br.edu.fatec.projetointerdisciplinar.model;
 
 import jakarta.persistence.*;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.*;
 import java.time.LocalDate;
 
@@ -28,7 +29,8 @@ public class PessoaEntity {
     @Column(name = "data_nascimento", nullable = false)
     private LocalDate dataNascimento;
 
-    @Column(name = "senha", nullable = false, length = 50)
+    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
+    @Column(name = "senha", nullable = false, length = 100)
     private String senha;
 
     @Column(name = "cep", nullable = false, length = 8)
@@ -40,7 +42,7 @@ public class PessoaEntity {
     @Column(name = "uf", nullable = false, length = 2)
     private String uf;
 
-    @Column(name = "endereco", nullable = false, length = 100, unique = true)
+    @Column(name = "endereco", nullable = false, length = 100)
     private String endereco;
 
     @Column(name = "telefone", nullable = false, length = 15)

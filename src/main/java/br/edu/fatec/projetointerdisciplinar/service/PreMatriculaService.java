@@ -4,6 +4,7 @@ import br.edu.fatec.projetointerdisciplinar.dto.*;
 import br.edu.fatec.projetointerdisciplinar.model.*;
 import br.edu.fatec.projetointerdisciplinar.repository.*;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -15,6 +16,7 @@ public class PreMatriculaService {
     private final ResponsavelRepository responsavelRepository;
     private final AlunoRepository alunoRepository;
     private final ResponsavelAlunoRepository responsavelAlunoRepository;
+    private final PasswordEncoder passwordEncoder;
 
     @Transactional
     public PreMatriculaResponse cadastrar(PreMatriculaRequest request) {
@@ -32,7 +34,7 @@ public class PreMatriculaService {
         pessoa.setCpf(apenasDigitos(request.cpfResponsavel()));
         pessoa.setRg(apenasDigitos(request.rgResponsavel()));
         pessoa.setDataNascimento(request.dataNascimentoResponsavel());
-        pessoa.setSenha(request.senha());
+        pessoa.setSenha(passwordEncoder.encode(request.senha()));
         pessoa.setCep(apenasDigitos(request.cep()));
         pessoa.setCidade(request.cidade().trim());
         pessoa.setUf(request.uf().trim().toUpperCase());
@@ -45,7 +47,7 @@ public class PreMatriculaService {
         responsavel.setLocalTrabalho(request.localTrabalho().trim());
         responsavel.setTelefoneTrabalho(apenasDigitos(request.telefoneTrabalho()));
         responsavel.setEstadoCivil(request.estadoCivil().trim());
-        responsavel.setStatus(0);
+        responsavel.setStatus(1);
         responsavel = responsavelRepository.save(responsavel);
 
         AlunoEntity aluno = new AlunoEntity();

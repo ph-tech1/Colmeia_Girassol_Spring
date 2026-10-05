@@ -3,6 +3,7 @@ package br.edu.fatec.projetointerdisciplinar.service;
 import br.edu.fatec.projetointerdisciplinar.model.PessoaEntity;
 import br.edu.fatec.projetointerdisciplinar.repository.PessoaRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -13,6 +14,7 @@ import java.util.Optional;
 public class PessoaService {
 
     private final PessoaRepository pessoaRepository;
+    private final PasswordEncoder passwordEncoder;
 
     public List<PessoaEntity> listarTodos() {
         return pessoaRepository.findAll();
@@ -23,6 +25,7 @@ public class PessoaService {
     }
 
     public PessoaEntity salvar(PessoaEntity pessoa) {
+        pessoa.setSenha(passwordEncoder.encode(pessoa.getSenha()));
         return pessoaRepository.save(pessoa);
     }
 

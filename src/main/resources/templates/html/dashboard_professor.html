@@ -30,7 +30,10 @@
                         <li><a class="dropdown-item nav-link-custom py-2" data-section="planejamento-section"><i class="fa-solid fa-calendar-check me-2"></i>Planejamento</a></li>
                         <li><a class="dropdown-item nav-link-custom py-2" data-section="minha-turma-section"><i class="fa-solid fa-users me-2"></i>Minha Turma</a></li>
                         <li><hr class="dropdown-divider"></li>
-                        <li><a th:href="@{/html/login.html}" class="dropdown-item text-danger py-2"><i class="fa-solid fa-right-from-bracket me-2"></i>Sair</a></li>
+                        <li><form th:action="@{/logout}" method="post">
+                            <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}">
+                            <button type="submit" class="dropdown-item text-danger py-2"><i class="fa-solid fa-right-from-bracket me-2"></i>Sair</button>
+                        </form></li>
                     </ul>
                 </div>
             </div>
@@ -58,7 +61,10 @@
                         <i class="fa-solid fa-users me-3"></i>Minha Turma
                     </a>
                 </li>
-                    <li class="nav-item mt-5"><a th:href="@{/html/login.html}" class="nav-link-custom text-danger"><i class="fa-solid fa-right-from-bracket"></i><span>Sair</span></a></li>
+                    <li class="nav-item mt-5"><form th:action="@{/logout}" method="post">
+                        <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}">
+                        <button type="submit" class="nav-link-custom text-danger border-0 bg-transparent"><i class="fa-solid fa-right-from-bracket"></i><span>Sair</span></button>
+                    </form></li>
             </nav>
         </aside>
 
