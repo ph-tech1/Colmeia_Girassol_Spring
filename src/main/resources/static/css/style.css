@@ -1100,6 +1100,32 @@ html[data-theme="dark"] body.responsavel-page .btn-outline-dark-blue {
     border-color: #93a8b2;
     color: #e5edf0;
 }
+html[data-theme="dark"] body.responsavel-page .modal-content {
+    border-color: rgba(229, 237, 240, 0.12) !important;
+    background: #26343c;
+    color: #e5edf0;
+}
+html[data-theme="dark"] body.responsavel-page .modal-content .form-control {
+    border-color: rgba(229, 237, 240, 0.18);
+    background: #1c2931;
+    color: #e5edf0;
+}
+html[data-theme="dark"] body.responsavel-page .modal-content .form-select {
+    border-color: rgba(229, 237, 240, 0.18);
+    background-color: #1c2931;
+    color: #e5edf0;
+    color-scheme: dark;
+}
+html[data-theme="dark"] body.responsavel-page .modal-content .form-select option {
+    background-color: #1c2931;
+    color: #e5edf0;
+}
+html[data-theme="dark"] body.responsavel-page .modal-content .form-control::placeholder {
+    color: #9aabb3;
+}
+html[data-theme="dark"] body.responsavel-page .modal-content .btn-close {
+    filter: invert(1) grayscale(100%) brightness(200%);
+}
 html[data-theme="dark"] body .theme-toggle { color: #e5edf0; border-color: #93a8b2; }
 html[data-theme="dark"] body .theme-toggle:hover { background: #e5edf0; color: #172129; }
 html[data-theme="dark"] body.hive-home .btn-outline-dark-blue,
@@ -1162,6 +1188,25 @@ html[data-theme="dark"] body.cadastro-page .btn-outline-dark-blue {
     height: 2.5rem;
     background: rgba(126, 200, 217, 0.22);
     color: var(--dark-blue);
+}
+
+.profile-trigger {
+    padding: 0;
+    border: 0;
+    background: transparent;
+    color: var(--dark-blue);
+    cursor: pointer;
+}
+
+.profile-trigger:hover .responsavel-avatar,
+.profile-trigger:focus-visible .responsavel-avatar {
+    box-shadow: 0 0 0 3px rgba(242, 213, 68, 0.45);
+}
+
+.profile-trigger:focus-visible {
+    border-radius: 2rem;
+    outline: 2px solid var(--dark-blue);
+    outline-offset: 4px;
 }
 
 .responsavel-page .student-details {

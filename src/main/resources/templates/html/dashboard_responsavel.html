@@ -3,18 +3,20 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="_csrf" th:content="${_csrf.token}">
+    <meta name="_csrf_header" th:content="${_csrf.headerName}">
     <script>try { document.documentElement.dataset.theme = localStorage.getItem('colmeia-theme') === 'dark' ? 'dark' : 'light'; } catch (error) { document.documentElement.dataset.theme = 'light'; }</script>
     <title>Portal da família | Colmeia Girassol</title>
     <link rel="icon" th:href="@{/images/abelha.png}">
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&family=Playfair+Display:wght@600;700&display=swap" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
-    <link rel="stylesheet" th:href="@{/css/style.css(v='1.4.0')}">
+    <link rel="stylesheet" th:href="@{/css/style.css(v='1.4.1')}">
 </head>
 <body class="responsavel-page">
 <nav class="hive-nav navbar navbar-expand-lg" aria-label="Navegação do portal">
     <div class="container">
-        <a class="navbar-brand hive-brand d-flex align-items-center gap-2" th:href="@{/}">
+        <a class="navbar-brand hive-brand d-flex align-items-center gap-2" th:href="@{/html/dashboard_responsavel.html}" aria-label="Voltar ao painel do responsável">
             <img th:src="@{/images/logo.png}" alt="" class="hive-brand-mark">
             <span>Colmeia <strong>Girassol</strong></span>
         </a>
@@ -31,10 +33,11 @@
                     </button>
                 </li>
                 <li class="nav-item ms-lg-2">
-                    <div class="d-flex align-items-center gap-2">
+                    <button type="button" class="profile-trigger d-flex align-items-center gap-2" data-bs-toggle="modal" data-bs-target="#modalPerfil" aria-label="Alterar perfil">
                         <span class="responsavel-avatar" th:text="${#strings.substring(responsavel.nome, 0, 1)}" aria-hidden="true">R</span>
                         <span class="fw-semibold text-dark-blue" th:text="${responsavel.nome}">Responsável</span>
-                    </div>
+                        <i class="fa-solid fa-pen-to-square small" aria-hidden="true"></i>
+                    </button>
                 </li>
                 <li class="nav-item">
                     <form th:action="@{/logout}" method="post">
@@ -57,15 +60,20 @@
     </header>
 
     <section id="criancas" class="mb-5" aria-labelledby="criancasTitulo">
-        <div class="d-flex align-items-center gap-2 mb-3">
-            <span class="responsavel-section-icon"><i class="fa-solid fa-child-reaching"></i></span>
-            <h2 id="criancasTitulo" class="h4 fw-bold text-dark-blue mb-0">Minhas crianças</h2>
+        <div class="d-flex flex-wrap justify-content-between align-items-center gap-3 mb-3">
+            <div class="d-flex align-items-center gap-2">
+                <span class="responsavel-section-icon"><i class="fa-solid fa-child-reaching"></i></span>
+                <h2 id="criancasTitulo" class="h4 fw-bold text-dark-blue mb-0">Minhas crianças</h2>
+            </div>
+            <button type="button" class="btn btn-yellow-main rounded-pill px-4 fw-semibold" data-bs-toggle="modal" data-bs-target="#modalCrianca">
+                <i class="fa-solid fa-plus me-2"></i>Adicionar criança
+            </button>
         </div>
 
         <div th:if="${#lists.isEmpty(alunos)}" class="form-card text-center py-5">
             <i class="fa-solid fa-seedling fs-2 text-warning mb-3"></i>
             <p class="fw-semibold text-dark-blue mb-1">Ainda não há crianças vinculadas à sua conta.</p>
-            <p class="text-muted mb-0">Quando o vínculo for cadastrado pela escola, os dados aparecerão aqui.</p>
+            <p class="text-muted mb-0">Use “Adicionar criança” para solicitar o vínculo com sua conta.</p>
         </div>
 
         <div th:unless="${#lists.isEmpty(alunos)}" class="row g-4">
@@ -186,7 +194,141 @@
     </section>
 </main>
 
+<div class="modal fade" id="modalPerfil" tabindex="-1" aria-labelledby="modalPerfilTitulo" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-lg">
+        <div class="modal-content border-0 rounded-4 shadow">
+            <form id="perfilForm">
+                <div class="modal-header border-0 pb-0">
+                    <div>
+                        <h2 id="modalPerfilTitulo" class="modal-title h5 fw-bold text-dark-blue">Alterar perfil</h2>
+                        <p class="small text-muted mb-0">Atualize seus dados de contato e endereço.</p>
+                    </div>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Fechar"></button>
+                </div>
+                <div class="modal-body p-4">
+                    <div id="perfilFeedback" class="alert d-none" role="alert"></div>
+                    <div class="row g-3">
+                        <div class="col-md-6">
+                            <label for="perfilNome" class="form-label fw-semibold">Nome completo</label>
+                            <input id="perfilNome" name="nome" class="form-control" minlength="3" maxlength="50" required th:value="${responsavel.nome}">
+                        </div>
+                        <div class="col-md-6">
+                            <label for="perfilTelefone" class="form-label fw-semibold">Telefone</label>
+                            <input id="perfilTelefone" name="telefone" class="form-control phone-mask" maxlength="15" required th:value="${responsavel.telefone}">
+                        </div>
+                        <div class="col-md-4">
+                            <label for="perfilCep" class="form-label fw-semibold">CEP</label>
+                            <input id="perfilCep" name="cep" class="form-control cep-mask" data-cep maxlength="9" required th:value="${responsavel.cep}">
+                        </div>
+                        <div class="col-md-6">
+                            <label for="perfilCidade" class="form-label fw-semibold">Cidade</label>
+                            <input id="perfilCidade" name="cidade" class="form-control" data-cep-field="localidade" minlength="2" maxlength="50" required th:value="${responsavel.cidade}">
+                        </div>
+                        <div class="col-md-2">
+                            <label for="perfilUf" class="form-label fw-semibold">UF</label>
+                            <select id="perfilUf" name="uf" class="form-select uf-field" data-cep-field="uf" required>
+                                <option value="" disabled>Selecione...</option>
+                                <option th:each="uf : ${unidadesFederativas}" th:value="${uf.sigla}" th:text="${uf.sigla + ' - ' + uf.nome}" th:selected="${uf.sigla == responsavel.uf}"></option>
+                            </select>
+                        </div>
+                        <div class="col-12">
+                            <label for="perfilEndereco" class="form-label fw-semibold">Endereço</label>
+                            <input id="perfilEndereco" name="endereco" class="form-control" data-cep-field="logradouro" minlength="3" maxlength="100" required th:value="${responsavel.endereco}">
+                        </div>
+                        <div class="col-md-6">
+                            <label for="perfilLocalTrabalho" class="form-label fw-semibold">Local de trabalho</label>
+                            <input id="perfilLocalTrabalho" name="localTrabalho" class="form-control" maxlength="50" required th:value="${cadastroResponsavel.localTrabalho}">
+                        </div>
+                        <div class="col-md-6">
+                            <label for="perfilTelefoneTrabalho" class="form-label fw-semibold">Telefone de trabalho</label>
+                            <input id="perfilTelefoneTrabalho" name="telefoneTrabalho" class="form-control phone-mask" maxlength="15" required th:value="${cadastroResponsavel.telefoneTrabalho}">
+                        </div>
+                        <div class="col-md-6">
+                            <label for="perfilEstadoCivil" class="form-label fw-semibold">Estado civil</label>
+                            <select id="perfilEstadoCivil" name="estadoCivil" class="form-select" required>
+                                <option value="" disabled>Selecione...</option>
+                                <option value="Solteiro(a)" th:selected="${#strings.startsWith(#strings.toLowerCase(cadastroResponsavel.estadoCivil), 'solteir')}">Solteiro(a)</option>
+                                <option value="Casado(a)" th:selected="${#strings.startsWith(#strings.toLowerCase(cadastroResponsavel.estadoCivil), 'casad')}">Casado(a)</option>
+                                <option value="Divorciado(a)" th:selected="${#strings.startsWith(#strings.toLowerCase(cadastroResponsavel.estadoCivil), 'divorciad')}">Divorciado(a)</option>
+                                <option value="Viúvo(a)" th:selected="${#strings.startsWith(#strings.toLowerCase(cadastroResponsavel.estadoCivil), 'viúv')}">Viúvo(a)</option>
+                            </select>
+                        </div>
+                        <div class="col-12">
+                            <p class="small text-muted mb-0">CPF e senha não podem ser alterados por este formulário.</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer border-0 pt-0 px-4 pb-4">
+                    <button type="button" class="btn btn-outline-dark-blue rounded-pill px-4" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="submit" class="btn btn-dark-blue rounded-pill px-4">Salvar alterações</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="modalCrianca" tabindex="-1" aria-labelledby="modalCriancaTitulo" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content border-0 rounded-4 shadow">
+            <form id="criancaForm">
+                <div class="modal-header border-0 pb-0">
+                    <div>
+                        <h2 id="modalCriancaTitulo" class="modal-title h5 fw-bold text-dark-blue">Adicionar criança</h2>
+                        <p class="small text-muted mb-0">A criança será vinculada ao seu perfil. A matrícula ativa é realizada pela escola.</p>
+                    </div>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Fechar"></button>
+                </div>
+                <div class="modal-body p-4">
+                    <div id="criancaFeedback" class="alert d-none" role="alert"></div>
+                    <div class="mb-3">
+                        <label for="criancaNome" class="form-label fw-semibold">Nome completo</label>
+                        <input id="criancaNome" name="nome" class="form-control" minlength="3" maxlength="100" required>
+                    </div>
+                    <div class="row g-3">
+                        <div class="col-md-6">
+                            <label for="criancaNascimento" class="form-label fw-semibold">Data de nascimento</label>
+                            <input id="criancaNascimento" name="dataNascimento" type="date" class="form-control" required>
+                        </div>
+                        <div class="col-md-6">
+                            <label for="criancaParentesco" class="form-label fw-semibold">Parentesco</label>
+                            <select id="criancaParentesco" name="grauParentesco" class="form-select" required>
+                                <option value="" selected disabled>Selecione...</option>
+                                <option value="Mãe">Mãe</option>
+                                <option value="Pai">Pai</option>
+                                <option value="Avô/Avó">Avô/Avó</option>
+                                <option value="Tio(a)">Tio(a)</option>
+                                <option value="Responsável Legal">Responsável Legal</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="mt-3">
+                        <label for="criancaAlergias" class="form-label fw-semibold">Alergias</label>
+                        <input id="criancaAlergias" name="alergias" class="form-control" maxlength="50" placeholder="Deixe em branco se não houver">
+                    </div>
+                    <div class="mt-3">
+                        <label for="criancaRestricoes" class="form-label fw-semibold">Restrições alimentares</label>
+                        <input id="criancaRestricoes" name="restricoesAlimentares" class="form-control" maxlength="50" placeholder="Deixe em branco se não houver">
+                    </div>
+                    <div class="mt-3">
+                        <label for="criancaNecessidades" class="form-label fw-semibold">Necessidades especiais</label>
+                        <textarea id="criancaNecessidades" name="necessidadesEspeciais" class="form-control" rows="2" placeholder="Deixe em branco se não houver"></textarea>
+                    </div>
+                </div>
+                <div class="modal-footer border-0 pt-0 px-4 pb-4">
+                    <button type="button" class="btn btn-outline-dark-blue rounded-pill px-4" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="submit" class="btn btn-yellow-main rounded-pill px-4 fw-semibold">Salvar criança</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
 <script th:src="@{/js/theme.js(v='1.0.0')}"></script>
+<script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.mask/1.14.16/jquery.mask.min.js"></script>
+<script th:src="@{/js/validation.js(v='1.0.0')}"></script>
+<script th:src="@{/js/cep.js(v='1.0.0')}"></script>
+<script th:src="@{/js/responsavel-dashboard.js(v='1.0.0')}"></script>
 </body>
 </html>

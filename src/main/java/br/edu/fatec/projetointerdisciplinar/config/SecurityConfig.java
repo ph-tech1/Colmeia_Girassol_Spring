@@ -28,6 +28,7 @@ public class SecurityConfig {
                         .requestMatchers("/html/dashboard_responsavel.html").hasRole("RESPONSAVEL")
                         .requestMatchers("/html/dashboard_professor.html").hasRole("PROFESSOR")
                         .requestMatchers("/html/dashboard_admin.html").hasRole("ADMIN")
+                        .requestMatchers("/api/portal-responsavel/**").hasRole("RESPONSAVEL")
                         .requestMatchers("/api/**").hasAnyRole("PROFESSOR", "ADMIN")
                         .requestMatchers("/html/**").authenticated()
                         .anyRequest().authenticated())
@@ -59,7 +60,9 @@ public class SecurityConfig {
                         .logoutSuccessUrl("/html/login.html?logout")
                         .invalidateHttpSession(true)
                         .deleteCookies("JSESSIONID")
-                        .permitAll());
+                        .permitAll())
+                .sessionManagement(session -> session
+                        .invalidSessionUrl("/html/login.html?expired"));
 
         return http.build();
     }

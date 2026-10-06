@@ -1,6 +1,7 @@
 package br.edu.fatec.projetointerdisciplinar.controller;
 
 import br.edu.fatec.projetointerdisciplinar.model.AlunoEntity;
+import br.edu.fatec.projetointerdisciplinar.enums.UnidadeFederativa;
 import br.edu.fatec.projetointerdisciplinar.model.AutorizadoBuscaEntity;
 import br.edu.fatec.projetointerdisciplinar.model.DiarioBordoEntity;
 import br.edu.fatec.projetointerdisciplinar.model.MatriculaEntity;
@@ -80,6 +81,8 @@ public class DashboardResponsavelController {
         }
 
         model.addAttribute("responsavel", pessoa);
+        model.addAttribute("cadastroResponsavel", responsavel);
+        model.addAttribute("unidadesFederativas", UnidadeFederativa.values());
         model.addAttribute("alunos", alunos);
         model.addAttribute("autorizados", autorizados);
         return "html/dashboard_responsavel";

@@ -284,7 +284,10 @@
                             </div>
                             <div class="col-md-2">
                                 <div class="form-floating">
-                                    <input type="text" class="form-control uf-field" id="ufResp" data-cep-field="uf" placeholder="UF" required maxlength="2">
+                                    <select class="form-select uf-field" id="ufResp" data-cep-field="uf" required>
+                                        <option value="" selected disabled>Selecione...</option>
+                                        <option th:each="uf : ${unidadesFederativas}" th:value="${uf.sigla}" th:text="${uf.sigla + ' - ' + uf.nome}"></option>
+                                    </select>
                                     <label for="ufResp">UF</label>
                                 </div>
                             </div>

@@ -1,6 +1,7 @@
 package br.edu.fatec.projetointerdisciplinar.service;
 
 import br.edu.fatec.projetointerdisciplinar.dto.*;
+import br.edu.fatec.projetointerdisciplinar.enums.UnidadeFederativa;
 import br.edu.fatec.projetointerdisciplinar.model.*;
 import br.edu.fatec.projetointerdisciplinar.repository.*;
 import lombok.RequiredArgsConstructor;
@@ -93,7 +94,7 @@ public class PreMatriculaService {
         if (apenasDigitos(request.cep()).length() != 8) {
             throw new IllegalArgumentException("CEP inválido.");
         }
-        if (request.uf().trim().length() != 2) {
+        if (!UnidadeFederativa.contemSigla(request.uf())) {
             throw new IllegalArgumentException("UF inválida.");
         }
     }
