@@ -11,7 +11,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&family=Playfair+Display:wght@600;700&display=swap" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
-    <link rel="stylesheet" th:href="@{/css/style.css(v='1.5.0')}">
+    <link rel="stylesheet" th:href="@{/css/style.css(v='1.5.1')}">
 </head>
 <body class="responsavel-page">
 <nav class="hive-nav navbar navbar-expand-lg" aria-label="Navegação do portal">
@@ -81,7 +81,8 @@
             </div>
             <button id="fecharEdicao" class="btn-close" type="button" aria-label="Fechar edição"></button>
         </div>
-        <form id="alunoForm" th:attr="data-aluno-codigo=${aluno.codigo}">
+        <form id="alunoForm" th:attr="data-aluno-codigo=${aluno.codigo},
+                                      data-update-url=@{/api/portal-responsavel/criancas/{codigo}(codigo=${aluno.codigo})}">
             <div id="alunoFeedback" class="alert d-none" role="alert"></div>
             <div class="row g-3">
                 <div class="col-md-8">
@@ -94,16 +95,61 @@
                 </div>
                 <div class="col-md-4">
                     <label for="alunoAlergias" class="form-label fw-semibold">Alergias</label>
-                    <input id="alunoAlergias" name="alergias" class="form-control" maxlength="50" th:value="${aluno.alergias}">
+                    <div class="student-suggestion-field">
+                        <input id="alunoAlergias" name="alergias" class="form-control" maxlength="50"
+                               autocomplete="off" aria-describedby="sugestoesAlergiasAjuda"
+                               th:value="${aluno.alergias}">
+                        <button class="student-suggestion-toggle" type="button" aria-label="Ver sugestões de alergias"
+                                aria-expanded="false" aria-controls="sugestoesAlergias">
+                            <i class="fa-solid fa-chevron-down" aria-hidden="true"></i>
+                        </button>
+                        <div id="sugestoesAlergias" class="student-suggestion-menu d-none" role="listbox" aria-label="Sugestões de alergias">
+                            <button type="button" role="option" data-sugestao-campo="alunoAlergias">Nenhuma</button>
+                            <button type="button" role="option" data-sugestao-campo="alunoAlergias">Leite</button>
+                            <button type="button" role="option" data-sugestao-campo="alunoAlergias">Lactose</button>
+                            <button type="button" role="option" data-sugestao-campo="alunoAlergias">Ovo</button>
+                            <button type="button" role="option" data-sugestao-campo="alunoAlergias">Amendoim</button>
+                            <button type="button" role="option" data-sugestao-campo="alunoAlergias">Castanhas</button>
+                            <button type="button" role="option" data-sugestao-campo="alunoAlergias">Glúten</button>
+                            <button type="button" role="option" data-sugestao-campo="alunoAlergias">Picada de inseto</button>
+                        </div>
+                    </div>
+                    <div id="sugestoesAlergiasAjuda" class="form-text">Escolha uma sugestão ou digite outra alergia.</div>
                 </div>
                 <div class="col-md-4">
                     <label for="alunoRestricoes" class="form-label fw-semibold">Restrições alimentares</label>
-                    <input id="alunoRestricoes" name="restricoesAlimentares" class="form-control" maxlength="50" th:value="${aluno.restricoesAlimentar}">
+                    <div class="student-suggestion-field">
+                        <input id="alunoRestricoes" name="restricoesAlimentares" class="form-control" maxlength="50"
+                               autocomplete="off" aria-describedby="sugestoesRestricoesAjuda"
+                               th:value="${aluno.restricoesAlimentar}">
+                        <button class="student-suggestion-toggle" type="button" aria-label="Ver sugestões de restrições alimentares"
+                                aria-expanded="false" aria-controls="sugestoesRestricoes">
+                            <i class="fa-solid fa-chevron-down" aria-hidden="true"></i>
+                        </button>
+                        <div id="sugestoesRestricoes" class="student-suggestion-menu d-none" role="listbox" aria-label="Sugestões de restrições alimentares">
+                            <button type="button" role="option" data-sugestao-campo="alunoRestricoes">Nenhuma</button>
+                            <button type="button" role="option" data-sugestao-campo="alunoRestricoes">Sem lactose</button>
+                            <button type="button" role="option" data-sugestao-campo="alunoRestricoes">Sem glúten</button>
+                            <button type="button" role="option" data-sugestao-campo="alunoRestricoes">Vegetariana</button>
+                            <button type="button" role="option" data-sugestao-campo="alunoRestricoes">Vegana</button>
+                            <button type="button" role="option" data-sugestao-campo="alunoRestricoes">Sem açúcar</button>
+                            <button type="button" role="option" data-sugestao-campo="alunoRestricoes">Dieta pastosa</button>
+                        </div>
+                    </div>
+                    <div id="sugestoesRestricoesAjuda" class="form-text">Escolha uma sugestão ou digite outra restrição.</div>
                 </div>
-                <div class="col-md-4">
+                <div class="col-12">
                     <label for="alunoNecessidades" class="form-label fw-semibold">Necessidades especiais</label>
                     <textarea id="alunoNecessidades" name="necessidadesEspeciais" class="form-control" rows="1"
                               th:text="${aluno.necessidadesEspeciais}"></textarea>
+                    <div class="form-text mb-2">Use uma opção comum ou descreva livremente o que a equipe precisa saber.</div>
+                    <div class="d-flex flex-wrap gap-2" aria-label="Sugestões de necessidades especiais">
+                        <button type="button" class="btn btn-sm btn-outline-dark-blue rounded-pill" data-sugestao-necessidade="Nenhuma">Nenhuma</button>
+                        <button type="button" class="btn btn-sm btn-outline-dark-blue rounded-pill" data-sugestao-necessidade="Acompanhamento individual">Acompanhamento individual</button>
+                        <button type="button" class="btn btn-sm btn-outline-dark-blue rounded-pill" data-sugestao-necessidade="Apoio à comunicação">Apoio à comunicação</button>
+                        <button type="button" class="btn btn-sm btn-outline-dark-blue rounded-pill" data-sugestao-necessidade="Apoio à mobilidade">Apoio à mobilidade</button>
+                        <button type="button" class="btn btn-sm btn-outline-dark-blue rounded-pill" data-sugestao-necessidade="Sensibilidade sensorial">Sensibilidade sensorial</button>
+                    </div>
                 </div>
             </div>
             <div class="d-flex flex-wrap justify-content-end gap-2 mt-4">
@@ -231,7 +277,6 @@
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
 <script th:src="@{/js/theme.js(v='1.0.0')}"></script>
-<script th:src="@{/js/validation.js(v='1.0.0')}"></script>
-<script th:src="@{/js/aluno-dashboard.js(v='1.0.0')}"></script>
+<script th:src="@{/js/aluno-dashboard.js(v='1.2.0')}"></script>
 </body>
 </html>

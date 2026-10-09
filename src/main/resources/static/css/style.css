@@ -1309,13 +1309,15 @@ html[data-theme="dark"] body.cadastro-page .btn-outline-dark-blue {
     display: flex;
     align-items: flex-start;
     gap: 0.9rem;
-    padding: 1rem 0;
-    border-bottom: 1px solid var(--line-soft);
+    margin-bottom: 0.6rem;
+    padding: 0.85rem 1rem;
+    border: 1px solid var(--line-soft);
+    border-radius: 0.9rem;
+    background: #f8fbfc;
 }
 
 .student-info-row:last-child {
-    padding-bottom: 0;
-    border-bottom: 0;
+    margin-bottom: 0;
 }
 
 .student-info-row > i {
@@ -1395,15 +1397,135 @@ html[data-theme="dark"] body.responsavel-page .student-back-link {
     color: #b7c5cb;
 }
 
-html[data-theme="dark"] body.responsavel-page .student-info-row,
-html[data-theme="dark"] body.responsavel-page .student-timeline-item::before {
+html[data-theme="dark"] body.responsavel-page .student-info-row {
     border-color: rgba(229, 237, 240, 0.12);
+    background: #304049;
+    color: #e5edf0;
+}
+
+html[data-theme="dark"] body.responsavel-page .student-info-row strong {
+    color: #f4f8f9;
+}
+
+html[data-theme="dark"] body.responsavel-page .student-timeline-item::before {
     background-color: rgba(229, 237, 240, 0.12);
 }
 
 html[data-theme="dark"] body.responsavel-page .student-record-count {
     background: #34444d;
     color: #e5edf0;
+}
+
+html[data-theme="dark"] body.responsavel-page #editarDados .form-label {
+    color: #e5edf0;
+}
+
+html[data-theme="dark"] body.responsavel-page #editarDados .form-text {
+    color: #b7c5cb;
+}
+
+html[data-theme="dark"] body.responsavel-page #editarDados .btn-close {
+    filter: invert(1) grayscale(100%) brightness(200%);
+}
+
+.student-suggestion-field {
+    position: relative;
+    z-index: 1;
+}
+
+.student-suggestion-field:focus-within {
+    z-index: 5;
+}
+
+.student-suggestion-field .form-control {
+    padding-right: 2.8rem;
+}
+
+.student-suggestion-toggle {
+    position: absolute;
+    top: 0.35rem;
+    right: 0.35rem;
+    display: inline-flex;
+    width: 2.2rem;
+    height: 2.2rem;
+    align-items: center;
+    justify-content: center;
+    border: 0;
+    border-radius: 0.65rem;
+    background: transparent;
+    color: #607789;
+    transition: background-color 0.15s ease, color 0.15s ease, transform 0.15s ease;
+}
+
+.student-suggestion-toggle:hover,
+.student-suggestion-toggle:focus-visible {
+    background: rgba(126, 200, 217, 0.2);
+    color: var(--dark-blue);
+}
+
+.student-suggestion-toggle[aria-expanded="true"] i {
+    transform: rotate(180deg);
+}
+
+.student-suggestion-toggle i {
+    transition: transform 0.15s ease;
+}
+
+.student-suggestion-menu {
+    position: absolute;
+    top: calc(100% + 0.35rem);
+    right: 0;
+    left: 0;
+    z-index: 6;
+    max-height: 14rem;
+    overflow-y: auto;
+    padding: 0.35rem;
+    border: 1px solid var(--line-soft);
+    border-radius: 0.9rem;
+    background: #fff;
+    box-shadow: 0 0.75rem 1.75rem rgba(25, 43, 56, 0.18);
+}
+
+.student-suggestion-menu button {
+    display: block;
+    width: 100%;
+    padding: 0.6rem 0.75rem;
+    border: 0;
+    border-radius: 0.6rem;
+    background: transparent;
+    color: var(--dark-blue);
+    text-align: left;
+}
+
+.student-suggestion-menu button:hover,
+.student-suggestion-menu button:focus-visible {
+    outline: 0;
+    background: var(--light-blue-pale);
+}
+
+html[data-theme="dark"] body.responsavel-page .student-suggestion-toggle {
+    color: #c4d3da;
+}
+
+html[data-theme="dark"] body.responsavel-page .student-suggestion-toggle:hover,
+html[data-theme="dark"] body.responsavel-page .student-suggestion-toggle:focus-visible {
+    background: #344b55;
+    color: #fff;
+}
+
+html[data-theme="dark"] body.responsavel-page .student-suggestion-menu {
+    border-color: rgba(229, 237, 240, 0.15);
+    background: #26343c;
+    box-shadow: 0 0.75rem 1.75rem rgba(0, 0, 0, 0.4);
+}
+
+html[data-theme="dark"] body.responsavel-page .student-suggestion-menu button {
+    color: #e5edf0;
+}
+
+html[data-theme="dark"] body.responsavel-page .student-suggestion-menu button:hover,
+html[data-theme="dark"] body.responsavel-page .student-suggestion-menu button:focus-visible {
+    background: #344b55;
 }
 
 @media (max-width: 991.98px) {
