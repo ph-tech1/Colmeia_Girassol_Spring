@@ -1,0 +1,237 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="_csrf" th:content="${_csrf.token}">
+    <meta name="_csrf_header" th:content="${_csrf.headerName}">
+    <script>try { document.documentElement.dataset.theme = localStorage.getItem('colmeia-theme') === 'dark' ? 'dark' : 'light'; } catch (error) { document.documentElement.dataset.theme = 'light'; }</script>
+    <title th:text="${aluno.nome + ' | Portal da família'}">Painel da criança | Colmeia Girassol</title>
+    <link rel="icon" th:href="@{/images/abelha.png}">
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&family=Playfair+Display:wght@600;700&display=swap" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+    <link rel="stylesheet" th:href="@{/css/style.css(v='1.5.0')}">
+</head>
+<body class="responsavel-page">
+<nav class="hive-nav navbar navbar-expand-lg" aria-label="Navegação do portal">
+    <div class="container">
+        <a class="navbar-brand hive-brand d-flex align-items-center gap-2" th:href="@{/html/dashboard_responsavel.html}" aria-label="Voltar ao painel do responsável">
+            <img th:src="@{/images/logo.png}" alt="" class="hive-brand-mark">
+            <span>Colmeia <strong>Girassol</strong></span>
+        </a>
+        <div class="d-flex align-items-center gap-2 ms-auto">
+            <button class="btn btn-outline-dark-blue theme-toggle" type="button" data-theme-toggle aria-label="Ativar modo escuro" aria-pressed="false" title="Ativar modo escuro">
+                <i class="fa-solid fa-moon" aria-hidden="true"></i>
+            </button>
+            <a class="btn btn-dark-blue rounded-pill px-3" th:href="@{/html/dashboard_responsavel.html}">
+                <i class="fa-solid fa-arrow-left me-2"></i><span class="d-none d-sm-inline">Voltar ao portal</span><span class="d-sm-none">Voltar</span>
+            </a>
+        </div>
+    </div>
+</nav>
+
+<main class="container py-5">
+    <a class="student-back-link d-inline-flex align-items-center gap-2 mb-4" th:href="@{/html/dashboard_responsavel.html#criancas}">
+        <i class="fa-solid fa-chevron-left" aria-hidden="true"></i> Minhas crianças
+    </a>
+
+    <header class="student-hero form-card p-4 p-lg-5 mb-4">
+        <div class="row align-items-center g-4">
+            <div class="col-lg">
+                <div class="hive-eyebrow"><span></span> Jornada na Colmeia</div>
+                <div class="d-flex align-items-center gap-3 mt-3">
+                    <span class="student-avatar student-avatar-large" th:text="${#strings.substring(aluno.nome, 0, 1)}" aria-hidden="true">C</span>
+                    <div>
+                        <h1 class="h2 fw-bold text-dark-blue mb-1" th:text="${aluno.nome}">Nome da criança</h1>
+                        <p class="text-muted mb-0">
+                            <span th:text="${parentesco}">Parentesco</span>
+                            <span aria-hidden="true"> · </span>
+                            <span th:if="${idade != null}" th:text="${idade + (idade == 1 ? ' ano' : ' anos')}">Idade</span>
+                            <span th:if="${idade == null}">Idade não informada</span>
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-auto">
+                <div class="student-hero-class">
+                    <span class="small text-muted d-block mb-1">Turma atual</span>
+                    <strong class="text-dark-blue" th:if="${matricula != null}" th:text="${matricula.turma.nomeTurma}">Turma</strong>
+                    <strong class="text-dark-blue" th:if="${matricula == null}">Sem matrícula ativa</strong>
+                    <span class="small text-muted d-block mt-1" th:if="${professorNome != null}">
+                        <i class="fa-solid fa-chalkboard-user me-1"></i><span th:text="${professorNome}">Professor</span>
+                    </span>
+                </div>
+            </div>
+            <div class="col-lg-auto">
+                <button id="editarDadosToggle" class="btn btn-yellow-main rounded-pill px-4 fw-semibold" type="button"
+                        aria-expanded="false" aria-controls="editarDados">
+                    <i class="fa-solid fa-pen-to-square me-2" aria-hidden="true"></i>Editar dados
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <section id="editarDados" class="form-card p-4 p-lg-5 mb-4 d-none" aria-labelledby="editarDadosTitulo">
+        <div class="d-flex align-items-start justify-content-between gap-3 mb-4">
+            <div>
+                <div class="hive-eyebrow"><span></span> Cadastro</div>
+                <h2 id="editarDadosTitulo" class="h4 fw-bold text-dark-blue mt-2 mb-1">Dados da criança</h2>
+                <p class="text-muted mb-0">Mantenha as informações importantes sempre atualizadas para a equipe.</p>
+            </div>
+            <button id="fecharEdicao" class="btn-close" type="button" aria-label="Fechar edição"></button>
+        </div>
+        <form id="alunoForm" th:attr="data-aluno-codigo=${aluno.codigo}">
+            <div id="alunoFeedback" class="alert d-none" role="alert"></div>
+            <div class="row g-3">
+                <div class="col-md-8">
+                    <label for="alunoNome" class="form-label fw-semibold">Nome completo</label>
+                    <input id="alunoNome" name="nome" class="form-control" minlength="3" maxlength="100" required th:value="${aluno.nome}">
+                </div>
+                <div class="col-md-4">
+                    <label for="alunoNascimento" class="form-label fw-semibold">Data de nascimento</label>
+                    <input id="alunoNascimento" name="dataNascimento" type="date" class="form-control" required th:value="${aluno.dataNascimento}">
+                </div>
+                <div class="col-md-4">
+                    <label for="alunoAlergias" class="form-label fw-semibold">Alergias</label>
+                    <input id="alunoAlergias" name="alergias" class="form-control" maxlength="50" th:value="${aluno.alergias}">
+                </div>
+                <div class="col-md-4">
+                    <label for="alunoRestricoes" class="form-label fw-semibold">Restrições alimentares</label>
+                    <input id="alunoRestricoes" name="restricoesAlimentares" class="form-control" maxlength="50" th:value="${aluno.restricoesAlimentar}">
+                </div>
+                <div class="col-md-4">
+                    <label for="alunoNecessidades" class="form-label fw-semibold">Necessidades especiais</label>
+                    <textarea id="alunoNecessidades" name="necessidadesEspeciais" class="form-control" rows="1"
+                              th:text="${aluno.necessidadesEspeciais}"></textarea>
+                </div>
+            </div>
+            <div class="d-flex flex-wrap justify-content-end gap-2 mt-4">
+                <button type="button" id="cancelarEdicao" class="btn btn-outline-dark-blue rounded-pill px-4">Cancelar</button>
+                <button type="submit" class="btn btn-dark-blue rounded-pill px-4"><i class="fa-solid fa-check me-2"></i>Salvar dados</button>
+            </div>
+        </form>
+    </section>
+
+    <section class="mb-4" aria-labelledby="acompanhamentoTitulo">
+        <div class="d-flex align-items-center gap-2 mb-3">
+            <span class="responsavel-section-icon"><i class="fa-solid fa-chart-line"></i></span>
+            <div>
+                <h2 id="acompanhamentoTitulo" class="h4 fw-bold text-dark-blue mb-0">Acompanhamento</h2>
+                <p class="small text-muted mb-0">Um panorama dos registros da equipe sobre a rotina escolar.</p>
+            </div>
+        </div>
+        <div class="row g-3">
+            <div class="col-6 col-xl-3">
+                <article class="student-stat-card h-100">
+                    <span class="student-stat-icon stat-blue"><i class="fa-solid fa-calendar-check"></i></span>
+                    <span class="small text-muted d-block mt-3">Frequência registrada</span>
+                    <strong class="student-stat-value" th:if="${diasRegistrados > 0}" th:text="${frequencia + '%'}">0%</strong>
+                    <strong class="student-stat-value" th:if="${diasRegistrados == 0}">—</strong>
+                    <div class="progress student-attendance-progress mt-2" th:if="${diasRegistrados > 0}" role="progressbar"
+                         th:attr="aria-valuenow=${frequencia}" aria-valuemin="0" aria-valuemax="100"
+                         aria-label="Percentual de presenças registradas">
+                        <div class="progress-bar" th:style="'width: ' + ${frequencia} + '%'"></div>
+                    </div>
+                </article>
+            </div>
+            <div class="col-6 col-xl-3">
+                <article class="student-stat-card h-100">
+                    <span class="student-stat-icon stat-green"><i class="fa-solid fa-sun"></i></span>
+                    <span class="small text-muted d-block mt-3">Presenças</span>
+                    <strong class="student-stat-value" th:text="${diasPresentes}">0</strong>
+                </article>
+            </div>
+            <div class="col-6 col-xl-3">
+                <article class="student-stat-card h-100">
+                    <span class="student-stat-icon stat-peach"><i class="fa-solid fa-house"></i></span>
+                    <span class="small text-muted d-block mt-3">Ausências</span>
+                    <strong class="student-stat-value" th:text="${diasAusentes}">0</strong>
+                </article>
+            </div>
+            <div class="col-6 col-xl-3">
+                <article class="student-stat-card h-100">
+                    <span class="student-stat-icon stat-yellow"><i class="fa-solid fa-book-open"></i></span>
+                    <span class="small text-muted d-block mt-3">Registros no diário</span>
+                    <strong class="student-stat-value" th:text="${diasRegistrados}">0</strong>
+                </article>
+            </div>
+        </div>
+    </section>
+
+    <div class="row g-4">
+        <section class="col-lg-5" aria-labelledby="saudeTitulo">
+            <div class="form-card p-4 h-100">
+                <div class="d-flex align-items-center gap-2 mb-3">
+                    <span class="student-stat-icon stat-peach"><i class="fa-solid fa-heart-pulse"></i></span>
+                    <div>
+                        <h2 id="saudeTitulo" class="h5 fw-bold text-dark-blue mb-0">Cuidados e bem-estar</h2>
+                        <p class="small text-muted mb-0">Informações importantes para o dia a dia.</p>
+                    </div>
+                </div>
+                <div class="student-info-row">
+                    <i class="fa-solid fa-shield-virus text-warning" aria-hidden="true"></i>
+                    <div><span class="small text-muted d-block">Alergias</span><strong th:text="${aluno.alergias ?: 'Nenhuma informada'}">—</strong></div>
+                </div>
+                <div class="student-info-row">
+                    <i class="fa-solid fa-utensils text-primary" aria-hidden="true"></i>
+                    <div><span class="small text-muted d-block">Restrições alimentares</span><strong th:text="${aluno.restricoesAlimentar ?: 'Nenhuma informada'}">—</strong></div>
+                </div>
+                <div class="student-info-row">
+                    <i class="fa-solid fa-hand-holding-heart text-danger" aria-hidden="true"></i>
+                    <div><span class="small text-muted d-block">Necessidades especiais</span><strong th:text="${aluno.necessidadesEspeciais ?: 'Nenhuma informada'}">—</strong></div>
+                </div>
+            </div>
+        </section>
+
+        <section class="col-lg-7" aria-labelledby="diarioTitulo">
+            <div class="form-card p-4 h-100">
+                <div class="d-flex flex-wrap justify-content-between align-items-center gap-2 mb-3">
+                    <div>
+                        <h2 id="diarioTitulo" class="h5 fw-bold text-dark-blue mb-1"><i class="fa-solid fa-book-open text-warning me-2"></i>Diário de bordo</h2>
+                        <p class="small text-muted mb-0">Até os 10 registros mais recentes compartilhados pela equipe.</p>
+                    </div>
+                    <span class="badge rounded-pill student-record-count" th:text="${diasRegistrados + ' registros'}">0 registros</span>
+                </div>
+
+                <div th:if="${#lists.isEmpty(diarios)}" class="student-empty-state text-center py-5">
+                    <i class="fa-solid fa-seedling fs-2 text-warning mb-3"></i>
+                    <p class="fw-semibold text-dark-blue mb-1">A jornada está começando</p>
+                    <p class="small text-muted mb-0">Quando a equipe registrar novidades, elas aparecerão aqui.</p>
+                </div>
+
+                <div th:unless="${#lists.isEmpty(diarios)}" class="student-timeline">
+                    <article class="student-timeline-item" th:each="diario : ${diarios}">
+                        <span class="student-timeline-marker" aria-hidden="true"></span>
+                        <div class="student-timeline-content">
+                            <div class="d-flex flex-wrap justify-content-between align-items-center gap-2 mb-2">
+                                <time class="fw-semibold text-dark-blue" th:text="${diario.dataRegistro}">Data do registro</time>
+                                <span class="badge rounded-pill"
+                                      th:classappend="${diario.compareceu} ? 'text-bg-success' : 'text-bg-secondary'"
+                                      th:text="${diario.compareceu} ? 'Presente' : 'Ausente'">Frequência</span>
+                            </div>
+                            <div class="row g-2">
+                                <div class="col-sm-4"><span class="small text-muted d-block">Humor</span><span th:text="${diario.humor ?: 'Sem registro'}">—</span></div>
+                                <div class="col-sm-4"><span class="small text-muted d-block">Alimentação</span><span th:text="${diario.alimentacao ?: 'Sem registro'}">—</span></div>
+                                <div class="col-sm-4"><span class="small text-muted d-block">Sono</span><span th:text="${diario.sono ?: 'Sem registro'}">—</span></div>
+                                <div class="col-12" th:if="${diario.banheiroFralda != null and !#strings.isEmpty(diario.banheiroFralda)}">
+                                    <span class="small text-muted d-block">Banheiro / fralda</span><span th:text="${diario.banheiroFralda}">—</span>
+                                </div>
+                                <div class="col-12" th:if="${diario.observacoes != null and !#strings.isEmpty(diario.observacoes)}">
+                                    <span class="small text-muted d-block">Observações da equipe</span><p class="mb-0" th:text="${diario.observacoes}">Observações</p>
+                                </div>
+                            </div>
+                        </div>
+                    </article>
+                </div>
+            </div>
+        </section>
+    </div>
+</main>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+<script th:src="@{/js/theme.js(v='1.0.0')}"></script>
+<script th:src="@{/js/validation.js(v='1.0.0')}"></script>
+<script th:src="@{/js/aluno-dashboard.js(v='1.0.0')}"></script>
+</body>
+</html>

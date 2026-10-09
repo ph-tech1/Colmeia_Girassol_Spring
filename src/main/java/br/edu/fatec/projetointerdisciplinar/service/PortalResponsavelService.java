@@ -1,6 +1,7 @@
 package br.edu.fatec.projetointerdisciplinar.service;
 
 import br.edu.fatec.projetointerdisciplinar.dto.AdicionarCriancaRequest;
+import br.edu.fatec.projetointerdisciplinar.dto.AtualizarCriancaRequest;
 import br.edu.fatec.projetointerdisciplinar.dto.AtualizarPerfilResponsavelRequest;
 import br.edu.fatec.projetointerdisciplinar.enums.UnidadeFederativa;
 import br.edu.fatec.projetointerdisciplinar.model.AlunoEntity;
@@ -75,6 +76,25 @@ public class PortalResponsavelService {
         return aluno;
     }
 
+    @Transactional
+    public AlunoEntity atualizarCrianca(String cpfAutenticado, Integer alunoCodigo, AtualizarCriancaRequest request) {
+        validarAtualizacaoCrianca(request);
+        PessoaEntity pessoa = buscarPessoa(cpfAutenticado);
+        ResponsavelEntity responsavel = responsavelRepository.findById(pessoa.getCodigo())
+                .orElseThrow(() -> new IllegalArgumentException("Cadastro de responsável não encontrado."));
+        ResponsavelAlunoEntity vinculo = responsavelAlunoRepository.findById(
+                        new ResponsavelAlunoId(responsavel.getPessoaCodigo(), alunoCodigo))
+                .orElseThrow(() -> new IllegalArgumentException("Esta criança não está vinculada à sua conta."));
+
+        AlunoEntity aluno = vinculo.getAluno();
+        aluno.setNome(request.nome().trim());
+        aluno.setDataNascimento(request.dataNascimento());
+        aluno.setAlergias(valorOuNenhum(request.alergias()));
+        aluno.setRestricoesAlimentar(valorOuNenhum(request.restricoesAlimentares()));
+        aluno.setNecessidadesEspeciais(valorOuNenhum(request.necessidadesEspeciais()));
+        return alunoRepository.save(aluno);
+    }
+
     private PessoaEntity buscarPessoa(String cpfAutenticado) {
         return pessoaRepository.findByCpf(cpfAutenticado)
                 .orElseThrow(() -> new IllegalArgumentException("Conta autenticada não encontrada."));
@@ -108,6 +128,20 @@ public class PortalResponsavelService {
         }
         if (request.nome().trim().length() < 3 || request.nome().trim().length() > 100
                 || request.grauParentesco().trim().length() < 2 || request.grauParentesco().trim().length() > 20
+                || (request.alergias() != null && request.alergias().trim().length() > 50)
+                || (request.restricoesAlimentares() != null && request.restricoesAlimentares().trim().length() > 50)) {
+            throw new IllegalArgumentException("Um ou mais campos excedem o tamanho permitido.");
+        }
+        if (request.dataNascimento().isAfter(LocalDate.now())) {
+            throw new IllegalArgumentException("A data de nascimento não pode estar no futuro.");
+        }
+    }
+
+    private void validarAtualizacaoCrianca(AtualizarCriancaRequest request) {
+        if (request == null || vazio(request.nome()) || request.dataNascimento() == null) {
+            throw new IllegalArgumentException("Informe o nome e a data de nascimento da criança.");
+        }
+        if (request.nome().trim().length() < 3 || request.nome().trim().length() > 100
                 || (request.alergias() != null && request.alergias().trim().length() > 50)
                 || (request.restricoesAlimentares() != null && request.restricoesAlimentares().trim().length() > 50)) {
             throw new IllegalArgumentException("Um ou mais campos excedem o tamanho permitido.");

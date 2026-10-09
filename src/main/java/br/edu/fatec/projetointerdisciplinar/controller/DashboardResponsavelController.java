@@ -7,6 +7,7 @@ import br.edu.fatec.projetointerdisciplinar.model.DiarioBordoEntity;
 import br.edu.fatec.projetointerdisciplinar.model.MatriculaEntity;
 import br.edu.fatec.projetointerdisciplinar.model.PessoaEntity;
 import br.edu.fatec.projetointerdisciplinar.model.ResponsavelAlunoEntity;
+import br.edu.fatec.projetointerdisciplinar.model.ResponsavelAlunoId;
 import br.edu.fatec.projetointerdisciplinar.model.ResponsavelEntity;
 import br.edu.fatec.projetointerdisciplinar.repository.AutorizadoBuscaRepository;
 import br.edu.fatec.projetointerdisciplinar.repository.DiarioBordoRepository;
@@ -20,10 +21,14 @@ import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.server.ResponseStatusException;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDate;
+import java.time.Period;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 
 @Controller
@@ -40,12 +45,8 @@ public class DashboardResponsavelController {
     @GetMapping("/html/dashboard_responsavel.html")
     @Transactional(readOnly = true)
     public String dashboard(Authentication authentication, Model model) {
-        PessoaEntity pessoa = pessoaRepository.findByCpf(authentication.getName())
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND,
-                        "Não foi possível localizar os dados da conta autenticada."));
-        ResponsavelEntity responsavel = responsavelRepository.findById(pessoa.getCodigo())
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND,
-                        "Não foi possível localizar o cadastro de responsável."));
+        PessoaEntity pessoa = buscarPessoaAutenticada(authentication);
+        ResponsavelEntity responsavel = buscarResponsavel(pessoa);
 
         List<AlunoDashboard> alunos = new ArrayList<>();
         List<ContatoAutorizado> autorizados = new ArrayList<>();
@@ -86,6 +87,65 @@ public class DashboardResponsavelController {
         model.addAttribute("alunos", alunos);
         model.addAttribute("autorizados", autorizados);
         return "html/dashboard_responsavel";
+    }
+
+    @GetMapping("/html/aluno/{codigo}")
+    @Transactional(readOnly = true)
+    public String detalheAluno(
+            @PathVariable Integer codigo,
+            Authentication authentication,
+            Model model
+    ) {
+        PessoaEntity pessoa = buscarPessoaAutenticada(authentication);
+        ResponsavelEntity responsavel = buscarResponsavel(pessoa);
+        ResponsavelAlunoEntity vinculo = responsavelAlunoRepository.findById(
+                        new ResponsavelAlunoId(responsavel.getPessoaCodigo(), codigo))
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND,
+                        "Não foi possível localizar uma criança vinculada à sua conta."));
+        AlunoEntity aluno = vinculo.getAluno();
+
+        List<MatriculaEntity> matriculas = matriculaRepository.findByAlunoCodigoOrderByNrDesc(codigo);
+        MatriculaEntity matriculaAtiva = matriculas.stream()
+                .filter(item -> item.getStatus() != null && item.getStatus() == 0)
+                .findFirst()
+                .orElse(null);
+        List<DiarioBordoEntity> diarios = new ArrayList<>();
+        for (MatriculaEntity matricula : matriculas) {
+            diarios.addAll(diarioBordoRepository.findByMatriculaNrOrderByCodigoDesc(matricula.getNr()));
+        }
+        diarios.sort(Comparator.comparing(DiarioBordoEntity::getCodigo).reversed());
+
+        long diasPresentes = diarios.stream().filter(DiarioBordoEntity::getCompareceu).count();
+        long diasAusentes = diarios.size() - diasPresentes;
+        int frequencia = diarios.isEmpty() ? 0 : (int) Math.round(diasPresentes * 100.0 / diarios.size());
+        String professorNome = matriculaAtiva == null ? null
+                : matriculaAtiva.getTurma().getProfessor().getPessoa().getNome();
+
+        model.addAttribute("responsavel", pessoa);
+        model.addAttribute("aluno", aluno);
+        model.addAttribute("parentesco", vinculo.getGrauParentesco());
+        model.addAttribute("matricula", matriculaAtiva);
+        model.addAttribute("professorNome", professorNome);
+        model.addAttribute("diarios", diarios.stream().limit(10).toList());
+        model.addAttribute("diasRegistrados", diarios.size());
+        model.addAttribute("diasPresentes", diasPresentes);
+        model.addAttribute("diasAusentes", diasAusentes);
+        model.addAttribute("frequencia", frequencia);
+        model.addAttribute("idade", aluno.getDataNascimento() == null ? null
+                : Period.between(aluno.getDataNascimento(), LocalDate.now()).getYears());
+        return "html/detalhe_aluno";
+    }
+
+    private PessoaEntity buscarPessoaAutenticada(Authentication authentication) {
+        return pessoaRepository.findByCpf(authentication.getName())
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND,
+                        "Não foi possível localizar os dados da conta autenticada."));
+    }
+
+    private ResponsavelEntity buscarResponsavel(PessoaEntity pessoa) {
+        return responsavelRepository.findById(pessoa.getCodigo())
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND,
+                        "Não foi possível localizar o cadastro de responsável."));
     }
 
     public record AlunoDashboard(

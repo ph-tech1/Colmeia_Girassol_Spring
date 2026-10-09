@@ -1,6 +1,7 @@
 package br.edu.fatec.projetointerdisciplinar.controller;
 
 import br.edu.fatec.projetointerdisciplinar.dto.AdicionarCriancaRequest;
+import br.edu.fatec.projetointerdisciplinar.dto.AtualizarCriancaRequest;
 import br.edu.fatec.projetointerdisciplinar.dto.AtualizarPerfilResponsavelRequest;
 import br.edu.fatec.projetointerdisciplinar.model.AlunoEntity;
 import br.edu.fatec.projetointerdisciplinar.model.PessoaEntity;
@@ -40,6 +41,20 @@ public class PortalResponsavelController {
             AlunoEntity aluno = portalResponsavelService.adicionarCrianca(authentication.getName(), request);
             return ResponseEntity.status(HttpStatus.CREATED)
                     .body(new CriancaResponse(aluno.getCodigo(), "Criança vinculada com sucesso."));
+        } catch (IllegalArgumentException exception) {
+            return ResponseEntity.badRequest().body(new ErroResponse(exception.getMessage()));
+        }
+    }
+
+    @PutMapping("/criancas/{codigo}")
+    public ResponseEntity<?> atualizarCrianca(
+            @PathVariable Integer codigo,
+            @RequestBody AtualizarCriancaRequest request,
+            Authentication authentication
+    ) {
+        try {
+            AlunoEntity aluno = portalResponsavelService.atualizarCrianca(authentication.getName(), codigo, request);
+            return ResponseEntity.ok(new CriancaResponse(aluno.getCodigo(), "Dados da criança atualizados com sucesso."));
         } catch (IllegalArgumentException exception) {
             return ResponseEntity.badRequest().body(new ErroResponse(exception.getMessage()));
         }

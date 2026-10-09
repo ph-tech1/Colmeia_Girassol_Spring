@@ -11,7 +11,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&family=Playfair+Display:wght@600;700&display=swap" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
-    <link rel="stylesheet" th:href="@{/css/style.css(v='1.4.1')}">
+    <link rel="stylesheet" th:href="@{/css/style.css(v='1.5.0')}">
 </head>
 <body class="responsavel-page">
 <nav class="hive-nav navbar navbar-expand-lg" aria-label="Navegação do portal">
@@ -99,6 +99,10 @@
                                     </p>
                                 </div>
                             </div>
+                            <a class="btn btn-outline-dark-blue rounded-pill px-3 mb-4"
+                               th:href="@{/html/aluno/{codigo}(codigo=${item.aluno.codigo})}">
+                                <i class="fa-solid fa-arrow-up-right-from-square me-2"></i>Ver painel da criança
+                            </a>
 
                             <div class="student-details">
                                 <h4 class="small fw-bold text-dark-blue mb-3">Informações importantes</h4>

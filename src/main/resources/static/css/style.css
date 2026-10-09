@@ -1183,6 +1183,12 @@ html[data-theme="dark"] body.cadastro-page .btn-outline-dark-blue {
     font-weight: 700;
 }
 
+.student-avatar-large {
+    width: 5rem;
+    height: 5rem;
+    font-size: 1.9rem;
+}
+
 .responsavel-section-icon {
     width: 2.5rem;
     height: 2.5rem;
@@ -1229,6 +1235,175 @@ html[data-theme="dark"] body.cadastro-page .btn-outline-dark-blue {
     border: 1px solid var(--line-soft);
     border-radius: 0.75rem;
     background: #fff;
+}
+
+.student-back-link {
+    color: var(--dark-blue);
+    font-weight: 600;
+    text-decoration: none;
+}
+
+.student-back-link:hover {
+    color: var(--dark-blue);
+    text-decoration: underline;
+}
+
+.student-hero {
+    position: relative;
+    overflow: hidden;
+    background:
+        radial-gradient(circle at 90% 0, rgba(242, 213, 68, 0.22), transparent 18rem),
+        #fff;
+}
+
+.student-hero-class {
+    min-width: 12rem;
+    padding: 1rem 1.25rem;
+    border: 1px solid var(--line-soft);
+    border-radius: 1rem;
+    background: rgba(248, 251, 252, 0.8);
+}
+
+.student-stat-card {
+    padding: 1.25rem;
+    border: 1px solid var(--line-soft);
+    border-radius: 1rem;
+    background: #fff;
+    box-shadow: 0 0.5rem 1.5rem rgba(45, 68, 89, 0.04);
+}
+
+.student-stat-icon {
+    display: inline-flex;
+    width: 2.75rem;
+    height: 2.75rem;
+    align-items: center;
+    justify-content: center;
+    border-radius: 0.9rem;
+    font-size: 1.1rem;
+}
+
+.student-stat-icon.stat-blue { background: rgba(126, 200, 217, 0.24); color: #327c91; }
+.student-stat-icon.stat-green { background: #e1f3e9; color: #32805a; }
+.student-stat-icon.stat-peach { background: #fff0e9; color: #b96649; }
+.student-stat-icon.stat-yellow { background: #fff8d9; color: #947517; }
+
+.student-stat-value {
+    display: block;
+    margin-top: 0.15rem;
+    color: var(--dark-blue);
+    font-size: 1.8rem;
+    line-height: 1.2;
+}
+
+.student-attendance-progress {
+    height: 0.45rem;
+    background: var(--light-blue-pale);
+}
+
+.student-attendance-progress .progress-bar {
+    border-radius: 1rem;
+    background: #5caa7f;
+}
+
+.student-info-row {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.9rem;
+    padding: 1rem 0;
+    border-bottom: 1px solid var(--line-soft);
+}
+
+.student-info-row:last-child {
+    padding-bottom: 0;
+    border-bottom: 0;
+}
+
+.student-info-row > i {
+    width: 1.2rem;
+    padding-top: 0.2rem;
+    text-align: center;
+}
+
+.student-timeline {
+    position: relative;
+    padding-left: 0.35rem;
+}
+
+.student-timeline-item {
+    position: relative;
+    display: grid;
+    grid-template-columns: 1rem minmax(0, 1fr);
+    gap: 0.85rem;
+    padding-bottom: 1.25rem;
+}
+
+.student-timeline-item:not(:last-child)::before {
+    position: absolute;
+    top: 1.1rem;
+    bottom: 0;
+    left: 0.43rem;
+    width: 1px;
+    background: var(--line-soft);
+    content: "";
+}
+
+.student-timeline-marker {
+    z-index: 1;
+    width: 0.9rem;
+    height: 0.9rem;
+    margin-top: 0.2rem;
+    border: 3px solid #fff;
+    border-radius: 50%;
+    background: var(--yellow-main);
+    box-shadow: 0 0 0 1px rgba(45, 68, 89, 0.12);
+}
+
+.student-timeline-content {
+    padding: 1rem;
+    border: 1px solid var(--line-soft);
+    border-radius: 0.9rem;
+    background: #fbfcfc;
+}
+
+.student-empty-state {
+    border: 1px dashed var(--line-soft);
+    border-radius: 1rem;
+    background: #fbfcfc;
+}
+
+.student-record-count {
+    background: var(--light-blue-pale);
+    color: var(--dark-blue);
+}
+
+html[data-theme="dark"] body.responsavel-page .student-hero {
+    background:
+        radial-gradient(circle at 90% 0, rgba(242, 213, 68, 0.12), transparent 18rem),
+        #26343c;
+}
+
+html[data-theme="dark"] body.responsavel-page .student-hero-class,
+html[data-theme="dark"] body.responsavel-page .student-stat-card,
+html[data-theme="dark"] body.responsavel-page .student-timeline-content,
+html[data-theme="dark"] body.responsavel-page .student-empty-state {
+    border-color: rgba(229, 237, 240, 0.12);
+    background: #1c2931;
+    color: #e5edf0;
+}
+
+html[data-theme="dark"] body.responsavel-page .student-back-link {
+    color: #b7c5cb;
+}
+
+html[data-theme="dark"] body.responsavel-page .student-info-row,
+html[data-theme="dark"] body.responsavel-page .student-timeline-item::before {
+    border-color: rgba(229, 237, 240, 0.12);
+    background-color: rgba(229, 237, 240, 0.12);
+}
+
+html[data-theme="dark"] body.responsavel-page .student-record-count {
+    background: #34444d;
+    color: #e5edf0;
 }
 
 @media (max-width: 991.98px) {
