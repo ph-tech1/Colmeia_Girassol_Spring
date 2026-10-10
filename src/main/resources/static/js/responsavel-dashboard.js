@@ -3,77 +3,77 @@
     const csrfHeader = document.querySelector('meta[name="_csrf_header"]')?.content;
 
     const mostrarFeedback = (elemento, mensagem, sucesso = false) => {
+        if (typeof window.showAppAlert === 'function') {
+            window.showAppAlert(mensagem, sucesso ? 'success' : 'danger');
+            return;
+        }
+
         elemento.textContent = mensagem;
         elemento.classList.remove('d-none', 'alert-danger', 'alert-success');
         elemento.classList.add(sucesso ? 'alert-success' : 'alert-danger');
     };
 
-    const enviar = async (url, metodo, dados) => {
-        const cabecalhos = { 'Content-Type': 'application/json' };
-        if (csrfToken && csrfHeader) cabecalhos[csrfHeader] = csrfToken;
+    const enviarFormulario = async (formulario, url, metodo, mensagemSucesso) => {
+        formulario.addEventListener('submit', async (event) => {
+            event.preventDefault();
+            if (!window.FormValidator.validateForm(formulario)) return;
 
-        const resposta = await fetch(url, {
-            method: metodo,
-            headers: cabecalhos,
-            body: JSON.stringify(dados)
+            const feedback = formulario.querySelector('[role="alert"]') || document.getElementById(`${formulario.id.replace('Form', '')}Feedback`);
+            const botao = formulario.querySelector('[type="submit"]');
+            const textoOriginal = botao.innerHTML;
+            const cabecalhos = { 'Content-Type': 'application/json', 'Accept': 'application/json' };
+            if (csrfToken && csrfHeader) cabecalhos[csrfHeader] = csrfToken;
+
+            botao.disabled = true;
+            botao.innerHTML = '<span class="spinner-border spinner-border-sm me-2" role="status"></span>Salvando...';
+
+            try {
+                const resposta = await fetch(url, {
+                    method: metodo,
+                    headers: cabecalhos,
+                    body: JSON.stringify(Object.fromEntries(new FormData(formulario)))
+                });
+
+                if (resposta.url.includes('/html/login.html')) {
+                    window.location.assign(resposta.url);
+                    return;
+                }
+
+                const tipoConteudo = resposta.headers.get('content-type') || '';
+                if (!tipoConteudo.includes('application/json')) {
+                    throw new Error('A resposta do servidor não pôde ser processada. Atualize a página e tente novamente.');
+                }
+
+                const corpo = await resposta.json();
+                if (!resposta.ok) throw new Error(corpo.mensagem || 'Não foi possível salvar os dados.');
+
+                mostrarFeedback(feedback, mensagemSucesso, true);
+                window.setTimeout(() => window.location.assign(formulario.dataset.successUrl), 900);
+            } catch (error) {
+                mostrarFeedback(feedback, error.message);
+            } finally {
+                botao.disabled = false;
+                botao.innerHTML = textoOriginal;
+            }
         });
-
-        if (resposta.url.includes('/html/login.html')) {
-            window.location.assign(resposta.url);
-            return null;
-        }
-
-        const tipoConteudo = resposta.headers.get('content-type') || '';
-        if (!tipoConteudo.includes('application/json')) {
-            throw new Error('A resposta do servidor não pôde ser processada. Atualize a página e tente novamente.');
-        }
-        const corpo = await resposta.json();
-        if (!resposta.ok) throw new Error(corpo.mensagem || 'Não foi possível salvar os dados.');
-        return corpo;
     };
 
     const perfilForm = document.getElementById('perfilForm');
-    window.CepService.vincular(perfilForm, {
-        onErro({ mensagem }) {
-            mostrarFeedback(document.getElementById('perfilFeedback'), mensagem);
-        }
-    });
-
-    perfilForm.addEventListener('submit', async (event) => {
-        event.preventDefault();
-        if (!window.FormValidator.validateForm(perfilForm)) return;
-        const feedback = document.getElementById('perfilFeedback');
-        const dados = Object.fromEntries(new FormData(perfilForm));
-
-        try {
-            const resultado = await enviar('/api/portal-responsavel/perfil', 'PUT', dados);
-            if (!resultado) return;
-            mostrarFeedback(feedback, 'Perfil atualizado com sucesso.', true);
-            window.setTimeout(() => window.location.reload(), 800);
-        } catch (error) {
-            mostrarFeedback(feedback, error.message);
-        }
-    });
+    if (perfilForm) {
+        window.CepService.vincular(perfilForm, {
+            onErro({ mensagem }) {
+                mostrarFeedback(document.getElementById('perfilFeedback'), mensagem);
+            }
+        });
+        enviarFormulario(perfilForm, '/api/portal-responsavel/perfil', 'PUT', 'Perfil atualizado com sucesso.');
+    }
 
     const criancaForm = document.getElementById('criancaForm');
-    const campoNascimento = document.getElementById('criancaNascimento');
-    const hoje = new Date();
-    hoje.setMinutes(hoje.getMinutes() - hoje.getTimezoneOffset());
-    campoNascimento.max = hoje.toISOString().slice(0, 10);
-
-    criancaForm.addEventListener('submit', async (event) => {
-        event.preventDefault();
-        if (!window.FormValidator.validateForm(criancaForm)) return;
-        const feedback = document.getElementById('criancaFeedback');
-        const dados = Object.fromEntries(new FormData(criancaForm));
-
-        try {
-            const resultado = await enviar('/api/portal-responsavel/criancas', 'POST', dados);
-            if (!resultado) return;
-            mostrarFeedback(feedback, 'Criança vinculada com sucesso.', true);
-            window.setTimeout(() => window.location.reload(), 800);
-        } catch (error) {
-            mostrarFeedback(feedback, error.message);
-        }
-    });
+    if (criancaForm) {
+        const campoNascimento = document.getElementById('criancaNascimento');
+        const hoje = new Date();
+        hoje.setMinutes(hoje.getMinutes() - hoje.getTimezoneOffset());
+        campoNascimento.max = hoje.toISOString().slice(0, 10);
+        enviarFormulario(criancaForm, '/api/portal-responsavel/criancas', 'POST', 'Criança vinculada com sucesso.');
+    }
 })();

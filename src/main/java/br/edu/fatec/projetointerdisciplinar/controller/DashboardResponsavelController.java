@@ -89,6 +89,23 @@ public class DashboardResponsavelController {
         return "html/dashboard_responsavel";
     }
 
+    @GetMapping("/html/perfil-responsavel")
+    @Transactional(readOnly = true)
+    public String editarPerfil(Authentication authentication, Model model) {
+        PessoaEntity pessoa = buscarPessoaAutenticada(authentication);
+        model.addAttribute("responsavel", pessoa);
+        model.addAttribute("cadastroResponsavel", buscarResponsavel(pessoa));
+        model.addAttribute("unidadesFederativas", UnidadeFederativa.values());
+        return "html/perfil_responsavel";
+    }
+
+    @GetMapping("/html/adicionar-crianca")
+    @Transactional(readOnly = true)
+    public String adicionarCrianca(Authentication authentication, Model model) {
+        model.addAttribute("responsavel", buscarPessoaAutenticada(authentication));
+        return "html/adicionar_crianca";
+    }
+
     @GetMapping("/html/aluno/{codigo}")
     @Transactional(readOnly = true)
     public String detalheAluno(

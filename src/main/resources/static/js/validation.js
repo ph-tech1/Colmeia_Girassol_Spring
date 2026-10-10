@@ -6,21 +6,6 @@
 
     const digits = value => String(value || '').replace(/\D/g, '');
 
-    function cpfValido(value) {
-        const cpf = digits(value);
-        if (cpf.length !== 11 || /^(\d)\1{10}$/.test(cpf)) return false;
-        let sum = 0;
-        for (let i = 0; i < 9; i++) sum += Number(cpf[i]) * (10 - i);
-        let check = (sum * 10) % 11;
-        if (check === 10) check = 0;
-        if (check !== Number(cpf[9])) return false;
-        sum = 0;
-        for (let i = 0; i < 10; i++) sum += Number(cpf[i]) * (11 - i);
-        check = (sum * 10) % 11;
-        if (check === 10) check = 0;
-        return check === Number(cpf[10]);
-    }
-
     function dataValida(value, { future = false, minAge = 0 } = {}) {
         if (!value) return false;
         const date = new Date(`${value}T00:00:00`);
@@ -39,10 +24,12 @@
     function setFieldState(field, valid, message) {
         const $field = $(field);
         $field.toggleClass('is-invalid', !valid).toggleClass('is-valid', valid);
+        const $inputGroup = $field.closest('.input-group');
+        $inputGroup.toggleClass('has-invalid-field', $inputGroup.find('.is-invalid').length > 0);
+        $inputGroup.toggleClass('has-valid-field', !$inputGroup.hasClass('has-invalid-field') && $inputGroup.find('.is-valid').length > 0);
         let $feedback = $field.siblings('.invalid-feedback');
         if (!$feedback.length) $feedback = $field.closest('.form-floating, .mb-3, .mb-4, .col-md-6, .col-md-12, .col-12').find('.invalid-feedback').first();
         if (!$feedback.length) {
-            const $inputGroup = $field.closest('.input-group');
             $feedback = $('<div class="invalid-feedback"></div>').insertAfter($inputGroup.length ? $inputGroup : $field);
         }
         $feedback.text(message || 'Preencha este campo corretamente.');
@@ -71,9 +58,6 @@
         } else if (value && type === 'email' && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value)) {
             valid = false;
             message = 'Informe um e-mail válido.';
-        } else if (value && !$field.is('[data-skip-cpf-validation]') && (id.toLowerCase().includes('cpf') || $field.hasClass('cpf-mask')) && !cpfValido(value)) {
-            valid = false;
-            message = 'Informe um CPF válido.';
         } else if (value && $field.hasClass('phone-mask') && digits(value).length < 10) {
             valid = false;
             message = 'Informe um telefone válido.';
@@ -105,13 +89,13 @@
         return valid;
     }
 
-    window.FormValidator = { cpfValido, dataValida, validateField, validateForm };
+    window.FormValidator = { dataValida, validateField, validateForm };
 
     $(function () {
         $('.cpf-mask').mask('000.000.000-00', { clearIfNotMatch: false });
         $('.phone-mask').mask('(00) 00000-0000');
         $('.cep-mask').mask('00000-000');
-        $('.rg-mask').mask('00.000.00-0');
+        $('.rg-mask').mask('00.000.000-0');
         $('.uf-field').on('input', function () { this.value = this.value.replace(/[^a-zA-Z]/g, '').toUpperCase().slice(0, 2); });
 
         $('form').on('submit', function (event) {

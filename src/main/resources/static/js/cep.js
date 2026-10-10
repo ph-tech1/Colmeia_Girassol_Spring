@@ -15,12 +15,18 @@
 
             const dados = await response.json();
             if (dados.erro) {
-                return { ok: false, mensagem: 'CEP não localizado.' };
+                return {
+                    ok: false,
+                    mensagem: 'CEP não localizado. Preencha o endereço manualmente; você ainda pode continuar o cadastro.'
+                };
             }
             return { ok: true, dados };
         } catch (error) {
             console.error('Erro ao consultar o CEP:', error);
-            return { ok: false, mensagem: 'Não foi possível consultar o CEP. Você pode preencher o endereço manualmente.' };
+            return {
+                ok: false,
+                mensagem: 'Não foi possível consultar o CEP. Preencha o endereço manualmente; você ainda pode continuar o cadastro.'
+            };
         }
     }
 

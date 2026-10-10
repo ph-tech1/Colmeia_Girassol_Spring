@@ -28,10 +28,6 @@ public class CpfUserDetailsService implements UserDetailsService {
     @Override
     public UserDetails loadUserByUsername(String cpfInformado) throws UsernameNotFoundException {
         String cpf = cpfInformado == null ? "" : cpfInformado.replaceAll("\\D", "");
-        if (cpf.length() != 11) {
-            throw new UsernameNotFoundException("Credenciais inválidas.");
-        }
-
         PessoaEntity pessoa = pessoaRepository.findByCpf(cpf)
                 .orElseThrow(() -> new UsernameNotFoundException("Credenciais inválidas."));
 

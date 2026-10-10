@@ -228,15 +228,15 @@ document.addEventListener("DOMContentLoaded", function () {
 
     // --- Ações Admin expostas globalmente ---
     window.removerProfessor = function() {
-        alert('Esta função de exclusão está desativada para esta versão de demonstração.');
+        window.showAppAlert('Esta função de exclusão está desativada para esta versão de demonstração.', 'info');
     };
 
     window.removerTurma = function() {
-        alert('Esta função de exclusão está desativada para esta versão de demonstração.');
+        window.showAppAlert('Esta função de exclusão está desativada para esta versão de demonstração.', 'info');
     };
 
     window.removerMatricula = function() {
-        alert('Esta função de exclusão está desativada para esta versão de demonstração.');
+        window.showAppAlert('Esta função de exclusão está desativada para esta versão de demonstração.', 'info');
     };
 
     window.verTurmaDetalhes = function(id) {
@@ -675,7 +675,7 @@ document.addEventListener("DOMContentLoaded", function () {
         const valido = window.FormValidator.validateForm(formulario);
 
         if (!valido) {
-            alert("Por favor, preencha o Nome e a Data de Nascimento.");
+            window.showAppAlert('Por favor, preencha o Nome e a Data de Nascimento.', 'warning');
             return;
         }
 
@@ -717,7 +717,7 @@ document.addEventListener("DOMContentLoaded", function () {
         }
 
         if (!valido) {
-            alert("Por favor, preencha todos os campos obrigatórios em vermelho.");
+            window.showAppAlert('Por favor, preencha todos os campos obrigatórios em vermelho.', 'warning');
             return;
         }
 
@@ -745,7 +745,7 @@ document.addEventListener("DOMContentLoaded", function () {
         const valido = [tituloInput, descTextarea, dataInput].every(field => field && window.FormValidator.validateField(field));
 
         if (!valido) {
-            alert("Por favor, preencha todos os campos obrigatórios em vermelho.");
+            window.showAppAlert('Por favor, preencha todos os campos obrigatórios em vermelho.', 'warning');
             return;
         }
 
@@ -777,7 +777,7 @@ document.addEventListener("DOMContentLoaded", function () {
         const valido = [nomeInput, cpfInput, parentescoInput, telInput].every(field => field && window.FormValidator.validateField(field));
 
         if (!valido) {
-            alert("Por favor, preencha todos os campos obrigatórios em vermelho.");
+            window.showAppAlert('Por favor, preencha todos os campos obrigatórios em vermelho.', 'warning');
             return;
         }
 

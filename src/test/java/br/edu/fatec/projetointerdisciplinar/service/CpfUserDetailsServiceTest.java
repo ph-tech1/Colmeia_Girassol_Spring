@@ -58,6 +58,27 @@ class CpfUserDetailsServiceTest {
     }
 
     @Test
+    void loadsTestAccountUsingShortRepeatedCpf() {
+        PessoaEntity pessoa = new PessoaEntity();
+        pessoa.setCodigo(9);
+        pessoa.setCpf("11111111");
+        pessoa.setSenha("$2a$12$encoded-password");
+
+        ResponsavelEntity responsavel = new ResponsavelEntity();
+        responsavel.setStatus(1);
+
+        when(pessoaRepository.findByCpf("11111111")).thenReturn(Optional.of(pessoa));
+        when(professorRepository.findById(9)).thenReturn(Optional.empty());
+        when(responsavelRepository.findById(9)).thenReturn(Optional.of(responsavel));
+
+        UserDetails user = userDetailsService.loadUserByUsername("11111111");
+
+        assertEquals("11111111", user.getUsername());
+        assertEquals("ROLE_RESPONSAVEL", user.getAuthorities().iterator().next().getAuthority());
+        verify(pessoaRepository).findByCpf("11111111");
+    }
+
+    @Test
     void rejectsPendingResponsibleAccount() {
         PessoaEntity pessoa = new PessoaEntity();
         pessoa.setCodigo(8);

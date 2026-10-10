@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="_csrf" th:content="${_csrf.token}">
+    <meta name="_csrf_header" th:content="${_csrf.headerName}">
+    <script>try { document.documentElement.dataset.theme = localStorage.getItem('colmeia-theme') === 'dark' ? 'dark' : 'light'; } catch (error) { document.documentElement.dataset.theme = 'light'; }</script>
+    <title>Alterar perfil | Colmeia Girassol</title>
+    <link rel="icon" th:href="@{/images/abelha.png}">
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&family=Playfair+Display:wght@600;700&display=swap" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+    <link rel="stylesheet" th:href="@{/css/style.css(v='1.9.0')}">
+</head>
+<body class="responsavel-page">
+<nav class="hive-nav navbar" aria-label="Navegação do portal">
+    <div class="container">
+        <a class="navbar-brand hive-brand d-flex align-items-center gap-2" th:href="@{/html/dashboard_responsavel.html}">
+            <img th:src="@{/images/logo.png}" alt="" class="hive-brand-mark">
+            <span>Colmeia <strong>Girassol</strong></span>
+        </a>
+        <div class="d-flex align-items-center gap-2 ms-auto">
+            <button class="btn btn-outline-dark-blue theme-toggle" type="button" data-theme-toggle aria-label="Ativar modo escuro" aria-pressed="false" title="Ativar modo escuro">
+                <i class="fa-solid fa-moon" aria-hidden="true"></i>
+            </button>
+            <a class="btn btn-dark-blue rounded-pill px-3" th:href="@{/html/dashboard_responsavel.html}">
+                <i class="fa-solid fa-arrow-left me-2"></i><span class="d-none d-sm-inline">Voltar ao portal</span><span class="d-sm-none">Voltar</span>
+            </a>
+        </div>
+    </div>
+</nav>
+
+<main class="container py-5">
+    <a class="student-back-link d-inline-flex align-items-center gap-2 mb-4" th:href="@{/html/dashboard_responsavel.html}">
+        <i class="fa-solid fa-chevron-left" aria-hidden="true"></i> Portal da família
+    </a>
+    <header class="responsavel-form-hero profile-form-hero mb-4">
+        <div class="responsavel-form-hero-copy">
+            <div class="hive-eyebrow"><span></span> Sua conta na Colmeia</div>
+            <h1 class="mt-2 mb-2">Seu perfil, sempre em dia.</h1>
+            <p class="mb-0">Manter seus dados atualizados ajuda a nossa equipe a estar sempre pertinho da sua família.</p>
+        </div>
+        <div class="responsavel-form-hero-art" aria-hidden="true">
+            <span class="hero-honeycomb hero-honeycomb-one"></span>
+            <span class="hero-honeycomb hero-honeycomb-two"></span>
+            <span class="hero-bee"><i class="fa-solid fa-user-pen"></i></span>
+            <span class="hero-sparkle hero-sparkle-one"><i class="fa-solid fa-star"></i></span>
+            <span class="hero-sparkle hero-sparkle-two"><i class="fa-solid fa-heart"></i></span>
+        </div>
+    </header>
+
+    <section class="responsavel-form-card form-card" aria-labelledby="perfilTitulo">
+        <div class="responsavel-form-card-aside profile-form-aside">
+            <span class="responsavel-form-aside-icon"><i class="fa-solid fa-user-shield"></i></span>
+            <h2 class="h4 fw-bold mb-2">Seus dados protegidos</h2>
+            <p>Use este espaço para manter seus contatos e endereço certinhos para a escola.</p>
+            <div class="profile-form-note">
+                <i class="fa-solid fa-lock me-2" aria-hidden="true"></i>
+                CPF e senha não são alterados por aqui.
+            </div>
+            <div class="profile-form-honeycomb" aria-hidden="true"><i class="fa-solid fa-hive"></i></div>
+        </div>
+        <div class="responsavel-form-card-body">
+            <div class="responsavel-form-section-heading">
+                <span class="responsavel-form-section-icon"><i class="fa-solid fa-address-card"></i></span>
+                <div>
+                    <h2 id="perfilTitulo" class="h4 fw-bold text-dark-blue mb-1">Informações do responsável</h2>
+                    <p class="small text-muted mb-0">Revise os dados antes de salvar as alterações.</p>
+                </div>
+            </div>
+            <form id="perfilForm" data-success-url="/html/dashboard_responsavel.html">
+                <div id="perfilFeedback" class="alert d-none" role="alert"></div>
+                <div class="responsavel-form-group-label"><i class="fa-solid fa-address-book me-2"></i>Contato e endereço</div>
+                <div class="row g-3">
+                <div class="col-md-6">
+                    <label for="perfilNome" class="form-label fw-semibold">Nome completo</label>
+                    <input id="perfilNome" name="nome" class="form-control" minlength="3" maxlength="50" required th:value="${responsavel.nome}">
+                </div>
+                <div class="col-md-6">
+                    <label for="perfilTelefone" class="form-label fw-semibold">Telefone</label>
+                    <input id="perfilTelefone" name="telefone" class="form-control phone-mask" maxlength="15" required th:value="${responsavel.telefone}">
+                </div>
+                <div class="col-md-3">
+                    <label for="perfilCep" class="form-label fw-semibold">CEP</label>
+                    <input id="perfilCep" name="cep" class="form-control cep-mask" data-cep maxlength="9" required th:value="${responsavel.cep}">
+                </div>
+                <div class="col-md-6">
+                    <label for="perfilCidade" class="form-label fw-semibold">Cidade</label>
+                    <input id="perfilCidade" name="cidade" class="form-control" data-cep-field="localidade" minlength="2" maxlength="50" required th:value="${responsavel.cidade}">
+                </div>
+                <div class="col-md-3">
+                    <label for="perfilUf" class="form-label fw-semibold">UF</label>
+                    <select id="perfilUf" name="uf" class="form-select uf-field" data-cep-field="uf" required>
+                        <option value="" disabled>Selecione</option>
+                        <option th:each="uf : ${unidadesFederativas}" th:value="${uf.sigla}" th:text="${uf.sigla + ' - ' + uf.nome}" th:selected="${uf.sigla == responsavel.uf}"></option>
+                    </select>
+                </div>
+                <div class="col-12">
+                    <label for="perfilEndereco" class="form-label fw-semibold">Endereço</label>
+                    <input id="perfilEndereco" name="endereco" class="form-control" data-cep-field="logradouro" minlength="3" maxlength="100" required th:value="${responsavel.endereco}">
+                </div>
+                </div>
+                <div class="responsavel-form-group-label mt-4"><i class="fa-solid fa-briefcase me-2"></i>Informações complementares</div>
+                <div class="row g-3">
+                    <div class="col-md-6">
+                        <label for="perfilLocalTrabalho" class="form-label fw-semibold">Local de trabalho</label>
+                        <input id="perfilLocalTrabalho" name="localTrabalho" class="form-control" maxlength="50" required th:value="${cadastroResponsavel.localTrabalho}">
+                    </div>
+                    <div class="col-md-6">
+                        <label for="perfilTelefoneTrabalho" class="form-label fw-semibold">Telefone de trabalho</label>
+                        <input id="perfilTelefoneTrabalho" name="telefoneTrabalho" class="form-control phone-mask" maxlength="15" required th:value="${cadastroResponsavel.telefoneTrabalho}">
+                    </div>
+                    <div class="col-md-6">
+                        <label for="perfilEstadoCivil" class="form-label fw-semibold">Estado civil</label>
+                        <select id="perfilEstadoCivil" name="estadoCivil" class="form-select" required>
+                            <option value="" disabled>Selecione</option>
+                            <option value="Solteiro(a)" th:selected="${#strings.startsWith(#strings.toLowerCase(cadastroResponsavel.estadoCivil), 'solteir')}">Solteiro(a)</option>
+                            <option value="Casado(a)" th:selected="${#strings.startsWith(#strings.toLowerCase(cadastroResponsavel.estadoCivil), 'casad')}">Casado(a)</option>
+                            <option value="Divorciado(a)" th:selected="${#strings.startsWith(#strings.toLowerCase(cadastroResponsavel.estadoCivil), 'divorciad')}">Divorciado(a)</option>
+                            <option value="Viúvo(a)" th:selected="${#strings.startsWith(#strings.toLowerCase(cadastroResponsavel.estadoCivil), 'viúv')}">Viúvo(a)</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="d-flex flex-wrap justify-content-end gap-2 mt-4">
+                    <a class="btn btn-outline-dark-blue rounded-pill px-4" th:href="@{/html/dashboard_responsavel.html}">Cancelar</a>
+                    <button type="submit" class="btn btn-dark-blue rounded-pill px-4"><i class="fa-solid fa-check me-2"></i>Salvar alterações</button>
+                </div>
+            </form>
+        </div>
+    </section>
+</main>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+<script th:src="@{/js/theme.js(v='1.4.0')}"></script>
+<script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.mask/1.14.16/jquery.mask.min.js"></script>
+<script th:src="@{/js/validation.js(v='1.2.0')}"></script>
+<script th:src="@{/js/cep.js(v='1.1.0')}"></script>
+<script th:src="@{/js/responsavel-dashboard.js(v='1.2.0')}"></script>
+</body>
+</html>

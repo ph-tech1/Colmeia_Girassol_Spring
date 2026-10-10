@@ -22,18 +22,22 @@ public class PreMatriculaService {
     @Transactional
     public PreMatriculaResponse cadastrar(PreMatriculaRequest request) {
         validar(request);
+        String rgDigits = apenasDigitos(request.rgResponsavel());
+        String rg = rgDigits.isBlank() ? null : rgDigits;
 
         pessoaRepository.findByCpf(apenasDigitos(request.cpfResponsavel())).ifPresent(existing -> {
             throw new IllegalArgumentException("Já existe uma pessoa cadastrada com este CPF.");
         });
-        pessoaRepository.findByRg(apenasDigitos(request.rgResponsavel())).ifPresent(existing -> {
-            throw new IllegalArgumentException("Já existe uma pessoa cadastrada com este RG.");
-        });
+        if (rg != null) {
+            pessoaRepository.findByRg(rg).ifPresent(existing -> {
+                throw new IllegalArgumentException("Já existe uma pessoa cadastrada com este RG.");
+            });
+        }
 
         PessoaEntity pessoa = new PessoaEntity();
         pessoa.setNome(request.nomeResponsavel().trim());
         pessoa.setCpf(apenasDigitos(request.cpfResponsavel()));
-        pessoa.setRg(apenasDigitos(request.rgResponsavel()));
+        pessoa.setRg(rg);
         pessoa.setDataNascimento(request.dataNascimentoResponsavel());
         pessoa.setSenha(passwordEncoder.encode(request.senha()));
         pessoa.setCep(apenasDigitos(request.cep()));
@@ -77,7 +81,7 @@ public class PreMatriculaService {
 
     private void validar(PreMatriculaRequest request) {
         if (request == null || vazio(request.nomeResponsavel()) || vazio(request.cpfResponsavel())
-                || vazio(request.rgResponsavel()) || request.dataNascimentoResponsavel() == null
+                || request.dataNascimentoResponsavel() == null
                 || vazio(request.senha()) || vazio(request.cep()) || vazio(request.cidade())
                 || vazio(request.uf()) || vazio(request.endereco()) || vazio(request.telefone())
                 || vazio(request.localTrabalho()) || vazio(request.telefoneTrabalho())
@@ -85,12 +89,9 @@ public class PreMatriculaService {
                 || request.dataNascimentoAluno() == null || vazio(request.grauParentesco())) {
             throw new IllegalArgumentException("Preencha todos os campos obrigatórios da pré-matrícula.");
         }
-        if (apenasDigitos(request.cpfResponsavel()).length() != 11) {
-            throw new IllegalArgumentException("CPF inválido.");
+        if (apenasDigitos(request.cpfResponsavel()).length() > 11) {
+            throw new IllegalArgumentException("O CPF deve ter no máximo 11 números.");
         }
-        // if (apenasDigitos(request.rgResponsavel()).length() != 9) {
-        //     throw new IllegalArgumentException("RG inválido.");
-        // }
         if (apenasDigitos(request.cep()).length() != 8) {
             throw new IllegalArgumentException("CEP inválido.");
         }

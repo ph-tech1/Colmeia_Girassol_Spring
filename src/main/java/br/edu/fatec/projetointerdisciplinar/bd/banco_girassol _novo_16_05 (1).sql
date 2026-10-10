@@ -1,19 +1,16 @@
 /* Cria o banco apenas se ainda não existir. */
-IF DB_ID(N'banco_girassol') IS NULL
-BEGIN
-    EXEC(N'CREATE DATABASE [banco_girassol]');
-END;
+CREATE DATABASE banco_girassol;
 GO
 
-USE [banco_girassol];
+USE banco_girassol;
 GO
 
-/* Pessoas: tabela principal de responsáveis, professores e pessoas autorizadas. */
+/* Tabela principal de pessoas (responsáveis, professores e pessoas autorizadas). */
 CREATE TABLE dbo.pessoas (
     codigo INT IDENTITY(1,1) NOT NULL,
     nome VARCHAR(50) NOT NULL,
     cpf VARCHAR(11) NOT NULL,
-    rg VARCHAR(9) NOT NULL,
+    rg VARCHAR(9) NULL,
     data_nascimento DATE NOT NULL,
     senha VARCHAR(100) NOT NULL,
     cep VARCHAR(8) NOT NULL,
@@ -49,8 +46,8 @@ CREATE TABLE dbo.professores (
     status INT NOT NULL,
 
     CONSTRAINT PK_professores PRIMARY KEY (pessoa_codigo),
-    CONSTRAINT FK_professores_pessoas
-        FOREIGN KEY (pessoa_codigo) REFERENCES dbo.pessoas (codigo)
+    CONSTRAINT FK_professores_pessoas FOREIGN KEY (pessoa_codigo)
+        REFERENCES dbo.pessoas (codigo)
 );
 GO
 
@@ -63,8 +60,8 @@ CREATE TABLE dbo.responsaveis (
     status INT NOT NULL,
 
     CONSTRAINT PK_responsaveis PRIMARY KEY (pessoa_codigo),
-    CONSTRAINT FK_responsaveis_pessoas
-        FOREIGN KEY (pessoa_codigo) REFERENCES dbo.pessoas (codigo)
+    CONSTRAINT FK_responsaveis_pessoas FOREIGN KEY (pessoa_codigo)
+        REFERENCES dbo.pessoas (codigo)
 );
 GO
 
@@ -74,11 +71,11 @@ CREATE TABLE dbo.autorizados_busca (
     aluno_codigo INT NOT NULL,
     grau_parentesco VARCHAR(50) NOT NULL,
 
-    CONSTRAINT PK_autorizados_busca PRIMARY KEY (codigo),
-    CONSTRAINT FK_autorizados_busca_pessoas
-        FOREIGN KEY (codigo) REFERENCES dbo.pessoas (codigo),
-    CONSTRAINT FK_autorizados_busca_alunos
-        FOREIGN KEY (aluno_codigo) REFERENCES dbo.alunos (codigo)
+    CONSTRAINT PK_autorizados_busca PRIMARY KEY (codigo, aluno_codigo),
+    CONSTRAINT FK_autorizados_busca_pessoas FOREIGN KEY (codigo)
+        REFERENCES dbo.pessoas (codigo),
+    CONSTRAINT FK_autorizados_busca_alunos FOREIGN KEY (aluno_codigo)
+        REFERENCES dbo.alunos (codigo)
 );
 GO
 
@@ -91,8 +88,8 @@ CREATE TABLE dbo.turmas (
     grau VARCHAR(50) NOT NULL,
 
     CONSTRAINT PK_turmas PRIMARY KEY (codigo),
-    CONSTRAINT FK_turmas_professores
-        FOREIGN KEY (professor_codigo) REFERENCES dbo.professores (pessoa_codigo)
+    CONSTRAINT FK_turmas_professores FOREIGN KEY (professor_codigo)
+        REFERENCES dbo.professores (pessoa_codigo)
 );
 GO
 
@@ -104,12 +101,11 @@ CREATE TABLE dbo.responsavel_aluno (
     esp_financeiro BIT NOT NULL,
     ordem_contato INT NOT NULL,
 
-    CONSTRAINT PK_responsavel_aluno
-        PRIMARY KEY (responsavel_codigo, aluno_codigo),
-    CONSTRAINT FK_responsavel_aluno_responsaveis
-        FOREIGN KEY (responsavel_codigo) REFERENCES dbo.responsaveis (pessoa_codigo),
-    CONSTRAINT FK_responsavel_aluno_alunos
-        FOREIGN KEY (aluno_codigo) REFERENCES dbo.alunos (codigo)
+    CONSTRAINT PK_responsavel_aluno PRIMARY KEY (responsavel_codigo, aluno_codigo),
+    CONSTRAINT FK_responsavel_aluno_responsaveis FOREIGN KEY (responsavel_codigo)
+        REFERENCES dbo.responsaveis (pessoa_codigo),
+    CONSTRAINT FK_responsavel_aluno_alunos FOREIGN KEY (aluno_codigo)
+        REFERENCES dbo.alunos (codigo)
 );
 GO
 
@@ -122,10 +118,10 @@ CREATE TABLE dbo.matriculas (
     status INT NOT NULL,
 
     CONSTRAINT PK_matriculas PRIMARY KEY (nr),
-    CONSTRAINT FK_matriculas_alunos
-        FOREIGN KEY (aluno_codigo) REFERENCES dbo.alunos (codigo),
-    CONSTRAINT FK_matriculas_turmas
-        FOREIGN KEY (turma_codigo) REFERENCES dbo.turmas (codigo)
+    CONSTRAINT FK_matriculas_alunos FOREIGN KEY (aluno_codigo)
+        REFERENCES dbo.alunos (codigo),
+    CONSTRAINT FK_matriculas_turmas FOREIGN KEY (turma_codigo)
+        REFERENCES dbo.turmas (codigo)
 );
 GO
 
@@ -140,10 +136,10 @@ CREATE TABLE dbo.aulas_planejamentos (
     status INT NOT NULL,
 
     CONSTRAINT PK_aulas_planejamentos PRIMARY KEY (codigo),
-    CONSTRAINT FK_aulas_planejamentos_professores
-        FOREIGN KEY (professor_codigo) REFERENCES dbo.professores (pessoa_codigo),
-    CONSTRAINT FK_aulas_planejamentos_turmas
-        FOREIGN KEY (turma_codigo) REFERENCES dbo.turmas (codigo)
+    CONSTRAINT FK_aulas_planejamentos_professores FOREIGN KEY (professor_codigo)
+        REFERENCES dbo.professores (pessoa_codigo),
+    CONSTRAINT FK_aulas_planejamentos_turmas FOREIGN KEY (turma_codigo)
+        REFERENCES dbo.turmas (codigo)
 );
 GO
 
@@ -160,8 +156,8 @@ CREATE TABLE dbo.diario_bordo (
     observacoes VARCHAR(500) NULL,
 
     CONSTRAINT PK_diario_bordo PRIMARY KEY (codigo),
-    CONSTRAINT FK_diario_bordo_matriculas
-        FOREIGN KEY (matricula_nr) REFERENCES dbo.matriculas (nr)
+    CONSTRAINT FK_diario_bordo_matriculas FOREIGN KEY (matricula_nr)
+        REFERENCES dbo.matriculas (nr)
 );
 GO
 
@@ -171,12 +167,10 @@ CREATE TABLE dbo.frequencias (
     matricula_codigo INT NOT NULL,
     status_presenca VARCHAR(1) NOT NULL,
 
-    CONSTRAINT PK_frequencias
-        PRIMARY KEY (aula_planejamentos_codigo, matricula_codigo),
-    CONSTRAINT FK_frequencias_aulas_planejamentos
-        FOREIGN KEY (aula_planejamentos_codigo)
+    CONSTRAINT PK_frequencias PRIMARY KEY (aula_planejamentos_codigo, matricula_codigo),
+    CONSTRAINT FK_frequencias_aulas_planejamentos FOREIGN KEY (aula_planejamentos_codigo)
         REFERENCES dbo.aulas_planejamentos (codigo),
-    CONSTRAINT FK_frequencias_matriculas
-        FOREIGN KEY (matricula_codigo) REFERENCES dbo.matriculas (nr)
+    CONSTRAINT FK_frequencias_matriculas FOREIGN KEY (matricula_codigo)
+        REFERENCES dbo.matriculas (nr)
 );
 GO
