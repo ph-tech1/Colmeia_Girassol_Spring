@@ -11,18 +11,23 @@ import lombok.*;
 @AllArgsConstructor
 public class AutorizadoBuscaEntity {
 
-    @Id
-    @Column(name = "codigo")
-    private Integer codigo;
+    @EmbeddedId
+    private AutorizadoBuscaId id;
 
-    @OneToOne
-    @MapsId
+    @ManyToOne
+    @MapsId("codigo")
     @JoinColumn(name = "codigo")
     private PessoaEntity pessoa;
 
     @ManyToOne
+    @MapsId("alunoCodigo")
     @JoinColumn(name = "aluno_codigo", nullable = false)
     private AlunoEntity aluno;
+
+    @ManyToOne
+    @MapsId("responsavelCodigo")
+    @JoinColumn(name = "responsavel_codigo", nullable = false)
+    private ResponsavelEntity responsavel;
 
     @Column(name = "grau_parentesco", nullable = false, length = 50)
     private String grauParentesco;

@@ -5,7 +5,6 @@ import lombok.*;
 
 import java.time.LocalDate;
 
-
 @Entity
 @Table(name = "alunos")
 @Getter
@@ -17,18 +16,18 @@ public class AlunoEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer codigo;
 
-    @Column(name = "nome",  nullable = false, length = 100)
+    @Column(name = "nome", nullable = false, length = 100)
     private String nome;
 
-    @Column(name = "data_nascimento" , nullable = false)
+    @Column(name = "data_nascimento", nullable = false)
     private LocalDate dataNascimento;
 
-    @Column(name = "alergias",  nullable = false, length = 50)
+    @Column(name = "alergias", nullable = false, length = 100)
     private String alergias;
 
-    @Column(name = "restricoes_alimentar",   nullable = false, length = 50)
+    @Column(name = "restricoes_alimentar", nullable = false, length = 100)
     private String restricoesAlimentar;
 
-    @Column(name = "necessidades_especiais")
+    @Column(name = "necessidades_especiais", columnDefinition = "VARCHAR(MAX)")
     private String necessidadesEspeciais;
 }

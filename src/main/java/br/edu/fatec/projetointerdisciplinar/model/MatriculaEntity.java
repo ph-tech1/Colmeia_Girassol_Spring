@@ -3,6 +3,8 @@ package br.edu.fatec.projetointerdisciplinar.model;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.time.LocalDateTime;
+
 @Entity
 @Table(name = "matriculas")
 @Getter
@@ -23,9 +25,15 @@ public class MatriculaEntity {
     @JoinColumn(name = "turma_codigo", nullable = false)
     private TurmaEntity turma;
 
-    @Column(name = "data_matricula", nullable = false, length = 50)
-    private String dataMatricula;
+    @Column(name = "data_envio", nullable = false)
+    private LocalDateTime dataEnvio;
+
+    @Column(name = "data_decisao")
+    private LocalDateTime dataDecisao;
 
     @Column(name = "status", nullable = false)
     private Integer status;
+
+    @Column(name = "motivo_rejeicao", length = 500)
+    private String motivoRejeicao;
 }

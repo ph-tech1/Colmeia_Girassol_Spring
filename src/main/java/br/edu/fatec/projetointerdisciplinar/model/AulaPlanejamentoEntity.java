@@ -30,7 +30,7 @@ public class AulaPlanejamentoEntity {
     @Column(name = "atividade_dinamica", nullable = false, length = 200)
     private String atividadeDinamica;
 
-    @Column(name = "descricao", nullable = false, length = 200)
+    @Column(name = "descricao", nullable = false, columnDefinition = "VARCHAR(MAX)")
     private String descricao;
 
     @Column(name = "status", nullable = false)

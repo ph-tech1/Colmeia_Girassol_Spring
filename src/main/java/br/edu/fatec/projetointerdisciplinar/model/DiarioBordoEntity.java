@@ -3,6 +3,8 @@ package br.edu.fatec.projetointerdisciplinar.model;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.time.LocalDate;
+
 @Entity
 @Table(name = "diario_bordo")
 @Getter
@@ -19,8 +21,8 @@ public class DiarioBordoEntity {
     @JoinColumn(name = "matricula_nr", nullable = false)
     private MatriculaEntity matricula;
 
-    @Column(name = "data_registro", nullable = false, length = 50)
-    private String dataRegistro;
+    @Column(name = "data_registro", nullable = false)
+    private LocalDate dataRegistro;
 
     @Column(name = "compareceu", nullable = false)
     private Boolean compareceu;

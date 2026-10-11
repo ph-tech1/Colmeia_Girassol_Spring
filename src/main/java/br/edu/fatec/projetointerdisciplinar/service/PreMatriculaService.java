@@ -28,6 +28,9 @@ public class PreMatriculaService {
         pessoaRepository.findByCpf(apenasDigitos(request.cpfResponsavel())).ifPresent(existing -> {
             throw new IllegalArgumentException("Já existe uma pessoa cadastrada com este CPF.");
         });
+        pessoaRepository.findByEmail(request.email().trim()).ifPresent(existing -> {
+            throw new IllegalArgumentException("Já existe uma pessoa cadastrada com este email.");
+        });
         if (rg != null) {
             pessoaRepository.findByRg(rg).ifPresent(existing -> {
                 throw new IllegalArgumentException("Já existe uma pessoa cadastrada com este RG.");
@@ -36,10 +39,12 @@ public class PreMatriculaService {
 
         PessoaEntity pessoa = new PessoaEntity();
         pessoa.setNome(request.nomeResponsavel().trim());
+        pessoa.setEmail(request.email().trim());
         pessoa.setCpf(apenasDigitos(request.cpfResponsavel()));
         pessoa.setRg(rg);
         pessoa.setDataNascimento(request.dataNascimentoResponsavel());
         pessoa.setSenha(passwordEncoder.encode(request.senha()));
+        pessoa.setTipoPerfil("RESPONSAVEL");
         pessoa.setCep(apenasDigitos(request.cep()));
         pessoa.setCidade(request.cidade().trim());
         pessoa.setUf(request.uf().trim().toUpperCase());
@@ -85,9 +90,12 @@ public class PreMatriculaService {
                 || vazio(request.senha()) || vazio(request.cep()) || vazio(request.cidade())
                 || vazio(request.uf()) || vazio(request.endereco()) || vazio(request.telefone())
                 || vazio(request.localTrabalho()) || vazio(request.telefoneTrabalho())
-                || vazio(request.estadoCivil()) || vazio(request.nomeAluno())
+                || vazio(request.estadoCivil()) || vazio(request.email()) || vazio(request.nomeAluno())
                 || request.dataNascimentoAluno() == null || vazio(request.grauParentesco())) {
             throw new IllegalArgumentException("Preencha todos os campos obrigatórios da pré-matrícula.");
+        }
+        if (request.email().trim().length() > 100 || !request.email().trim().matches("^[^\\s@]+@[^\\s@]+\\.[^\\s@]+$")) {
+            throw new IllegalArgumentException("Email inválido.");
         }
         if (apenasDigitos(request.cpfResponsavel()).length() > 11) {
             throw new IllegalArgumentException("O CPF deve ter no máximo 11 números.");

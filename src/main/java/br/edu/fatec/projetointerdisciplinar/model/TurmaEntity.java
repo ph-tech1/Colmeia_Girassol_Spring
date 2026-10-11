@@ -22,8 +22,8 @@ public class TurmaEntity {
     @Column(name = "nome_turma", nullable = false, length = 50)
     private String nomeTurma;
 
-    @Column(name = "ano", nullable = false, length = 50)
-    private String ano;
+    @Column(name = "ano", nullable = false)
+    private Integer ano;
 
     @Column(name = "grau", nullable = false, length = 50)
     private String grau;
