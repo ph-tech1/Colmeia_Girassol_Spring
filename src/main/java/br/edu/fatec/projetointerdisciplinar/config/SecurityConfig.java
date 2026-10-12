@@ -1,6 +1,7 @@
 package br.edu.fatec.projetointerdisciplinar.config;
 
 import jakarta.servlet.DispatcherType;
+import org.springframework.http.HttpMethod;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -28,7 +29,9 @@ public class SecurityConfig {
                         .requestMatchers("/html/dashboard_responsavel.html").hasRole("RESPONSAVEL")
                         .requestMatchers("/html/aluno/**").hasRole("RESPONSAVEL")
                         .requestMatchers("/html/dashboard_professor.html").hasRole("PROFESSOR")
-                        .requestMatchers("/html/dashboard_admin.html").hasRole("ADMIN")
+                        .requestMatchers("/html/dashboard_admin.html", "/html/cadastro_professor.html").hasRole("ADMIN")
+                        .requestMatchers("/api/admin/**").hasRole("ADMIN")
+                        .requestMatchers(HttpMethod.POST, "/api/professores/**").hasRole("ADMIN")
                         .requestMatchers("/api/portal-responsavel/**").hasRole("RESPONSAVEL")
                         .requestMatchers("/api/**").hasAnyRole("PROFESSOR", "ADMIN")
                         .requestMatchers("/html/**").authenticated()

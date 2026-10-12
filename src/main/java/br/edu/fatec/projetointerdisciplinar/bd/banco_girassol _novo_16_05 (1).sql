@@ -1,5 +1,6 @@
 CREATE DATABASE banco_girassol;
-GO USE banco_girassol;
+GO
+USE banco_girassol;
 GO --------------------------------------------------------------------------------
     -- 1. TABELA DE PESSOAS
     --------------------------------------------------------------------------------

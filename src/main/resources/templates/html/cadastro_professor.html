@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="_csrf" th:content="${_csrf.token}">
+    <meta name="_csrf_header" th:content="${_csrf.headerName}">
+    <script>try { document.documentElement.dataset.theme = localStorage.getItem('colmeia-theme') === 'dark' ? 'dark' : 'light'; } catch (error) { document.documentElement.dataset.theme = 'light'; }</script>
+    <title>Cadastro de Professor | Colmeia Girassol</title>
+    <link rel="icon" th:href="@{/images/abelha.png}">
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+    <link rel="stylesheet" th:href="@{/css/style.css(v='1.9.2')}">
+</head>
+<body class="teacher-register-page">
+    <main class="teacher-register-shell">
+        <header class="teacher-register-nav">
+            <a class="teacher-brand" th:href="@{/html/dashboard_admin.html#cadastro-professor}">
+                <img th:src="@{/images/logo.png}" alt="" class="teacher-brand-logo">
+                <span>Colmeia <strong>Girassol</strong></span>
+            </a>
+            <div class="d-flex align-items-center gap-2">
+                <button class="btn teacher-theme-toggle theme-toggle" type="button" data-theme-toggle
+                        aria-label="Ativar modo escuro" aria-pressed="false" title="Ativar modo escuro">
+                    <i class="fa-solid fa-moon" aria-hidden="true"></i>
+                </button>
+                <a class="btn teacher-back-link" th:href="@{/html/dashboard_admin.html#cadastro-professor}">
+                    <i class="fa-solid fa-arrow-left me-2" aria-hidden="true"></i>
+                    <span>Voltar ao painel</span>
+                </a>
+            </div>
+        </header>
+
+        <section class="teacher-welcome" aria-labelledby="teacher-page-title">
+            <div class="teacher-welcome-copy">
+                <span class="teacher-eyebrow"><i class="fa-solid fa-sun me-2" aria-hidden="true"></i>Gente que faz florescer</span>
+                <h1 id="teacher-page-title">Toda grande jornada começa com quem <span>ensina.</span></h1>
+                <p>Vamos abrir espaço para mais uma pessoa especial na nossa comunidade. Preencha os dados para dar as boas-vindas ao novo professor.</p>
+                <div class="teacher-welcome-note">
+                    <span class="teacher-note-icon"><i class="fa-solid fa-heart" aria-hidden="true"></i></span>
+                    <span>Um cadastro cuidadoso é o primeiro passo para uma parceria que transforma.</span>
+                </div>
+            </div>
+            <div class="teacher-portrait" aria-hidden="true">
+                <span class="teacher-spark teacher-spark-one"><i class="fa-solid fa-star"></i></span>
+                <span class="teacher-spark teacher-spark-two"><i class="fa-solid fa-seedling"></i></span>
+                <div class="teacher-portrait-frame">
+                    <div class="teacher-portrait-sun"></div>
+                    <div class="teacher-portrait-person">
+                        <i class="fa-solid fa-user-graduate"></i>
+                    </div>
+                </div>
+                <div class="teacher-portrait-caption">
+                    <span>Uma nova história</span>
+                    <i class="fa-solid fa-arrow-trend-up"></i>
+                </div>
+            </div>
+        </section>
+
+        <section class="teacher-form-card" aria-labelledby="teacher-form-title">
+            <div class="teacher-form-heading">
+                <div>
+                    <span class="teacher-form-kicker">Cadastro da equipe</span>
+                    <h2 id="teacher-form-title">Dados do professor</h2>
+                    <p>Os campos com <span aria-hidden="true">*</span> são obrigatórios.</p>
+                </div>
+                <span class="teacher-form-badge"><i class="fa-solid fa-shield-heart me-2" aria-hidden="true"></i>Dados protegidos</span>
+            </div>
+
+            <div id="teacherFeedback" class="alert d-none" role="status" aria-live="polite"></div>
+
+            <form id="teacherRegisterForm" novalidate
+                  th:attr="data-professores-url=@{/api/admin/professores},data-dashboard-url=@{/html/dashboard_admin.html#cadastro-professor}">
+                <fieldset class="teacher-form-section">
+                    <legend><span>01</span> Quem é o novo professor?</legend>
+                    <div class="row g-3">
+                        <div class="col-lg-6">
+                            <label for="professorNome" class="form-label">Nome completo <span>*</span></label>
+                            <input id="professorNome" class="form-control" type="text" maxlength="100" minlength="3"
+                                   autocomplete="name" placeholder="Ex.: Marina Oliveira" required>
+                            <div class="invalid-feedback"></div>
+                        </div>
+                        <div class="col-lg-3 col-md-6">
+                            <label for="professorCpf" class="form-label">CPF <span>*</span></label>
+                            <input id="professorCpf" class="form-control cpf-mask" type="text" inputmode="numeric"
+                                   minlength="14" maxlength="14" placeholder="000.000.000-00" required>
+                            <div class="invalid-feedback"></div>
+                        </div>
+                        <div class="col-lg-3 col-md-6">
+                            <label for="professorRg" class="form-label">RG</label>
+                            <input id="professorRg" class="form-control rg-mask" type="text" maxlength="20"
+                                   placeholder="Opcional">
+                            <div class="invalid-feedback"></div>
+                        </div>
+                        <div class="col-lg-4 col-md-6">
+                            <label for="professorNascimento" class="form-label">Data de nascimento <span>*</span></label>
+                            <input id="professorNascimento" class="form-control" type="date" autocomplete="bday" required>
+                            <div class="invalid-feedback"></div>
+                        </div>
+                        <div class="col-lg-4 col-md-6">
+                            <label for="professorEmail" class="form-label">E-mail <span>*</span></label>
+                            <input id="professorEmail" class="form-control" type="email" maxlength="100"
+                                   autocomplete="email" placeholder="nome@email.com" required>
+                            <div class="invalid-feedback"></div>
+                        </div>
+                        <div class="col-12 col-lg-4">
+                            <label for="professorSenha" class="form-label">Senha inicial <span>*</span></label>
+                            <div class="input-group">
+                                <input id="professorSenha" class="form-control" type="password" minlength="8" maxlength="72"
+                                       autocomplete="new-password" placeholder="Mínimo de 8 caracteres" required>
+                                <button class="btn teacher-password-toggle" type="button" data-password-toggle="professorSenha"
+                                        aria-label="Mostrar senha" aria-pressed="false">
+                                    <i class="fa-solid fa-eye" aria-hidden="true"></i>
+                                </button>
+                            </div>
+                            <div class="invalid-feedback"></div>
+                        </div>
+                        <div class="col-lg-6">
+                            <label for="professorFormacao" class="form-label">Formação <span>*</span></label>
+                            <input id="professorFormacao" class="form-control" type="text" maxlength="100"
+                                   placeholder="Ex.: Pedagogia" required>
+                            <div class="invalid-feedback"></div>
+                        </div>
+                        <div class="col-lg-6">
+                            <label for="professorContratacao" class="form-label">Data de contratação <span>*</span></label>
+                            <input id="professorContratacao" class="form-control" type="date" required>
+                            <div class="invalid-feedback"></div>
+                        </div>
+                    </div>
+                </fieldset>
+
+                <fieldset class="teacher-form-section">
+                    <legend><span>02</span> Onde podemos encontrar você?</legend>
+                    <div class="row g-3">
+                        <div class="col-lg-3 col-md-4">
+                            <label for="professorCep" class="form-label">CEP <span>*</span></label>
+                            <input id="professorCep" class="form-control cep-mask" type="text" inputmode="numeric"
+                                   autocomplete="postal-code" data-cep maxlength="9" placeholder="00000-000" required>
+                            <div class="invalid-feedback"></div>
+                            <small class="teacher-field-hint">Ao sair do campo, tentamos localizar o endereço.</small>
+                        </div>
+                        <div class="col-lg-6 col-md-8">
+                            <label for="professorEndereco" class="form-label">Endereço <span>*</span></label>
+                            <input id="professorEndereco" class="form-control" type="text" maxlength="100"
+                                   autocomplete="street-address" data-cep-field="logradouro" placeholder="Rua e número" required>
+                            <div class="invalid-feedback"></div>
+                        </div>
+                        <div class="col-lg-3">
+                            <label for="professorTelefone" class="form-label">Telefone <span>*</span></label>
+                            <input id="professorTelefone" class="form-control phone-mask" type="tel" inputmode="tel"
+                                   maxlength="15" autocomplete="tel" placeholder="(00) 00000-0000" required>
+                            <div class="invalid-feedback"></div>
+                        </div>
+                        <div class="col-lg-8 col-md-8">
+                            <label for="professorCidade" class="form-label">Cidade <span>*</span></label>
+                            <input id="professorCidade" class="form-control" type="text" maxlength="50"
+                                   autocomplete="address-level2" data-cep-field="localidade" placeholder="Sua cidade" required>
+                            <div class="invalid-feedback"></div>
+                        </div>
+                        <div class="col-lg-4 col-md-4">
+                            <label for="professorUf" class="form-label">Estado <span>*</span></label>
+                            <select id="professorUf" class="form-select uf-field" autocomplete="address-level1"
+                                    data-cep-field="uf" required>
+                                <option value="" selected disabled>Selecione a UF</option>
+                                <option th:each="uf : ${unidadesFederativas}" th:value="${uf.sigla}"
+                                        th:text="${uf.sigla + ' — ' + uf.nome}"></option>
+                            </select>
+                            <div class="invalid-feedback"></div>
+                        </div>
+                    </div>
+                </fieldset>
+
+                <div class="teacher-form-actions">
+                    <a class="btn teacher-cancel-button" th:href="@{/html/dashboard_admin.html#cadastro-professor}">Cancelar</a>
+                    <button class="btn teacher-submit-button" type="submit">
+                        <i class="fa-solid fa-check me-2" aria-hidden="true"></i>Cadastrar professor
+                    </button>
+                </div>
+            </form>
+        </section>
+
+        <footer class="teacher-register-footer">
+            <i class="fa-solid fa-sun me-2" aria-hidden="true"></i>Colmeia Girassol <span>·</span> Crescendo juntos, todos os dias.
+        </footer>
+    </main>
+
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.mask/1.14.16/jquery.mask.min.js"></script>
+    <script th:src="@{/js/theme.js(v='1.4.0')}"></script>
+    <script th:src="@{/js/validation.js(v='1.2.0')}"></script>
+    <script th:src="@{/js/cep.js(v='1.1.0')}"></script>
+    <script th:src="@{/js/cadastro-professor.js(v='1.0.0')}"></script>
+</body>
+</html>

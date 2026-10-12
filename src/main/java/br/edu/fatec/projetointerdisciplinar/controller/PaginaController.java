@@ -19,7 +19,7 @@ public class PaginaController {
         if ("nova_senha".equals(pagina)) {
             return "redirect:/html/login.html";
         }
-        if ("cadastro".equals(pagina)) {
+        if ("cadastro".equals(pagina) || "cadastro_professor".equals(pagina)) {
             model.addAttribute("unidadesFederativas", UnidadeFederativa.values());
         }
         return "html/" + pagina;

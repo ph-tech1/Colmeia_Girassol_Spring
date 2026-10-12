@@ -32,6 +32,9 @@ public class CpfUserDetailsService implements UserDetailsService {
                 .orElseThrow(() -> new UsernameNotFoundException("Credenciais inválidas."));
 
         List<String> perfis = new ArrayList<>();
+        if ("ADMIN".equalsIgnoreCase(pessoa.getTipoPerfil())) {
+            perfis.add("ADMIN");
+        }
         professorRepository.findById(pessoa.getCodigo())
                 .map(ProfessorEntity::getStatus)
                 .filter(status -> Objects.equals(status, 1))

@@ -79,6 +79,23 @@ class CpfUserDetailsServiceTest {
     }
 
     @Test
+    void loadsAdminFromPessoaProfileWithoutProfessorOrResponsibleRecord() {
+        PessoaEntity pessoa = new PessoaEntity();
+        pessoa.setCodigo(10);
+        pessoa.setCpf("12345678901");
+        pessoa.setSenha("$2a$12$encoded-password");
+        pessoa.setTipoPerfil("ADMIN");
+
+        when(pessoaRepository.findByCpf("12345678901")).thenReturn(Optional.of(pessoa));
+        when(professorRepository.findById(10)).thenReturn(Optional.empty());
+        when(responsavelRepository.findById(10)).thenReturn(Optional.empty());
+
+        UserDetails user = userDetailsService.loadUserByUsername("12345678901");
+
+        assertEquals("ROLE_ADMIN", user.getAuthorities().iterator().next().getAuthority());
+    }
+
+    @Test
     void rejectsPendingResponsibleAccount() {
         PessoaEntity pessoa = new PessoaEntity();
         pessoa.setCodigo(8);
