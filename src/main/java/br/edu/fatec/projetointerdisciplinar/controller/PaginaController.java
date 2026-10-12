@@ -16,6 +16,9 @@ public class PaginaController {
 
     @GetMapping("/html/{pagina}.html")
     public String pagina(@PathVariable String pagina, Model model) {
+        if ("nova_senha".equals(pagina)) {
+            return "redirect:/html/login.html";
+        }
         if ("cadastro".equals(pagina)) {
             model.addAttribute("unidadesFederativas", UnidadeFederativa.values());
         }

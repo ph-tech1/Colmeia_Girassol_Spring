@@ -1,6 +1,7 @@
 package br.edu.fatec.projetointerdisciplinar.service;
 
 import br.edu.fatec.projetointerdisciplinar.model.AutorizadoBuscaEntity;
+import br.edu.fatec.projetointerdisciplinar.model.AutorizadoBuscaId;
 import br.edu.fatec.projetointerdisciplinar.repository.AutorizadoBuscaRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -18,8 +19,8 @@ public class AutorizadoBuscaService {
         return autorizadoBuscaRepository.findAll();
     }
 
-    public Optional<AutorizadoBuscaEntity> buscarPorId(Integer codigo) {
-        return autorizadoBuscaRepository.findById(codigo);
+    public Optional<AutorizadoBuscaEntity> buscarPorId(AutorizadoBuscaId id) {
+        return autorizadoBuscaRepository.findById(id);
     }
 
     public AutorizadoBuscaEntity salvar(AutorizadoBuscaEntity autorizadoBusca) {
@@ -30,7 +31,7 @@ public class AutorizadoBuscaService {
         return null;
     }
 
-    public void deletar(Integer codigo) {
-        autorizadoBuscaRepository.deleteById(codigo);
+    public void deletar(AutorizadoBuscaId id) {
+        autorizadoBuscaRepository.deleteById(id);
     }
 }

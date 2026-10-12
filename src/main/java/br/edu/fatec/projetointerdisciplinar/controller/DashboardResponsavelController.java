@@ -70,7 +70,7 @@ public class DashboardResponsavelController {
                     : matricula.getTurma().getProfessor().getPessoa().getNome();
             alunos.add(new AlunoDashboard(aluno, vinculo.getGrauParentesco(), matricula, professorNome, diario));
 
-            for (AutorizadoBuscaEntity autorizado : autorizadoBuscaRepository.findByAlunoCodigo(aluno.getCodigo())) {
+            for (AutorizadoBuscaEntity autorizado : autorizadoBuscaRepository.findByAluno_Codigo(aluno.getCodigo())) {
                 PessoaEntity pessoaAutorizada = autorizado.getPessoa();
                 autorizados.add(new ContatoAutorizado(
                         aluno.getNome(),
