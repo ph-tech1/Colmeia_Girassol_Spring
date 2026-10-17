@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="_csrf" th:content="${_csrf.token}">
+    <meta name="_csrf_header" th:content="${_csrf.headerName}">
+    <script>try { document.documentElement.dataset.theme = localStorage.getItem('colmeia-theme') === 'dark' ? 'dark' : 'light'; } catch (error) { document.documentElement.dataset.theme = 'light'; }</script>
+    <title>Adicionar pessoa autorizada | Colmeia Girassol</title>
+    <link rel="icon" th:href="@{/images/abelha.png}">
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&family=Playfair+Display:wght@600;700&display=swap" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+    <link rel="stylesheet" th:href="@{/css/style.css(v='1.11.0')}">
+</head>
+<body class="responsavel-page">
+<nav class="hive-nav navbar" aria-label="Navegação do portal">
+    <div class="container">
+        <a class="navbar-brand hive-brand d-flex align-items-center gap-2" th:href="@{/html/dashboard_responsavel.html}">
+            <img th:src="@{/images/logo.png}" alt="" class="hive-brand-mark">
+            <span>Colmeia <strong>Girassol</strong></span>
+        </a>
+        <div class="d-flex align-items-center gap-2 ms-auto">
+            <button class="btn btn-outline-dark-blue theme-toggle" type="button" data-theme-toggle aria-label="Ativar modo escuro" aria-pressed="false" title="Ativar modo escuro">
+                <i class="fa-solid fa-moon" aria-hidden="true"></i>
+            </button>
+            <a class="btn btn-dark-blue rounded-pill px-3" th:href="@{/html/dashboard_responsavel.html#autorizados}">
+                <i class="fa-solid fa-arrow-left me-2"></i><span class="d-none d-sm-inline">Voltar ao portal</span><span class="d-sm-none">Voltar</span>
+            </a>
+        </div>
+    </div>
+</nav>
+
+<main class="container py-5">
+    <a class="student-back-link d-inline-flex align-items-center gap-2 mb-4" th:href="@{/html/dashboard_responsavel.html#autorizados}">
+        <i class="fa-solid fa-chevron-left" aria-hidden="true"></i> Pessoas autorizadas
+    </a>
+    <header class="responsavel-form-hero profile-form-hero mb-4">
+        <div class="responsavel-form-hero-copy">
+            <div class="hive-eyebrow"><span></span> Cuidado compartilhado</div>
+            <h1 class="mt-2 mb-2">Quem pode buscar sua criança?</h1>
+            <p class="mb-0">Informe os dados da pessoa de confiança autorizada a buscar sua criança.</p>
+        </div>
+    </header>
+
+    <section class="responsavel-form-card form-card" aria-labelledby="autorizadoTitulo">
+        <div class="responsavel-form-card-aside profile-form-aside">
+            <span class="responsavel-form-aside-icon"><i class="fa-solid fa-user-shield" aria-hidden="true"></i></span>
+            <h2 class="h4 fw-bold mb-2">Segurança em primeiro lugar</h2>
+            <p>Confira os dados com atenção. A identificação correta ajuda a escola a cuidar da saída com tranquilidade.</p>
+            <div class="profile-form-note">
+                <i class="fa-solid fa-lock me-2" aria-hidden="true"></i>
+                A autorização ficará vinculada à sua conta e à criança selecionada.
+            </div>
+        </div>
+        <div class="responsavel-form-card-body">
+            <div class="responsavel-form-section-heading">
+                <span class="responsavel-form-section-icon"><i class="fa-solid fa-address-card" aria-hidden="true"></i></span>
+                <div>
+                    <h2 id="autorizadoTitulo" class="h4 fw-bold text-dark-blue mb-1">Dados da pessoa autorizada</h2>
+                    <p class="small text-muted mb-0">Os campos com * são obrigatórios.</p>
+                </div>
+            </div>
+            <form id="autorizadoBuscaForm" novalidate th:attr="data-success-url=@{/html/dashboard_responsavel.html#autorizados}">
+                <div class="responsavel-form-group-label"><i class="fa-solid fa-child-reaching me-2"></i>Criança vinculada</div>
+                <div th:if="${#lists.isEmpty(vinculos)}" class="alert alert-warning" role="status">
+                    <i class="fa-solid fa-circle-info me-2" aria-hidden="true"></i>
+                    Primeiro, <a class="alert-link" th:href="@{/html/adicionar-crianca}">adicione uma criança</a> à sua conta.
+                </div>
+                <div class="row g-3">
+                    <div class="col-12">
+                        <label for="autorizadoCrianca" class="form-label fw-semibold">Criança <span class="text-warning">*</span></label>
+                        <select id="autorizadoCrianca" name="alunoCodigo" class="form-select" required>
+                            <option value="" selected disabled>Selecione a criança</option>
+                            <option th:each="vinculo : ${vinculos}" th:value="${vinculo.aluno.codigo}" th:text="${vinculo.aluno.nome}">Nome da criança</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="responsavel-form-group-label mt-4"><i class="fa-solid fa-user me-2"></i>Identificação e contato</div>
+                <div class="row g-3">
+                    <div class="col-md-6">
+                        <label for="autorizadoNome" class="form-label fw-semibold">Nome completo <span class="text-warning">*</span></label>
+                        <input id="autorizadoNome" name="nome" class="form-control" type="text" minlength="3" maxlength="100" autocomplete="name" required>
+                        <div class="invalid-feedback"></div>
+                    </div>
+                    <div class="col-md-6">
+                        <label for="autorizadoParentesco" class="form-label fw-semibold">Grau de parentesco ou vínculo <span class="text-warning">*</span></label>
+                        <select id="autorizadoParentesco" name="grauParentesco" class="form-select" required>
+                            <option value="" selected disabled>Selecione o vínculo</option>
+                            <option value="Mãe">Mãe</option>
+                            <option value="Pai">Pai</option>
+                            <option value="Avô/Avó">Avô/Avó</option>
+                            <option value="Tio(a)">Tio(a)</option>
+                            <option value="Irmão/Irmã">Irmão/Irmã</option>
+                            <option value="Outro familiar">Outro familiar</option>
+                            <option value="Amigo(a) da família">Amigo(a) da família</option>
+                            <option value="Responsável legal">Responsável legal</option>
+                            <option value="Outro">Outro</option>
+                        </select>
+                        <div class="invalid-feedback"></div>
+                    </div>
+                    <div class="col-md-6">
+                        <label for="autorizadoTelefone" class="form-label fw-semibold">Telefone <span class="text-warning">*</span></label>
+                        <input id="autorizadoTelefone" name="telefone" class="form-control phone-mask" type="tel" inputmode="tel" maxlength="15" autocomplete="tel" placeholder="(00) 00000-0000" required>
+                        <div class="invalid-feedback"></div>
+                    </div>
+                </div>
+                <div id="autorizadoBuscaFeedback" class="alert d-none mt-4 mb-0" role="alert"></div>
+                <div class="alert alert-info mt-4 mb-0" role="status">
+                    <i class="fa-solid fa-circle-info me-2" aria-hidden="true"></i>
+                    O responsável da conta será associado automaticamente; não informe códigos internos.
+                </div>
+                <div class="d-flex flex-wrap justify-content-end gap-2 mt-4">
+                    <a class="btn btn-outline-dark-blue rounded-pill px-4" th:href="@{/html/dashboard_responsavel.html#autorizados}">Cancelar</a>
+                    <button type="submit" class="btn btn-yellow-main rounded-pill px-4 fw-semibold" th:disabled="${#lists.isEmpty(vinculos)}">
+                        <i class="fa-solid fa-check me-2" aria-hidden="true"></i>Salvar autorização
+                    </button>
+                </div>
+            </form>
+        </div>
+    </section>
+</main>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+<script th:src="@{/js/theme.js(v='1.4.0')}"></script>
+<script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.mask/1.14.16/jquery.mask.min.js"></script>
+<script th:src="@{/js/validation.js(v='1.2.0')}"></script>
+<script th:src="@{/js/responsavel-dashboard.js(v='1.4.0')}"></script>
+</body>
+</html>

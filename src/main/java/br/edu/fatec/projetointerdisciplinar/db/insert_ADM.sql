@@ -5,7 +5,7 @@ INSERT INTO dbo.pessoas (
 VALUES (
     'Nome do Administrador',
     'admin@escola.com',
-    ' ',               -- CPF com 11 dígitos
+    '12345678901',               -- CPF com 11 dígitos
     NULL,                        -- RG (ou informe o RG)
     '1990-01-01',                -- Data de nascimento (AAAA-MM-DD)
     '$2a$10$1E8zxFzJPY5mbqO3wyTap.vEzu4P4u5qvsL6rTKab9639F7MRTqmG',

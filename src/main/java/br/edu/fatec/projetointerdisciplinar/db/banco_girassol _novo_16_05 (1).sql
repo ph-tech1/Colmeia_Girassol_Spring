@@ -61,12 +61,13 @@ GO -----------------------------------------------------------------------------
     -- 5. TABELA DE PESSOAS AUTORIZADAS A BUSCAR
     --------------------------------------------------------------------------------
     CREATE TABLE dbo.autorizados_busca (
-        codigo INT NOT NULL,
+        codigo INT IDENTITY(1, 1) NOT NULL,
         aluno_codigo INT NOT NULL,
         responsavel_codigo INT NOT NULL,
+        nome VARCHAR(100) NOT NULL,
+        telefone VARCHAR(15) NOT NULL,
         grau_parentesco VARCHAR(50) NOT NULL,
-        CONSTRAINT PK_autorizados_busca PRIMARY KEY (codigo, aluno_codigo, responsavel_codigo),
-        CONSTRAINT FK_autorizados_busca_pessoas FOREIGN KEY (codigo) REFERENCES dbo.pessoas (codigo),
+        CONSTRAINT PK_autorizados_busca PRIMARY KEY (codigo),
         CONSTRAINT FK_autorizados_busca_alunos FOREIGN KEY (aluno_codigo) REFERENCES dbo.alunos (codigo),
         CONSTRAINT FK_autorizados_busca_responsaveis FOREIGN KEY (responsavel_codigo) REFERENCES dbo.responsaveis (pessoa_codigo)
     );

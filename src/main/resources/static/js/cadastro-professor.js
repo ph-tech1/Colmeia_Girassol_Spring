@@ -44,7 +44,10 @@
             showFeedback('Não foi possível carregar as validações do formulário. Atualize a página e tente novamente.', 'danger');
             return;
         }
-        if (!window.FormValidator.validateForm(form)) return;
+        if (!window.FormValidator.validateForm(form)) {
+            showFeedback('Revise os campos destacados e tente novamente.', 'warning');
+            return;
+        }
         if (!csrfToken || !csrfHeader) {
             showFeedback('Não foi possível validar sua sessão. Atualize a página e tente novamente.', 'danger');
             return;
@@ -67,7 +70,9 @@
             dataContratacao: value('professorContratacao')
         };
         const submitButton = form.querySelector('[type="submit"]');
+        const originalButtonContent = submitButton.innerHTML;
         submitButton.disabled = true;
+        submitButton.innerHTML = '<span class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>Salvando...';
         feedback.classList.add('d-none');
 
         try {
@@ -80,6 +85,10 @@
                 },
                 body: JSON.stringify(payload)
             });
+            if (response.url.includes('/html/login.html')) {
+                window.location.assign(response.url);
+                return;
+            }
             const body = await readResponse(response);
             if (!response.ok) throw new Error(errorMessage(body, response.status));
 
@@ -93,6 +102,7 @@
             showFeedback(error.message || 'Não foi possível cadastrar o professor.', 'danger');
         } finally {
             submitButton.disabled = false;
+            submitButton.innerHTML = originalButtonContent;
         }
     });
 

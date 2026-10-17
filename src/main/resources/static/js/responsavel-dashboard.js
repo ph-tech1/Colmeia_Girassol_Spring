@@ -76,4 +76,31 @@
         campoNascimento.max = hoje.toISOString().slice(0, 10);
         enviarFormulario(criancaForm, '/api/portal-responsavel/criancas', 'POST', 'Criança vinculada com sucesso.');
     }
+
+    const solicitacaoMatriculaForm = document.getElementById('solicitacaoMatriculaForm');
+    if (solicitacaoMatriculaForm) {
+        const campoCrianca = document.getElementById('solicitacaoMatriculaCrianca');
+        document.querySelectorAll('[data-child-name]').forEach((botao) => {
+            botao.addEventListener('click', () => {
+                campoCrianca.value = botao.dataset.childName;
+                campoCrianca.dispatchEvent(new Event('input', { bubbles: true }));
+            });
+        });
+
+        solicitacaoMatriculaForm.addEventListener('submit', (event) => {
+            event.preventDefault();
+            if (!window.FormValidator?.validateForm(solicitacaoMatriculaForm)) return;
+            window.showAppAlert('Os dados foram conferidos, mas a solicitação ainda não foi enviada. O envio será conectado posteriormente.', 'info');
+        });
+    }
+
+    const autorizadoBuscaForm = document.getElementById('autorizadoBuscaForm');
+    if (autorizadoBuscaForm) {
+        enviarFormulario(
+            autorizadoBuscaForm,
+            '/api/portal-responsavel/autorizados',
+            'POST',
+            'Pessoa autorizada cadastrada com sucesso.'
+        );
+    }
 })();

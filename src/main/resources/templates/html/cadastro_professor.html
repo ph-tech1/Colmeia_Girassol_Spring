@@ -118,8 +118,16 @@
                         </div>
                         <div class="col-lg-6">
                             <label for="professorFormacao" class="form-label">Formação <span>*</span></label>
-                            <input id="professorFormacao" class="form-control" type="text" maxlength="100"
-                                   placeholder="Ex.: Pedagogia" required>
+                            <input id="professorFormacao" class="form-control" type="text" list="formacoesProfessor"
+                                   maxlength="100" placeholder="Selecione uma sugestão ou digite sua formação" required>
+                            <datalist id="formacoesProfessor">
+                                <option value="Pedagogia"></option>
+                                <option value="Magistério (Curso Normal)"></option>
+                                <option value="Normal Superior"></option>
+                                <option value="Licenciatura em Pedagogia"></option>
+                                <option value="Especialização em Educação Infantil"></option>
+                                <option value="Psicopedagogia"></option>
+                            </datalist>
                             <div class="invalid-feedback"></div>
                         </div>
                         <div class="col-lg-6">
@@ -190,6 +198,6 @@
     <script th:src="@{/js/theme.js(v='1.4.0')}"></script>
     <script th:src="@{/js/validation.js(v='1.2.0')}"></script>
     <script th:src="@{/js/cep.js(v='1.1.0')}"></script>
-    <script th:src="@{/js/cadastro-professor.js(v='1.0.0')}"></script>
+    <script th:src="@{/js/cadastro-professor.js(v='1.1.0')}"></script>
 </body>
 </html>

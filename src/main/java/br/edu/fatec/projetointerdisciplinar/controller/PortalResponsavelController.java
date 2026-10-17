@@ -1,5 +1,6 @@
 package br.edu.fatec.projetointerdisciplinar.controller;
 
+import br.edu.fatec.projetointerdisciplinar.dto.AdicionarAutorizadoBuscaRequest;
 import br.edu.fatec.projetointerdisciplinar.dto.AdicionarCriancaRequest;
 import br.edu.fatec.projetointerdisciplinar.dto.AtualizarCriancaRequest;
 import br.edu.fatec.projetointerdisciplinar.dto.AtualizarPerfilResponsavelRequest;
@@ -46,6 +47,20 @@ public class PortalResponsavelController {
         }
     }
 
+    @PostMapping("/autorizados")
+    public ResponseEntity<?> adicionarAutorizado(
+            @RequestBody AdicionarAutorizadoBuscaRequest request,
+            Authentication authentication
+    ) {
+        try {
+            portalResponsavelService.adicionarAutorizado(authentication.getName(), request);
+            return ResponseEntity.status(HttpStatus.CREATED)
+                    .body(new SucessoResponse("Pessoa autorizada cadastrada com sucesso."));
+        } catch (IllegalArgumentException exception) {
+            return ResponseEntity.badRequest().body(new ErroResponse(exception.getMessage()));
+        }
+    }
+
     @PutMapping("/criancas/{codigo}")
     public ResponseEntity<?> atualizarCrianca(
             @PathVariable Integer codigo,
@@ -64,6 +79,9 @@ public class PortalResponsavelController {
     }
 
     private record CriancaResponse(Integer codigo, String mensagem) {
+    }
+
+    private record SucessoResponse(String mensagem) {
     }
 
     private record ErroResponse(String mensagem) {

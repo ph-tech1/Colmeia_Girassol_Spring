@@ -70,13 +70,13 @@ public class DashboardResponsavelController {
                     : matricula.getTurma().getProfessor().getPessoa().getNome();
             alunos.add(new AlunoDashboard(aluno, vinculo.getGrauParentesco(), matricula, professorNome, diario));
 
-            for (AutorizadoBuscaEntity autorizado : autorizadoBuscaRepository.findByAluno_Codigo(aluno.getCodigo())) {
-                PessoaEntity pessoaAutorizada = autorizado.getPessoa();
+            for (AutorizadoBuscaEntity autorizado : autorizadoBuscaRepository
+                    .findByAluno_CodigoAndResponsavel_PessoaCodigo(aluno.getCodigo(), responsavel.getPessoaCodigo())) {
                 autorizados.add(new ContatoAutorizado(
                         aluno.getNome(),
-                        pessoaAutorizada.getNome(),
+                        autorizado.getNome(),
                         autorizado.getGrauParentesco(),
-                        pessoaAutorizada.getTelefone()
+                        autorizado.getTelefone()
                 ));
             }
         }
@@ -104,6 +104,16 @@ public class DashboardResponsavelController {
     public String adicionarCrianca(Authentication authentication, Model model) {
         model.addAttribute("responsavel", buscarPessoaAutenticada(authentication));
         return "html/adicionar_crianca";
+    }
+
+    @GetMapping("/html/adicionar-autorizado")
+    @Transactional(readOnly = true)
+    public String adicionarAutorizado(Authentication authentication, Model model) {
+        PessoaEntity pessoa = buscarPessoaAutenticada(authentication);
+        ResponsavelEntity responsavel = buscarResponsavel(pessoa);
+        model.addAttribute("vinculos",
+                responsavelAlunoRepository.findByIdResponsavelCodigo(responsavel.getPessoaCodigo()));
+        return "html/adicionar_autorizado";
     }
 
     @GetMapping("/html/aluno/{codigo}")
