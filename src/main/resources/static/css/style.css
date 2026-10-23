@@ -1521,6 +1521,72 @@ html[data-theme="dark"] body.cadastro-page .btn-outline-dark-blue {
     background: #f8fbfc;
 }
 
+.enrollment-status {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.85rem;
+    padding: 1rem;
+    border: 1px solid transparent;
+    border-left-width: 4px;
+    border-radius: 1rem;
+}
+
+.enrollment-status-icon {
+    display: grid;
+    width: 2.6rem;
+    height: 2.6rem;
+    flex: 0 0 2.6rem;
+    place-items: center;
+    border-radius: 0.85rem;
+    font-size: 1.1rem;
+}
+
+.enrollment-status strong {
+    display: block;
+    margin: 0.1rem 0 0.25rem;
+    color: var(--dark-blue);
+    font-size: 1rem;
+}
+
+.enrollment-status p {
+    color: #53697a;
+    font-size: 0.88rem;
+    line-height: 1.5;
+}
+
+.enrollment-status--pending {
+    border-color: #f1d66f;
+    border-left-color: #d3a900;
+    background: #fff9df;
+}
+
+.enrollment-status--pending .enrollment-status-icon {
+    background: #f8eaa8;
+    color: #795f00;
+}
+
+.enrollment-status--confirmed {
+    border-color: #a6d9b8;
+    border-left-color: #27834a;
+    background: #edf9f0;
+}
+
+.enrollment-status--confirmed .enrollment-status-icon {
+    background: #d4efdc;
+    color: #216b3d;
+}
+
+.enrollment-status--cancelled {
+    border-color: #d8dee3;
+    border-left-color: #788692;
+    background: #f3f5f6;
+}
+
+.enrollment-status--cancelled .enrollment-status-icon {
+    background: #e1e6e9;
+    color: #53616c;
+}
+
 .responsavel-page .diary-panel {
     padding: 1.25rem;
     border: 1px solid var(--line-soft);
@@ -1689,6 +1755,39 @@ html[data-theme="dark"] body.responsavel-page .student-timeline-content,
 html[data-theme="dark"] body.responsavel-page .student-empty-state {
     border-color: rgba(229, 237, 240, 0.12);
     background: #1c2931;
+}
+html[data-theme="dark"] body.responsavel-page .enrollment-status--pending {
+    border-color: rgba(242, 213, 68, 0.32);
+    border-left-color: var(--yellow-main);
+    background: #30333a;
+}
+html[data-theme="dark"] body.responsavel-page .enrollment-status--pending .enrollment-status-icon {
+    background: rgba(242, 213, 68, 0.16);
+    color: var(--yellow-main);
+}
+html[data-theme="dark"] body.responsavel-page .enrollment-status--confirmed {
+    border-color: rgba(108, 205, 142, 0.28);
+    border-left-color: #6ccd8e;
+    background: #20372e;
+}
+html[data-theme="dark"] body.responsavel-page .enrollment-status--confirmed .enrollment-status-icon {
+    background: rgba(108, 205, 142, 0.14);
+    color: #8ce0a8;
+}
+html[data-theme="dark"] body.responsavel-page .enrollment-status--cancelled {
+    border-color: rgba(229, 237, 240, 0.16);
+    border-left-color: #9aaab4;
+    background: #29343a;
+}
+html[data-theme="dark"] body.responsavel-page .enrollment-status--cancelled .enrollment-status-icon {
+    background: rgba(229, 237, 240, 0.1);
+    color: #c7d2d8;
+}
+html[data-theme="dark"] body.responsavel-page .enrollment-status strong {
+    color: #f1f5f6;
+}
+html[data-theme="dark"] body.responsavel-page .enrollment-status p {
+    color: #bfccd1;
     color: #e5edf0;
 }
 
@@ -2190,6 +2289,11 @@ html[data-theme="dark"] body.admin-dashboard .modal-content {
     color: #e5edf0;
 }
 
+html[data-theme="dark"] body.admin-dashboard .stat-icon.bg-purple-light {
+    background-color: rgba(185, 148, 255, 0.16) !important;
+    color: #c9a7ff !important;
+}
+
 html[data-theme="dark"] body.admin-dashboard .table-custom thead,
 html[data-theme="dark"] body.admin-dashboard .table-light {
     --bs-table-bg: #1c2931;
@@ -2197,6 +2301,11 @@ html[data-theme="dark"] body.admin-dashboard .table-light {
     --bs-table-border-color: rgba(229, 237, 240, 0.12);
     background: #1c2931;
     color: #e5edf0;
+}
+
+html[data-theme="dark"] body.admin-dashboard .table-custom thead th {
+    border-color: rgba(229, 237, 240, 0.12);
+    color: #b7c5cb;
 }
 
 html[data-theme="dark"] body.admin-dashboard .table {
@@ -2240,6 +2349,32 @@ html[data-theme="dark"] body.admin-dashboard .modal-content .btn-close {
 html[data-theme="dark"] body.admin-dashboard .btn-outline-dark-blue {
     border-color: #93a8b2;
     color: #e5edf0;
+}
+
+html[data-theme="dark"] body.admin-dashboard #matriculas .btn-outline-danger {
+    border-color: #ff858e;
+    background: rgba(220, 53, 69, 0.14);
+    color: #ffabb1;
+}
+
+html[data-theme="dark"] body.admin-dashboard #matriculas .btn-outline-danger:hover,
+html[data-theme="dark"] body.admin-dashboard #matriculas .btn-outline-danger:focus-visible {
+    border-color: #dc3545;
+    background: #dc3545;
+    color: #fff;
+}
+
+html[data-theme="dark"] body.admin-dashboard #matriculas .btn-outline-dark {
+    border-color: #aab9c0;
+    background: rgba(229, 237, 240, 0.08);
+    color: #e5edf0;
+}
+
+html[data-theme="dark"] body.admin-dashboard #matriculas .btn-outline-dark:hover,
+html[data-theme="dark"] body.admin-dashboard #matriculas .btn-outline-dark:focus-visible {
+    border-color: #e5edf0;
+    background: #e5edf0;
+    color: #1c2931;
 }
 
 html[data-theme="dark"] body.admin-dashboard .alert.app-toast {

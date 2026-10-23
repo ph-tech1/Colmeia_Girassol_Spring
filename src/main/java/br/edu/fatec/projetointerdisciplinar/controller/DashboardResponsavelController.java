@@ -56,18 +56,21 @@ public class DashboardResponsavelController {
             AlunoEntity aluno = vinculo.getAluno();
             MatriculaEntity matricula = matriculaRepository.findByAlunoCodigoOrderByNrDesc(aluno.getCodigo())
                     .stream()
-                    .filter(item -> item.getStatus() != null && item.getStatus() == 0)
                     .findFirst()
                     .orElse(null);
 
-            DiarioBordoEntity diario = matricula == null ? null
+            boolean matriculaAtiva = matricula != null
+                    && (matricula.getStatus() == 2 || matricula.getStatus() == 4)
+                    && matricula.getTurma() != null;
+            DiarioBordoEntity diario = !matriculaAtiva ? null
                     : diarioBordoRepository.findByMatriculaNrOrderByCodigoDesc(matricula.getNr())
                     .stream()
                     .findFirst()
                     .orElse(null);
 
-            String professorNome = matricula == null ? null
-                    : matricula.getTurma().getProfessor().getPessoa().getNome();
+            String professorNome = matriculaAtiva
+                    ? matricula.getTurma().getProfessor().getPessoa().getNome()
+                    : null;
             alunos.add(new AlunoDashboard(aluno, vinculo.getGrauParentesco(), matricula, professorNome, diario));
 
             for (AutorizadoBuscaEntity autorizado : autorizadoBuscaRepository
@@ -133,7 +136,7 @@ public class DashboardResponsavelController {
 
         List<MatriculaEntity> matriculas = matriculaRepository.findByAlunoCodigoOrderByNrDesc(codigo);
         MatriculaEntity matriculaAtiva = matriculas.stream()
-                .filter(item -> item.getStatus() != null && item.getStatus() == 0)
+                .filter(item -> item.getStatus() != null && item.getStatus() == 2)
                 .findFirst()
                 .orElse(null);
         List<DiarioBordoEntity> diarios = new ArrayList<>();
@@ -145,7 +148,8 @@ public class DashboardResponsavelController {
         long diasPresentes = diarios.stream().filter(DiarioBordoEntity::getCompareceu).count();
         long diasAusentes = diarios.size() - diasPresentes;
         int frequencia = diarios.isEmpty() ? 0 : (int) Math.round(diasPresentes * 100.0 / diarios.size());
-        String professorNome = matriculaAtiva == null ? null
+        String professorNome = matriculaAtiva == null || matriculaAtiva.getTurma() == null
+                ? null
                 : matriculaAtiva.getTurma().getProfessor().getPessoa().getNome();
 
         model.addAttribute("responsavel", pessoa);

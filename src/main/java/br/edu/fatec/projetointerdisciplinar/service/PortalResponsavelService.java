@@ -7,12 +7,14 @@ import br.edu.fatec.projetointerdisciplinar.dto.AtualizarPerfilResponsavelReques
 import br.edu.fatec.projetointerdisciplinar.enums.UnidadeFederativa;
 import br.edu.fatec.projetointerdisciplinar.model.AlunoEntity;
 import br.edu.fatec.projetointerdisciplinar.model.AutorizadoBuscaEntity;
+import br.edu.fatec.projetointerdisciplinar.model.MatriculaEntity;
 import br.edu.fatec.projetointerdisciplinar.model.PessoaEntity;
 import br.edu.fatec.projetointerdisciplinar.model.ResponsavelAlunoEntity;
 import br.edu.fatec.projetointerdisciplinar.model.ResponsavelAlunoId;
 import br.edu.fatec.projetointerdisciplinar.model.ResponsavelEntity;
 import br.edu.fatec.projetointerdisciplinar.repository.AlunoRepository;
 import br.edu.fatec.projetointerdisciplinar.repository.AutorizadoBuscaRepository;
+import br.edu.fatec.projetointerdisciplinar.repository.MatriculaRepository;
 import br.edu.fatec.projetointerdisciplinar.repository.PessoaRepository;
 import br.edu.fatec.projetointerdisciplinar.repository.ResponsavelAlunoRepository;
 import br.edu.fatec.projetointerdisciplinar.repository.ResponsavelRepository;
@@ -21,6 +23,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 @Service
 @RequiredArgsConstructor
@@ -31,6 +34,7 @@ public class PortalResponsavelService {
     private final AlunoRepository alunoRepository;
     private final ResponsavelAlunoRepository responsavelAlunoRepository;
     private final AutorizadoBuscaRepository autorizadoBuscaRepository;
+    private final MatriculaRepository matriculaRepository;
 
     @Transactional
     public PessoaEntity atualizarPerfil(String cpfAutenticado, AtualizarPerfilResponsavelRequest request) {
@@ -97,6 +101,53 @@ public class PortalResponsavelService {
         aluno.setRestricoesAlimentar(valorOuNenhum(request.restricoesAlimentares()));
         aluno.setNecessidadesEspeciais(valorOuNenhum(request.necessidadesEspeciais()));
         return alunoRepository.save(aluno);
+    }
+
+    @Transactional
+    public void solicitarMatricula(String cpfAutenticado, Integer alunoCodigo) {
+        ResponsavelAlunoEntity vinculo = buscarVinculoResponsavel(cpfAutenticado, alunoCodigo);
+        MatriculaEntity matricula = matriculaRepository.findByAlunoCodigoOrderByNrDesc(alunoCodigo)
+                .stream()
+                .findFirst()
+                .orElse(null);
+        if (matricula != null && (matricula.getStatus() == null || matricula.getStatus() != 0)) {
+            throw new IllegalArgumentException("Esta matrícula não está disponível para uma nova solicitação.");
+        }
+
+        if (matricula == null) {
+            matricula = new MatriculaEntity();
+            matricula.setAluno(vinculo.getAluno());
+        }
+        matricula.setStatus(1);
+        matricula.setDataEnvio(LocalDateTime.now());
+        matricula.setDataDecisao(null);
+        matricula.setMotivoRejeicao(null);
+        matriculaRepository.save(matricula);
+    }
+
+    @Transactional
+    public void cancelarMatricula(String cpfAutenticado, Integer alunoCodigo) {
+        buscarVinculoResponsavel(cpfAutenticado, alunoCodigo);
+        MatriculaEntity matricula = matriculaRepository.findByAlunoCodigoOrderByNrDesc(alunoCodigo)
+                .stream()
+                .findFirst()
+                .orElseThrow(() -> new IllegalArgumentException("Não foi encontrada uma matrícula para cancelar."));
+        if (matricula.getStatus() == null || matricula.getStatus() != 2) {
+            throw new IllegalArgumentException("Só é possível cancelar uma matrícula confirmada.");
+        }
+
+        matricula.setStatus(3);
+        matricula.setDataDecisao(LocalDateTime.now());
+        matriculaRepository.save(matricula);
+    }
+
+    private ResponsavelAlunoEntity buscarVinculoResponsavel(String cpfAutenticado, Integer alunoCodigo) {
+        PessoaEntity pessoa = buscarPessoa(cpfAutenticado);
+        ResponsavelEntity responsavel = responsavelRepository.findById(pessoa.getCodigo())
+                .orElseThrow(() -> new IllegalArgumentException("Cadastro de responsável não encontrado."));
+        return responsavelAlunoRepository.findById(
+                        new ResponsavelAlunoId(responsavel.getPessoaCodigo(), alunoCodigo))
+                .orElseThrow(() -> new IllegalArgumentException("Esta criança não está vinculada à sua conta."));
     }
 
     @Transactional

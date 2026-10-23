@@ -32,6 +32,12 @@
         return element;
     }
 
+    function blankCell(className = '') {
+        const element = document.createElement('td');
+        if (className) element.className = className;
+        return element;
+    }
+
     function appendRow(tbody, values) {
         const row = document.createElement('tr');
         values.forEach(value => row.append(cell(value)));
@@ -130,7 +136,7 @@
         }
 
         data.turmas.forEach(turma => {
-            const matriculas = data.matriculas.filter(item => item.turma?.codigo === turma.codigo);
+            const matriculas = data.matriculas.filter(item => Number(item.status) === 2 && item.turma?.codigo === turma.codigo);
             const column = document.createElement('div');
             column.className = 'col-md-6 col-xl-4';
             const card = document.createElement('article');
@@ -156,14 +162,70 @@
     function renderMatriculas() {
         const tbody = document.querySelector('#matriculas tbody');
         tbody.replaceChildren();
-        if (!data.matriculas.length) return setTableState(tbody, 5, 'Nenhuma matrícula cadastrada.');
-        data.matriculas.forEach(matricula => appendRow(tbody, [
-            matricula.nr,
-            matricula.aluno?.nome,
-            matricula.turma?.nomeTurma,
-            formatDate(matricula.dataEnvio),
-            matricula.status == null ? '—' : `Código ${matricula.status}`
-        ]));
+        const solicitacoes = data.matriculas.filter(matricula => Number(matricula.status) >= 1 && Number(matricula.status) <= 4);
+        const filtro = document.getElementById('matriculaFiltro').value;
+        const filtradas = filtro === 'todos'
+            ? solicitacoes
+            : solicitacoes.filter(matricula => Number(matricula.status) === Number(filtro));
+        const statusInfo = {
+            1: { label: 'Pendente', badge: 'text-bg-warning' },
+            2: { label: 'Confirmada', badge: 'text-bg-success' },
+            3: { label: 'Cancelada', badge: 'text-bg-secondary' },
+            4: { label: 'Encerrada', badge: 'text-bg-dark' }
+        };
+        renderCount('matriculas-pendentes', solicitacoes.filter(item => Number(item.status) === 1).length);
+        renderCount('matriculas-confirmadas', solicitacoes.filter(item => Number(item.status) === 2).length);
+        renderCount('matriculas-canceladas', solicitacoes.filter(item => Number(item.status) === 3).length);
+        renderCount('matriculas-encerradas', solicitacoes.filter(item => Number(item.status) === 4).length);
+        if (!filtradas.length) {
+            return setTableState(
+                tbody,
+                6,
+                filtro === 'todos' ? 'Ainda não há solicitações de matrícula.' : 'Nenhuma solicitação encontrada para este status.'
+            );
+        }
+
+        filtradas.forEach(matricula => {
+            const row = document.createElement('tr');
+            [matricula.nr, matricula.aluno?.nome, matricula.turma?.nomeTurma, formatDate(matricula.dataEnvio)]
+                .forEach(value => row.append(cell(value)));
+
+            const statusCell = blankCell();
+            const badge = document.createElement('span');
+            const info = statusInfo[Number(matricula.status)];
+            badge.className = `badge rounded-pill ${info.badge}`;
+            badge.textContent = info.label;
+            statusCell.append(badge);
+            row.append(statusCell);
+
+            const actions = blankCell('text-nowrap');
+            if (Number(matricula.status) === 1 || Number(matricula.status) === 2) {
+                if (Number(matricula.status) === 1) {
+                    actions.append(createMatriculaAction(matricula.nr, 2, 'Confirmar', 'btn-success'));
+                    actions.append(document.createTextNode(' '));
+                } else {
+                    actions.append(createMatriculaAction(matricula.nr, 4, 'Encerrar', 'btn-outline-dark'));
+                    actions.append(document.createTextNode(' '));
+                }
+                actions.append(createMatriculaAction(matricula.nr, 3, 'Cancelar', 'btn-outline-danger'));
+            } else {
+                actions.textContent = 'Sem ações disponíveis';
+                actions.className = 'small text-muted';
+            }
+            row.append(actions);
+            tbody.append(row);
+        });
+    }
+
+    function createMatriculaAction(nr, status, label, buttonClass) {
+        const button = document.createElement('button');
+        button.type = 'button';
+        button.className = `btn btn-sm rounded-pill ${buttonClass}`;
+        button.dataset.matriculaNr = nr;
+        button.dataset.matriculaStatus = status;
+        button.dataset.matriculaAction = 'true';
+        button.textContent = label;
+        return button;
     }
 
     function renderAlunos() {
@@ -174,7 +236,7 @@
             const matricula = data.matriculas
                 .filter(item => item.aluno?.codigo === aluno.codigo)
                 .sort((left, right) => Number(right.nr) - Number(left.nr))[0];
-            const turma = matricula?.turma?.nomeTurma;
+            const turma = Number(matricula?.status) === 2 ? matricula?.turma?.nomeTurma : null;
             const vinculo = data.vinculos
                 .filter(item => item.aluno?.codigo === aluno.codigo)
                 .sort((left, right) => Number(left.ordemContato) - Number(right.ordemContato))[0];
@@ -235,27 +297,13 @@
             professor => professor.nome,
             'Selecione um professor'
         );
-        fillSelect(
-            document.getElementById('select-aluno-mat'),
-            data.alunos,
-            aluno => aluno.codigo,
-            aluno => aluno.nome,
-            'Selecione um aluno'
-        );
-        fillSelect(
-            document.getElementById('select-turma-mat'),
-            data.turmas,
-            turma => turma.codigo,
-            turma => turma.nomeTurma,
-            'Selecione uma turma'
-        );
     }
 
     function renderDashboard() {
         renderCount('stat-alunos', data.alunos.length);
         renderCount('stat-professores', data.professores.length);
         renderCount('stat-turmas', data.turmas.length);
-        renderCount('stat-matriculas', data.matriculas.length);
+        renderCount('stat-matriculas', data.matriculas.filter(item => Number(item.status) >= 1).length);
         renderProfessorTable();
         renderTurmas();
         renderMatriculas();
@@ -306,12 +354,6 @@
         }
     }
 
-    function todayLocalDateTime() {
-        const now = new Date();
-        const localDate = new Date(now.getTime() - now.getTimezoneOffset() * 60000);
-        return localDate.toISOString().slice(0, 19);
-    }
-
     function formValue(id) {
         return document.getElementById(id).value.trim();
     }
@@ -345,18 +387,24 @@
             }, 'Turma cadastrada com sucesso.', refreshDashboard);
         });
 
-        const matriculaForm = document.getElementById('novaMatriculaForm');
-        matriculaForm.addEventListener('submit', event => {
-            event.preventDefault();
-            const alunoCodigo = Number(document.getElementById('select-aluno-mat').value);
-            const turmaCodigo = Number(document.getElementById('select-turma-mat').value);
-            submitForm(matriculaForm, `${endpoints.matriculas}/salvar`, {
-                aluno: { codigo: alunoCodigo },
-                turma: { codigo: turmaCodigo },
-                dataEnvio: todayLocalDateTime(),
-                status: 0
-            }, 'Matrícula enviada para processamento com sucesso.', refreshDashboard);
-        });
+    }
+
+    async function atualizarStatusMatricula(nr, status, button) {
+        button.disabled = true;
+        const textoOriginal = button.textContent;
+        button.textContent = 'Atualizando...';
+        try {
+            await request(`${endpoints.matriculas}/${nr}/status`, {
+                method: 'PATCH',
+                body: JSON.stringify({ status })
+            });
+            await refreshDashboard();
+            window.showAppAlert('Status da matrícula atualizado com sucesso.', 'success');
+        } catch (error) {
+            window.showAppAlert(error.message || 'Não foi possível atualizar o status.', 'danger');
+            button.disabled = false;
+            button.textContent = textoOriginal;
+        }
     }
 
     function wireNavigation() {
@@ -393,6 +441,12 @@
     document.querySelectorAll('#cadastro-professor tbody, #matriculas tbody, #alunos-lista tbody, #responsaveis-lista tbody, #diarios-lista tbody')
         .forEach(tbody => setTableState(tbody, Number(tbody.dataset.columns), 'Carregando dados...'));
 
+    document.querySelector('#matriculas tbody').addEventListener('click', event => {
+        const button = event.target.closest('[data-matricula-action]');
+        if (!button) return;
+        atualizarStatusMatricula(Number(button.dataset.matriculaNr), Number(button.dataset.matriculaStatus), button);
+    });
+    document.getElementById('matriculaFiltro').addEventListener('change', renderMatriculas);
     wireForms();
     wireNavigation();
     initializeSessionGreeting();

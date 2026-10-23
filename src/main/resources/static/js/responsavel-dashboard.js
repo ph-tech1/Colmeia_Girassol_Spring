@@ -77,22 +77,54 @@
         enviarFormulario(criancaForm, '/api/portal-responsavel/criancas', 'POST', 'Criança vinculada com sucesso.');
     }
 
-    const solicitacaoMatriculaForm = document.getElementById('solicitacaoMatriculaForm');
-    if (solicitacaoMatriculaForm) {
-        const campoCrianca = document.getElementById('solicitacaoMatriculaCrianca');
-        document.querySelectorAll('[data-child-name]').forEach((botao) => {
-            botao.addEventListener('click', () => {
-                campoCrianca.value = botao.dataset.childName;
-                campoCrianca.dispatchEvent(new Event('input', { bubbles: true }));
-            });
-        });
+    document.querySelectorAll('[data-matricula-action]').forEach((button) => {
+        button.addEventListener('click', async () => {
+            const cancelar = button.dataset.matriculaAction === 'cancelar';
+            if (cancelar && !window.confirm('Deseja realmente cancelar esta matrícula confirmada?')) return;
 
-        solicitacaoMatriculaForm.addEventListener('submit', (event) => {
-            event.preventDefault();
-            if (!window.FormValidator?.validateForm(solicitacaoMatriculaForm)) return;
-            window.showAppAlert('Os dados foram conferidos, mas a solicitação ainda não foi enviada. O envio será conectado posteriormente.', 'info');
+            if (!csrfToken || !csrfHeader) {
+                mostrarFeedback(
+                    button.closest('article').querySelector('[data-matricula-feedback]'),
+                    'Não foi possível validar sua sessão. Atualize a página e tente novamente.'
+                );
+                return;
+            }
+            const textoOriginal = button.innerHTML;
+            const cabecalhos = { 'Accept': 'application/json' };
+            cabecalhos[csrfHeader] = csrfToken;
+            button.disabled = true;
+            button.innerHTML = '<span class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>Atualizando...';
+
+            try {
+                const resposta = await fetch(button.dataset.matriculaUrl, {
+                    method: 'POST',
+                    headers: cabecalhos
+                });
+                if (resposta.url.includes('/html/login.html')) {
+                    window.location.assign(resposta.url);
+                    return;
+                }
+                const tipoConteudo = resposta.headers.get('content-type') || '';
+                if (!tipoConteudo.includes('application/json')) {
+                    throw new Error('A resposta do servidor não pôde ser processada. Atualize a página e tente novamente.');
+                }
+                const corpo = await resposta.json();
+                if (!resposta.ok) {
+                    throw new Error(corpo?.mensagem || 'Não foi possível atualizar a matrícula. Tente novamente.');
+                }
+                window.showAppAlert(
+                    corpo?.mensagem || (cancelar ? 'Matrícula cancelada.' : 'Solicitação enviada.'),
+                    'success'
+                );
+                window.setTimeout(() => window.location.reload(), 700);
+            } catch (error) {
+                const feedback = button.closest('article').querySelector('[data-matricula-feedback]');
+                mostrarFeedback(feedback, error.message);
+                button.disabled = false;
+                button.innerHTML = textoOriginal;
+            }
         });
-    }
+    });
 
     const autorizadoBuscaForm = document.getElementById('autorizadoBuscaForm');
     if (autorizadoBuscaForm) {

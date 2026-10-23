@@ -75,6 +75,32 @@ public class PortalResponsavelController {
         }
     }
 
+    @PostMapping("/criancas/{codigo}/matricula")
+    public ResponseEntity<?> solicitarMatricula(
+            @PathVariable Integer codigo,
+            Authentication authentication
+    ) {
+        try {
+            portalResponsavelService.solicitarMatricula(authentication.getName(), codigo);
+            return ResponseEntity.ok(new SucessoResponse("Solicitação de matrícula enviada para a escola."));
+        } catch (IllegalArgumentException exception) {
+            return ResponseEntity.badRequest().body(new ErroResponse(exception.getMessage()));
+        }
+    }
+
+    @PostMapping("/criancas/{codigo}/matricula/cancelar")
+    public ResponseEntity<?> cancelarMatricula(
+            @PathVariable Integer codigo,
+            Authentication authentication
+    ) {
+        try {
+            portalResponsavelService.cancelarMatricula(authentication.getName(), codigo);
+            return ResponseEntity.ok(new SucessoResponse("Matrícula cancelada com sucesso."));
+        } catch (IllegalArgumentException exception) {
+            return ResponseEntity.badRequest().body(new ErroResponse(exception.getMessage()));
+        }
+    }
+
     private record PerfilResponse(String nome, String telefone) {
     }
 

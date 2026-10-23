@@ -102,7 +102,7 @@ GO -----------------------------------------------------------------------------
     CREATE TABLE dbo.matriculas (
         nr INT IDENTITY(1, 1) NOT NULL,
         aluno_codigo INT NOT NULL,
-        turma_codigo INT NOT NULL,
+        turma_codigo INT NULL,
         data_envio DATETIME NOT NULL CONSTRAINT DF_matriculas_envio DEFAULT GETDATE(),
         data_decisao DATETIME NULL,
         status INT NOT NULL CONSTRAINT DF_matriculas_status DEFAULT 0,

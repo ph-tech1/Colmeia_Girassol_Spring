@@ -25,4 +25,26 @@ public class MatriculaController {
     public ResponseEntity<MatriculaEntity> salvar(@RequestBody MatriculaEntity matricula) {
         return ResponseEntity.status(HttpStatus.CREATED).body(matriculaService.salvar(matricula));
     }
+
+    @PatchMapping("/{nr}/status")
+    public ResponseEntity<?> atualizarStatus(
+            @PathVariable Integer nr,
+            @RequestBody AtualizarStatusRequest request
+    ) {
+        try {
+            MatriculaEntity matricula = matriculaService.atualizarStatus(
+                    nr,
+                    request == null ? null : request.status()
+            );
+            return ResponseEntity.ok(matricula);
+        } catch (IllegalArgumentException exception) {
+            return ResponseEntity.badRequest().body(new ErroResponse(exception.getMessage()));
+        }
+    }
+
+    private record AtualizarStatusRequest(Integer status) {
+    }
+
+    private record ErroResponse(String mensagem) {
+    }
 }

@@ -22,7 +22,7 @@ public class MatriculaEntity {
     private AlunoEntity aluno;
 
     @ManyToOne
-    @JoinColumn(name = "turma_codigo", nullable = false)
+    @JoinColumn(name = "turma_codigo")
     private TurmaEntity turma;
 
     @Column(name = "data_envio", nullable = false)

@@ -56,8 +56,9 @@
             <div class="col-lg-auto">
                 <div class="student-hero-class">
                     <span class="small text-muted d-block mb-1">Turma atual</span>
-                    <strong class="text-dark-blue" th:if="${matricula != null}" th:text="${matricula.turma.nomeTurma}">Turma</strong>
+                    <strong class="text-dark-blue" th:if="${matricula != null and matricula.turma != null}" th:text="${matricula.turma.nomeTurma}">Turma</strong>
                     <strong class="text-dark-blue" th:if="${matricula == null}">Sem matrícula ativa</strong>
+                    <strong class="text-dark-blue" th:if="${matricula != null and matricula.turma == null}">Turma em definição</strong>
                     <span class="small text-muted d-block mt-1" th:if="${professorNome != null}">
                         <i class="fa-solid fa-chalkboard-user me-1"></i><span th:text="${professorNome}">Professor</span>
                     </span>

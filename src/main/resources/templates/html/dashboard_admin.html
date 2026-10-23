@@ -12,7 +12,7 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
     <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
-    <link rel="stylesheet" th:href="@{/css/style.css(v='1.9.2')}">
+    <link rel="stylesheet" th:href="@{/css/style.css(v='1.9.3')}">
     <style>
         .dashboard-section { display: none; }
         .dashboard-section.active { display: block; }
@@ -198,45 +198,62 @@
 
             <!-- Matrículas -->
             <section id="matriculas" class="dashboard-section mb-5" data-aos="fade-up">
-                <div class="d-flex justify-content-between align-items-center mb-4">
-                    <h4 class="fw-bold text-dark-blue mb-0">Matrículas Cadastradas</h4>
-                    <button class="btn btn-dark-blue rounded-pill px-4" data-bs-toggle="collapse" data-bs-target="#formMatricula">
-                        <i class="fa-solid fa-plus me-2"></i>Nova Matrícula
-                    </button>
+                <div class="d-flex flex-wrap justify-content-between align-items-end gap-3 mb-4">
+                    <div>
+                        <span class="admin-dashboard-kicker"><span aria-hidden="true"></span>Central de solicitações</span>
+                        <h4 class="fw-bold text-dark-blue mb-1">Triagem de matrículas</h4>
+                        <p class="text-muted mb-0">Acompanhe cada pedido e atualize o status conforme a decisão da escola.</p>
+                    </div>
+                    <label class="small fw-semibold text-dark-blue" for="matriculaFiltro">
+                        Mostrar
+                        <select class="form-select mt-1" id="matriculaFiltro" aria-label="Filtrar solicitações por status">
+                            <option value="todos">Todos os pedidos</option>
+                            <option value="1">Pendentes</option>
+                            <option value="2">Confirmadas</option>
+                            <option value="3">Canceladas</option>
+                            <option value="4">Encerradas</option>
+                        </select>
+                    </label>
                 </div>
-                <div class="collapse mb-4" id="formMatricula">
-                    <div class="form-card">
-                        <form id="novaMatriculaForm" class="row g-3">
-                            <div class="col-md-6">
-                                <label for="select-aluno-mat" class="form-label fw-bold">Selecione o Aluno</label>
-                                <select class="form-select rounded-3" id="select-aluno-mat" required>
-                                    <option value="" selected disabled>Carregando alunos...</option>
-                                </select>
-                            </div>
-                            <div class="col-md-6">
-                                <label for="select-turma-mat" class="form-label fw-bold">Selecione a Turma</label>
-                                <select class="form-select rounded-3" id="select-turma-mat" required>
-                                    <option value="" selected disabled>Carregando turmas...</option>
-                                </select>
-                            </div>
-                            <div class="col-12 text-end mt-2">
-                                <button type="submit" class="btn btn-custom btn-yellow-main rounded-pill px-5">Confirmar Matrícula</button>
-                            </div>
-                        </form>
+                <div class="row g-3 mb-4" aria-label="Resumo de solicitações">
+                    <div class="col-6 col-xl-3">
+                        <div class="stat-card py-3">
+                            <span class="small text-muted d-block">Pendentes</span>
+                            <strong class="h4 mb-0 text-warning" id="matriculas-pendentes">—</strong>
+                        </div>
+                    </div>
+                    <div class="col-6 col-xl-3">
+                        <div class="stat-card py-3">
+                            <span class="small text-muted d-block">Confirmadas</span>
+                            <strong class="h4 mb-0 text-success" id="matriculas-confirmadas">—</strong>
+                        </div>
+                    </div>
+                    <div class="col-6 col-xl-3">
+                        <div class="stat-card py-3">
+                            <span class="small text-muted d-block">Canceladas</span>
+                            <strong class="h4 mb-0 text-secondary" id="matriculas-canceladas">—</strong>
+                        </div>
+                    </div>
+                    <div class="col-6 col-xl-3">
+                        <div class="stat-card py-3">
+                            <span class="small text-muted d-block">Encerradas</span>
+                            <strong class="h4 mb-0 text-dark-blue" id="matriculas-encerradas">—</strong>
+                        </div>
                     </div>
                 </div>
                 <div class="table-custom">
-                    <table class="table table-hover mb-0">
+                    <table class="table table-hover align-middle mb-0">
                         <thead>
                             <tr>
                                 <th>Nº Matrícula</th>
                                 <th>Aluno</th>
                                 <th>Turma</th>
-                                <th>Data</th>
+                                <th>Solicitada em</th>
                                 <th>Status</th>
+                                <th>Ações</th>
                             </tr>
                         </thead>
-                        <tbody data-collection="matriculas" data-columns="5"></tbody>
+                        <tbody data-collection="matriculas" data-columns="6"></tbody>
                     </table>
                 </div>
             </section>
@@ -311,6 +328,6 @@
     <script>AOS.init();</script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
     <script th:src="@{/js/theme.js(v='1.4.0')}"></script>
-    <script th:src="@{/js/admin-dashboard.js(v='1.0.0')}"></script>
+    <script th:src="@{/js/admin-dashboard.js(v='1.0.1')}"></script>
 </body>
 </html>

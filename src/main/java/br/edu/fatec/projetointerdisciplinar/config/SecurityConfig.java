@@ -32,6 +32,8 @@ public class SecurityConfig {
                         .requestMatchers("/html/dashboard_professor.html").hasRole("PROFESSOR")
                         .requestMatchers("/html/dashboard_admin.html", "/html/cadastro_professor.html").hasRole("ADMIN")
                         .requestMatchers("/api/admin/**").hasRole("ADMIN")
+                        .requestMatchers(HttpMethod.POST, "/api/matriculas/**").hasRole("ADMIN")
+                        .requestMatchers(HttpMethod.PATCH, "/api/matriculas/**").hasRole("ADMIN")
                         .requestMatchers(HttpMethod.POST, "/api/professores/**").hasRole("ADMIN")
                         .requestMatchers("/api/portal-responsavel/**").hasRole("RESPONSAVEL")
                         .requestMatchers("/api/**").hasAnyRole("PROFESSOR", "ADMIN")

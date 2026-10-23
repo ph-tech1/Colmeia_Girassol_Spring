@@ -11,7 +11,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&family=Playfair+Display:wght@600;700&display=swap" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
-    <link rel="stylesheet" th:href="@{/css/style.css(v='1.9.0')}">
+    <link rel="stylesheet" th:href="@{/css/style.css(v='1.9.1')}">
 </head>
 <body class="responsavel-page">
 <nav class="hive-nav navbar navbar-expand-lg" aria-label="Navegação do portal">
@@ -79,6 +79,7 @@
         <div th:unless="${#lists.isEmpty(alunos)}" class="row g-4">
             <div class="col-12" th:each="item : ${alunos}">
                 <article class="form-card p-4 p-lg-5">
+                    <div class="alert d-none mb-4" data-matricula-feedback role="alert" aria-live="polite"></div>
                     <div class="row g-4">
                         <div class="col-lg-4">
                             <div class="d-flex align-items-center gap-3 mb-4">
@@ -87,7 +88,7 @@
                                     <h3 class="h4 fw-bold text-dark-blue mb-1" th:text="${item.aluno.nome}">Nome da criança</h3>
                                     <p class="text-muted mb-0">
                                         <span th:text="${item.grauParentesco}">Parentesco</span>
-                                        <span th:if="${item.matricula != null}">
+                                        <span th:if="${item.matricula != null and (item.matricula.status == 2 or item.matricula.status == 4) and item.matricula.turma != null}">
                                             <span aria-hidden="true"> · </span>
                                             <span th:text="${item.matricula.turma.nomeTurma}">Turma</span>
                                             <span th:if="${item.professorNome != null}">
@@ -95,7 +96,11 @@
                                                 Prof. <span th:text="${item.professorNome}">Professor</span>
                                             </span>
                                         </span>
-                                        <span th:if="${item.matricula == null}"> · Sem matrícula ativa</span>
+                                        <span th:if="${item.matricula != null and item.matricula.status == 2 and item.matricula.turma == null}"> · Matrícula confirmada, turma em definição</span>
+                                        <span th:if="${item.matricula == null or item.matricula.status == 0}"> · Sem solicitação registrada</span>
+                                        <span th:if="${item.matricula != null and item.matricula.status == 1}"> · Solicitação pendente</span>
+                                        <span th:if="${item.matricula != null and item.matricula.status == 3}"> · Solicitação cancelada</span>
+                                        <span th:if="${item.matricula != null and item.matricula.status == 4}"> · Matrícula encerrada</span>
                                     </p>
                                 </div>
                             </div>
@@ -103,11 +108,48 @@
                                th:href="@{/html/aluno/{codigo}(codigo=${item.aluno.codigo})}">
                                 <i class="fa-solid fa-arrow-up-right-from-square me-2"></i>Ver painel da criança
                             </a>
-                            <button th:if="${item.matricula == null}" class="btn btn-yellow-main rounded-pill px-3 mb-4 ms-sm-2"
-                                    type="button" data-bs-toggle="modal" data-bs-target="#solicitarMatriculaModal"
-                                    th:attr="data-child-name=${item.aluno.nome}">
+                            <button th:if="${item.matricula == null or item.matricula.status == 0}"
+                                    class="btn btn-yellow-main rounded-pill px-3 mb-4 ms-sm-2"
+                                    type="button" data-matricula-action="solicitar"
+                                    th:attr="data-matricula-url=@{/api/portal-responsavel/criancas/{codigo}/matricula(codigo=${item.aluno.codigo})}">
                                 <i class="fa-solid fa-clipboard-check me-2" aria-hidden="true"></i>Solicitar matrícula
                             </button>
+                            <button th:if="${item.matricula != null and item.matricula.status == 2}"
+                                    class="btn btn-outline-danger rounded-pill px-3 mb-4 ms-sm-2"
+                                    type="button" data-matricula-action="cancelar"
+                                    th:attr="data-matricula-url=@{/api/portal-responsavel/criancas/{codigo}/matricula/cancelar(codigo=${item.aluno.codigo})}">
+                                <i class="fa-solid fa-ban me-2" aria-hidden="true"></i>Cancelar matrícula
+                            </button>
+                            <div th:if="${item.matricula != null and item.matricula.status == 1}"
+                                 class="enrollment-status enrollment-status--pending mb-4" role="status" aria-live="polite">
+                                <span class="enrollment-status-icon" aria-hidden="true">
+                                    <i class="fa-solid fa-hourglass-half"></i>
+                                </span>
+                                <div>
+                                    <strong>Pedido em análise</strong>
+                                    <p class="mb-0">A secretaria recebeu a solicitação e está avaliando. Você pode acompanhar o andamento por aqui.</p>
+                                </div>
+                            </div>
+                            <div th:if="${item.matricula != null and item.matricula.status == 2}"
+                                 class="enrollment-status enrollment-status--confirmed mb-4" role="status" aria-live="polite">
+                                <span class="enrollment-status-icon" aria-hidden="true">
+                                    <i class="fa-solid fa-circle-check"></i>
+                                </span>
+                                <div>
+                                    <strong>Matrícula confirmada</strong>
+                                    <p class="mb-0">A matrícula foi confirmada pela escola. Se precisar, você pode cancelá-la por aqui.</p>
+                                </div>
+                            </div>
+                            <div th:if="${item.matricula != null and item.matricula.status == 3}"
+                                 class="enrollment-status enrollment-status--cancelled mb-4" role="status" aria-live="polite">
+                                <span class="enrollment-status-icon" aria-hidden="true">
+                                    <i class="fa-solid fa-circle-xmark"></i>
+                                </span>
+                                <div>
+                                    <strong>Pedido cancelado</strong>
+                                    <p class="mb-0">Esta solicitação foi cancelada. Para orientações sobre um novo pedido, fale com a secretaria.</p>
+                                </div>
+                            </div>
 
                             <div class="student-details">
                                 <h4 class="small fw-bold text-dark-blue mb-3">Informações importantes</h4>
@@ -196,7 +238,7 @@
                         <td class="ps-4 fw-semibold" th:text="${contato.alunoNome}">Criança</td>
                         <td th:text="${contato.nome}">Nome</td>
                         <td th:text="${contato.grauParentesco}">Parentesco</td>
-                        <td th:text="${contato.telefone}">Telefone</td>
+                        <td class="telefone" th:text="${contato.telefone}">Telefone</td>
                     </tr>
                     <tr th:if="${#lists.isEmpty(autorizados)}">
                         <td colspan="4" class="text-center text-muted py-4">Nenhuma outra pessoa autorizada está cadastrada.</td>
@@ -208,37 +250,17 @@
     </section>
 </main>
 
-<div class="modal fade" id="solicitarMatriculaModal" tabindex="-1" aria-labelledby="solicitarMatriculaTitulo" aria-hidden="true">
-    <div class="modal-dialog modal-dialog-centered">
-        <div class="modal-content">
-            <div class="modal-header border-0 pb-0">
-                <div>
-                    <span class="hive-eyebrow"><span></span> Um novo começo</span>
-                    <h2 class="modal-title h4 fw-bold text-dark-blue mt-2" id="solicitarMatriculaTitulo">Solicitar matrícula</h2>
-                </div>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Fechar"></button>
-            </div>
-            <form id="solicitacaoMatriculaForm">
-                <div class="modal-body">
-                    <p class="text-muted">Confira para qual criança deseja solicitar a matrícula.</p>
-                    <div class="mb-3">
-                        <label for="solicitacaoMatriculaCrianca" class="form-label fw-semibold">Criança</label>
-                        <input id="solicitacaoMatriculaCrianca" class="form-control" type="text" readonly required>
-                    </div>
-                    <p class="small text-muted mt-3 mb-0">
-                        <i class="fa-solid fa-circle-info me-1" aria-hidden="true"></i>
-                        Esta tela é apenas visual; a solicitação ainda não será enviada à escola.
-                    </p>
-                </div>
-                <div class="modal-footer border-0 pt-0">
-                    <button type="button" class="btn btn-outline-dark-blue rounded-pill px-4" data-bs-dismiss="modal">Cancelar</button>
-                    <button type="submit" class="btn btn-yellow-main rounded-pill px-4 fw-semibold">Confimar</button>
-                </div>
-            </form>
-        </div>
-    </div>
-</div>
+<script>
+document.querySelectorAll(".telefone").forEach((elemento) => {
+    const numero = elemento.textContent.replace(/\D/g, "");
 
+    if (numero.length === 11) {
+        elemento.textContent = numero.replace(/(\d{2})(\d{5})(\d{4})/, "($1) $2-$3");
+    } else if (numero.length === 10) {
+        elemento.textContent = numero.replace(/(\d{2})(\d{4})(\d{4})/, "($1) $2-$3");
+    }
+});
+</script>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
 <script th:src="@{/js/theme.js(v='1.4.0')}"></script>
 <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
