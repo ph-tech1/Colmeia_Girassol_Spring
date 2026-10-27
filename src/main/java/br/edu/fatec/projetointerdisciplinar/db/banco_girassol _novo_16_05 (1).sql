@@ -111,6 +111,7 @@ GO -----------------------------------------------------------------------------
         CONSTRAINT FK_matriculas_alunos FOREIGN KEY (aluno_codigo) REFERENCES dbo.alunos (codigo),
         CONSTRAINT FK_matriculas_turmas FOREIGN KEY (turma_codigo) REFERENCES dbo.turmas (codigo),
         CONSTRAINT CHK_matricula_status CHECK (status IN (0, 1, 2, 3, 4))
+        -- 0 pedente, 1 em analize, 2 aprovado, 3 rejeitado e 4 cancelada
     );
 GO --------------------------------------------------------------------------------
     -- 9. TABELA DE PLANEJAMENTO DE AULAS

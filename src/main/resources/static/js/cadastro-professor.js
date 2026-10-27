@@ -96,8 +96,7 @@
             form.querySelectorAll('.is-valid, .is-invalid').forEach(field => {
                 field.classList.remove('is-valid', 'is-invalid');
             });
-            showFeedback('Professor cadastrado com sucesso!', 'success', form.dataset.dashboardUrl);
-            feedback.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            window.showAppAlert('Professor cadastrado com sucesso!', 'success');
         } catch (error) {
             showFeedback(error.message || 'Não foi possível cadastrar o professor.', 'danger');
         } finally {

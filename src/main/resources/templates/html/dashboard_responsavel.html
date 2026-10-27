@@ -88,7 +88,7 @@
                                     <h3 class="h4 fw-bold text-dark-blue mb-1" th:text="${item.aluno.nome}">Nome da criança</h3>
                                     <p class="text-muted mb-0">
                                         <span th:text="${item.grauParentesco}">Parentesco</span>
-                                        <span th:if="${item.matricula != null and (item.matricula.status == 2 or item.matricula.status == 4) and item.matricula.turma != null}">
+                                        <span th:if="${item.matricula != null and item.matricula.status == 2 and item.matricula.turma != null}">
                                             <span aria-hidden="true"> · </span>
                                             <span th:text="${item.matricula.turma.nomeTurma}">Turma</span>
                                             <span th:if="${item.professorNome != null}">
@@ -96,11 +96,12 @@
                                                 Prof. <span th:text="${item.professorNome}">Professor</span>
                                             </span>
                                         </span>
-                                        <span th:if="${item.matricula != null and item.matricula.status == 2 and item.matricula.turma == null}"> · Matrícula confirmada, turma em definição</span>
-                                        <span th:if="${item.matricula == null or item.matricula.status == 0}"> · Sem solicitação registrada</span>
-                                        <span th:if="${item.matricula != null and item.matricula.status == 1}"> · Solicitação pendente</span>
-                                        <span th:if="${item.matricula != null and item.matricula.status == 3}"> · Solicitação cancelada</span>
-                                        <span th:if="${item.matricula != null and item.matricula.status == 4}"> · Matrícula encerrada</span>
+                                        <span th:if="${item.matricula == null}"> · Sem solicitação registrada</span>
+                                        <span th:if="${item.matricula != null and item.matricula.status == 0}"> · Solicitação aguardando análise</span>
+                                        <span th:if="${item.matricula != null and item.matricula.status == 1}"> · Matrícula em análise</span>
+                                        <span th:if="${item.matricula != null and item.matricula.status == 2 and item.matricula.turma == null}"> · Matrícula aprovada, turma em definição</span>
+                                        <span th:if="${item.matricula != null and item.matricula.status == 3}"> · Matrícula rejeitada</span>
+                                        <span th:if="${item.matricula != null and item.matricula.status == 4}"> · Matrícula cancelada</span>
                                     </p>
                                 </div>
                             </div>
@@ -108,26 +109,42 @@
                                th:href="@{/html/aluno/{codigo}(codigo=${item.aluno.codigo})}">
                                 <i class="fa-solid fa-arrow-up-right-from-square me-2"></i>Ver painel da criança
                             </a>
-                            <button th:if="${item.matricula == null or item.matricula.status == 0}"
+                            <button th:if="${item.matricula == null}"
                                     class="btn btn-yellow-main rounded-pill px-3 mb-4 ms-sm-2"
                                     type="button" data-matricula-action="solicitar"
                                     th:attr="data-matricula-url=@{/api/portal-responsavel/criancas/{codigo}/matricula(codigo=${item.aluno.codigo})}">
                                 <i class="fa-solid fa-clipboard-check me-2" aria-hidden="true"></i>Solicitar matrícula
                             </button>
-                            <button th:if="${item.matricula != null and item.matricula.status == 2}"
+                            <button th:if="${item.matricula != null and item.matricula.status != 4}"
                                     class="btn btn-outline-danger rounded-pill px-3 mb-4 ms-sm-2"
                                     type="button" data-matricula-action="cancelar"
                                     th:attr="data-matricula-url=@{/api/portal-responsavel/criancas/{codigo}/matricula/cancelar(codigo=${item.aluno.codigo})}">
-                                <i class="fa-solid fa-ban me-2" aria-hidden="true"></i>Cancelar matrícula
+                                <i class="fa-solid fa-ban me-2" aria-hidden="true"></i>Cancelar solicitação
                             </button>
+                            <button th:if="${item.matricula != null and item.matricula.status == 4}"
+                                    class="btn btn-yellow-main rounded-pill px-3 mb-4 ms-sm-2"
+                                    type="button" data-matricula-action="retomar"
+                                    th:attr="data-matricula-url=@{/api/portal-responsavel/criancas/{codigo}/matricula/retomar(codigo=${item.aluno.codigo})}">
+                                <i class="fa-solid fa-rotate-right me-2" aria-hidden="true"></i>Retomar matrícula
+                            </button>
+                            <div th:if="${item.matricula != null and item.matricula.status == 0}"
+                                 class="enrollment-status enrollment-status--pending mb-4" role="status" aria-live="polite">
+                                <span class="enrollment-status-icon" aria-hidden="true">
+                                    <i class="fa-solid fa-hourglass-half"></i>
+                                </span>
+                                <div>
+                                    <strong>Solicitação recebida</strong>
+                                    <p class="mb-0">A escola recebeu a solicitação. Ela será encaminhada para análise.</p>
+                                </div>
+                            </div>
                             <div th:if="${item.matricula != null and item.matricula.status == 1}"
                                  class="enrollment-status enrollment-status--pending mb-4" role="status" aria-live="polite">
                                 <span class="enrollment-status-icon" aria-hidden="true">
                                     <i class="fa-solid fa-hourglass-half"></i>
                                 </span>
                                 <div>
-                                    <strong>Pedido em análise</strong>
-                                    <p class="mb-0">A secretaria recebeu a solicitação e está avaliando. Você pode acompanhar o andamento por aqui.</p>
+                                    <strong>Matrícula em análise</strong>
+                                    <p class="mb-0">A secretaria está avaliando a solicitação. Você pode acompanhar o andamento por aqui.</p>
                                 </div>
                             </div>
                             <div th:if="${item.matricula != null and item.matricula.status == 2}"
@@ -136,8 +153,8 @@
                                     <i class="fa-solid fa-circle-check"></i>
                                 </span>
                                 <div>
-                                    <strong>Matrícula confirmada</strong>
-                                    <p class="mb-0">A matrícula foi confirmada pela escola. Se precisar, você pode cancelá-la por aqui.</p>
+                                    <strong>Matrícula aprovada</strong>
+                                    <p class="mb-0">A escola aprovou a matrícula. Se precisar, você pode cancelá-la por aqui.</p>
                                 </div>
                             </div>
                             <div th:if="${item.matricula != null and item.matricula.status == 3}"
@@ -146,8 +163,18 @@
                                     <i class="fa-solid fa-circle-xmark"></i>
                                 </span>
                                 <div>
-                                    <strong>Pedido cancelado</strong>
-                                    <p class="mb-0">Esta solicitação foi cancelada. Para orientações sobre um novo pedido, fale com a secretaria.</p>
+                                    <strong>Matrícula rejeitada</strong>
+                                    <p class="mb-0">Motivo: <span th:text="${item.matricula.motivoRejeicao}">Motivo informado pela escola</span></p>
+                                </div>
+                            </div>
+                            <div th:if="${item.matricula != null and item.matricula.status == 4}"
+                                 class="enrollment-status enrollment-status--cancelled mb-4" role="status" aria-live="polite">
+                                <span class="enrollment-status-icon" aria-hidden="true">
+                                    <i class="fa-solid fa-circle-xmark"></i>
+                                </span>
+                                <div>
+                                    <strong>Matrícula cancelada</strong>
+                                    <p class="mb-0">Esta solicitação foi cancelada. Você pode retomá-la quando quiser.</p>
                                 </div>
                             </div>
 
@@ -267,6 +294,6 @@ document.querySelectorAll(".telefone").forEach((elemento) => {
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.mask/1.14.16/jquery.mask.min.js"></script>
 <script th:src="@{/js/validation.js(v='1.2.0')}"></script>
 <script th:src="@{/js/cep.js(v='1.1.0')}"></script>
-<script th:src="@{/js/responsavel-dashboard.js(v='1.3.0')}"></script>
+<script th:src="@{/js/responsavel-dashboard.js(v='1.4.0')}"></script>
 </body>
 </html>

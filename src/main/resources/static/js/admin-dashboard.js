@@ -112,11 +112,31 @@
         if (element) element.textContent = count;
     }
 
+    function normalizeSearch(value) {
+        return String(value ?? '')
+            .normalize('NFD')
+            .replace(/[\u0300-\u036f]/g, '')
+            .toLocaleLowerCase('pt-BR')
+            .trim();
+    }
+
+    function matchesSearch(query, values) {
+        const normalizedQuery = normalizeSearch(query);
+        if (!normalizedQuery) return true;
+        return normalizeSearch(values.filter(value => value != null).join(' ')).includes(normalizedQuery);
+    }
+
     function renderProfessorTable() {
         const tbody = document.querySelector('#cadastro-professor tbody');
         tbody.replaceChildren();
         if (!data.professores.length) return setTableState(tbody, 4, 'Nenhum professor cadastrado.');
-        data.professores.forEach(professor => appendRow(tbody, [
+        const filtrados = data.professores.filter(professor => matchesSearch(
+            document.getElementById('professorSearchInput').value,
+            [professor.nome, professor.formacao, formatDate(professor.dataContratacao),
+                Number(professor.status) === 1 ? 'Ativo' : 'Inativo']
+        ));
+        if (!filtrados.length) return setTableState(tbody, 4, 'Nenhum professor encontrado para essa busca.');
+        filtrados.forEach(professor => appendRow(tbody, [
             professor.nome,
             professor.formacao,
             formatDate(professor.dataContratacao),
@@ -140,7 +160,7 @@
             const column = document.createElement('div');
             column.className = 'col-md-6 col-xl-4';
             const card = document.createElement('article');
-            card.className = 'stat-card border-start border-4 border-primary';
+            card.className = 'stat-card classroom-dashboard-card';
             const title = document.createElement('h5');
             title.className = 'fw-bold text-dark-blue';
             title.textContent = turma.nomeTurma;
@@ -151,41 +171,104 @@
             schoolYear.className = 'text-muted small mb-3';
             schoolYear.textContent = `${turma.ano ?? '—'} · ${turma.grau || '—'}`;
             const count = document.createElement('span');
-            count.className = 'badge bg-light text-dark-blue rounded-pill px-3';
+            count.className = 'badge classroom-enrollment-count rounded-pill px-3';
             count.textContent = `${matriculas.length} matrícula(s)`;
-            card.append(title, teacher, schoolYear, count);
+            const rosterButton = document.createElement('a');
+            rosterButton.className = 'btn btn-sm btn-outline-dark-blue rounded-pill';
+            rosterButton.href = `${dashboard.dataset.classroomRosterUrl}?codigo=${encodeURIComponent(turma.codigo)}`;
+            rosterButton.textContent = 'Ver alunos';
+            const editButton = document.createElement('a');
+            editButton.className = 'btn btn-sm btn-outline-dark-blue rounded-pill';
+            editButton.href = `${dashboard.dataset.classroomEditUrl}?codigo=${encodeURIComponent(turma.codigo)}`;
+            editButton.innerHTML = '<i class="fa-solid fa-pen-to-square me-1" aria-hidden="true"></i>Editar';
+            const deleteButton = document.createElement('button');
+            deleteButton.type = 'button';
+            deleteButton.className = 'btn btn-sm btn-outline-danger rounded-pill';
+            deleteButton.dataset.deleteClassroom = turma.codigo;
+            deleteButton.dataset.classroomName = turma.nomeTurma || 'esta turma';
+            deleteButton.innerHTML = '<i class="fa-solid fa-trash-can me-1" aria-hidden="true"></i>Excluir';
+            const actions = document.createElement('div');
+            actions.className = 'classroom-card-actions';
+            actions.append(count, rosterButton);
+            const managementActions = document.createElement('div');
+            managementActions.className = 'classroom-management-actions';
+            managementActions.append(editButton, deleteButton);
+            card.append(title, teacher, schoolYear, actions, managementActions);
             column.append(card);
             grid.append(column);
         });
     }
 
+    function openClassroomDeletion(button) {
+        const matriculasVinculadas = data.matriculas.filter(item =>
+            Number(item.turma?.codigo) === Number(button.dataset.deleteClassroom)
+        ).length;
+        document.getElementById('deleteClassroomName').textContent = button.dataset.classroomName;
+        document.getElementById('deleteClassroomImpact').textContent = matriculasVinculadas
+            ? `${matriculasVinculadas} matrícula(s) permanecerão no sistema, mas ficarão sem turma atribuída.`
+            : 'Nenhuma matrícula está vinculada a esta turma.';
+        document.getElementById('confirmDeleteClassroom').dataset.classroomCodigo = button.dataset.deleteClassroom;
+        window.bootstrap.Modal.getOrCreateInstance(document.getElementById('deleteClassroomModal')).show();
+    }
+
+    async function deleteClassroom(button) {
+        const codigo = button.dataset.classroomCodigo;
+        const originalText = button.innerHTML;
+        button.disabled = true;
+        button.innerHTML = '<span class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>Excluindo...';
+        try {
+            await request(`${endpoints.turmas}/${encodeURIComponent(codigo)}`, { method: 'DELETE' });
+            window.bootstrap.Modal.getOrCreateInstance(document.getElementById('deleteClassroomModal')).hide();
+            await refreshDashboard();
+            window.showAppAlert('Turma excluída com sucesso.', 'success');
+        } catch (error) {
+            window.showAppAlert(error.message || 'Não foi possível excluir a turma.', 'danger');
+        } finally {
+            button.disabled = false;
+            button.innerHTML = originalText;
+        }
+    }
+
     function renderMatriculas() {
         const tbody = document.querySelector('#matriculas tbody');
         tbody.replaceChildren();
-        const solicitacoes = data.matriculas.filter(matricula => Number(matricula.status) >= 1 && Number(matricula.status) <= 4);
+        const solicitacoes = data.matriculas.filter(matricula => Number(matricula.status) >= 0 && Number(matricula.status) <= 4);
         const filtro = document.getElementById('matriculaFiltro').value;
+        const termoBusca = document.getElementById('matriculaSearchInput').value;
         const filtradas = filtro === 'todos'
             ? solicitacoes
             : solicitacoes.filter(matricula => Number(matricula.status) === Number(filtro));
         const statusInfo = {
-            1: { label: 'Pendente', badge: 'text-bg-warning' },
-            2: { label: 'Confirmada', badge: 'text-bg-success' },
-            3: { label: 'Cancelada', badge: 'text-bg-secondary' },
-            4: { label: 'Encerrada', badge: 'text-bg-dark' }
+            0: { label: 'Aguardando análise', badge: 'text-bg-primary' },
+            1: { label: 'Em análise', badge: 'text-bg-warning' },
+            2: { label: 'Aprovada', badge: 'text-bg-success' },
+            3: { label: 'Rejeitada', badge: 'text-bg-danger' },
+            4: { label: 'Cancelada', badge: 'text-bg-secondary' }
         };
+        const filtradasPorBusca = filtradas.filter(matricula => matchesSearch(termoBusca, [
+            matricula.nr,
+            matricula.aluno?.nome,
+            matricula.turma?.nomeTurma,
+            formatDate(matricula.dataEnvio),
+            statusInfo[Number(matricula.status)]?.label,
+            matricula.motivoRejeicao
+        ]));
+        renderCount('matriculas-aguardando', solicitacoes.filter(item => Number(item.status) === 0).length);
         renderCount('matriculas-pendentes', solicitacoes.filter(item => Number(item.status) === 1).length);
-        renderCount('matriculas-confirmadas', solicitacoes.filter(item => Number(item.status) === 2).length);
-        renderCount('matriculas-canceladas', solicitacoes.filter(item => Number(item.status) === 3).length);
-        renderCount('matriculas-encerradas', solicitacoes.filter(item => Number(item.status) === 4).length);
-        if (!filtradas.length) {
+        renderCount('matriculas-aprovadas', solicitacoes.filter(item => Number(item.status) === 2).length);
+        renderCount('matriculas-rejeitadas', solicitacoes.filter(item => Number(item.status) === 3).length);
+        renderCount('matriculas-canceladas', solicitacoes.filter(item => Number(item.status) === 4).length);
+        if (!filtradasPorBusca.length) {
             return setTableState(
                 tbody,
                 6,
-                filtro === 'todos' ? 'Ainda não há solicitações de matrícula.' : 'Nenhuma solicitação encontrada para este status.'
+                !solicitacoes.length ? 'Ainda não há solicitações de matrícula.'
+                    : !filtradas.length ? 'Nenhuma solicitação encontrada para este status.'
+                        : 'Nenhuma matrícula encontrada para essa busca.'
             );
         }
 
-        filtradas.forEach(matricula => {
+        filtradasPorBusca.forEach(matricula => {
             const row = document.createElement('tr');
             [matricula.nr, matricula.aluno?.nome, matricula.turma?.nomeTurma, formatDate(matricula.dataEnvio)]
                 .forEach(value => row.append(cell(value)));
@@ -196,18 +279,28 @@
             badge.className = `badge rounded-pill ${info.badge}`;
             badge.textContent = info.label;
             statusCell.append(badge);
+            if (Number(matricula.status) === 3 && matricula.motivoRejeicao) {
+                const reason = document.createElement('div');
+                reason.className = 'small text-muted mt-1';
+                reason.textContent = `Motivo: ${matricula.motivoRejeicao}`;
+                statusCell.append(reason);
+            }
             row.append(statusCell);
 
             const actions = blankCell('text-nowrap');
-            if (Number(matricula.status) === 1 || Number(matricula.status) === 2) {
-                if (Number(matricula.status) === 1) {
-                    actions.append(createMatriculaAction(matricula.nr, 2, 'Confirmar', 'btn-success'));
-                    actions.append(document.createTextNode(' '));
-                } else {
-                    actions.append(createMatriculaAction(matricula.nr, 4, 'Encerrar', 'btn-outline-dark'));
-                    actions.append(document.createTextNode(' '));
-                }
-                actions.append(createMatriculaAction(matricula.nr, 3, 'Cancelar', 'btn-outline-danger'));
+            if (Number(matricula.status) === 0) {
+                actions.append(createMatriculaAction(matricula.nr, 1, 'Iniciar análise', 'btn-outline-primary'));
+            } else if (Number(matricula.status) === 1) {
+                actions.append(createMatriculaAction(matricula.nr, 2, 'Aprovar', 'btn-success'));
+                actions.append(document.createTextNode(' '));
+                actions.append(createMatriculaAction(matricula.nr, 3, 'Rejeitar', 'btn-outline-danger'));
+            } else if (Number(matricula.status) === 2) {
+                const assignButton = document.createElement('button');
+                assignButton.type = 'button';
+                assignButton.className = 'btn btn-sm rounded-pill btn-outline-primary';
+                assignButton.dataset.assignMatricula = matricula.nr;
+                assignButton.textContent = matricula.turma ? 'Trocar turma' : 'Atribuir turma';
+                actions.append(assignButton);
             } else {
                 actions.textContent = 'Sem ações disponíveis';
                 actions.className = 'small text-muted';
@@ -232,6 +325,7 @@
         const tbody = document.querySelector('#alunos-lista tbody');
         tbody.replaceChildren();
         if (!data.alunos.length) return setTableState(tbody, 3, 'Nenhum aluno cadastrado.');
+        let encontrados = 0;
         data.alunos.forEach(aluno => {
             const matricula = data.matriculas
                 .filter(item => item.aluno?.codigo === aluno.codigo)
@@ -241,15 +335,24 @@
                 .filter(item => item.aluno?.codigo === aluno.codigo)
                 .sort((left, right) => Number(left.ordemContato) - Number(right.ordemContato))[0];
             const responsavel = vinculo?.responsavel?.pessoa?.nome;
+            if (!matchesSearch(document.getElementById('alunoSearchInput').value, [aluno.nome, turma, responsavel])) return;
             appendRow(tbody, [aluno.nome, turma, responsavel]);
+            encontrados += 1;
         });
+        if (!encontrados) setTableState(tbody, 3, 'Nenhum aluno encontrado para essa busca.');
     }
 
     function renderResponsaveis() {
         const tbody = document.querySelector('#responsaveis-lista tbody');
         tbody.replaceChildren();
         if (!data.responsaveis.length) return setTableState(tbody, 4, 'Nenhum responsável cadastrado.');
-        data.responsaveis.forEach(responsavel => appendRow(tbody, [
+        const filtrados = data.responsaveis.filter(responsavel => matchesSearch(
+            document.getElementById('responsavelSearchInput').value,
+            [responsavel.pessoa?.nome, responsavel.pessoa?.cpf, maskCpf(responsavel.pessoa?.cpf),
+                responsavel.pessoa?.telefone, maskPhone(responsavel.pessoa?.telefone), responsavel.pessoa?.email]
+        ));
+        if (!filtrados.length) return setTableState(tbody, 4, 'Nenhum responsável encontrado para essa busca.');
+        filtrados.forEach(responsavel => appendRow(tbody, [
             responsavel.pessoa?.nome,
             maskCpf(responsavel.pessoa?.cpf),
             maskPhone(responsavel.pessoa?.telefone),
@@ -272,45 +375,17 @@
             ]));
     }
 
-    function fillSelect(select, items, getValue, getLabel, placeholder) {
-        select.replaceChildren();
-        const firstOption = document.createElement('option');
-        firstOption.value = '';
-        firstOption.disabled = true;
-        firstOption.selected = true;
-        firstOption.textContent = placeholder;
-        select.append(firstOption);
-        items.forEach(item => {
-            const option = document.createElement('option');
-            option.value = getValue(item);
-            option.textContent = getLabel(item);
-            select.append(option);
-        });
-        select.disabled = items.length === 0;
-    }
-
-    function renderSelects() {
-        fillSelect(
-            document.getElementById('select-prof-turma'),
-            data.professores.filter(professor => Number(professor.status) === 1),
-            professor => professor.codigo,
-            professor => professor.nome,
-            'Selecione um professor'
-        );
-    }
-
     function renderDashboard() {
         renderCount('stat-alunos', data.alunos.length);
         renderCount('stat-professores', data.professores.length);
         renderCount('stat-turmas', data.turmas.length);
-        renderCount('stat-matriculas', data.matriculas.filter(item => Number(item.status) >= 1).length);
+        renderCount('stat-matriculas', data.matriculas.length);
         renderProfessorTable();
         renderTurmas();
         renderMatriculas();
         renderAlunos();
         renderResponsaveis();
         renderDiarios();
-        renderSelects();
     }
 
     async function refreshDashboard() {
@@ -354,49 +429,74 @@
         }
     }
 
-    function formValue(id) {
-        return document.getElementById(id).value.trim();
+    function openClassAssignment(nr) {
+        const matricula = data.matriculas.find(item => Number(item.nr) === Number(nr));
+        if (!matricula || Number(matricula.status) !== 2) {
+            window.showAppAlert('A matrícula precisa estar aprovada para receber uma turma.', 'danger');
+            return;
+        }
+
+        const select = document.getElementById('matriculaTurmaSelect');
+        select.replaceChildren(new Option('Selecione uma turma', ''));
+        data.turmas
+            .slice()
+            .sort((left, right) => String(left.nomeTurma || '').localeCompare(String(right.nomeTurma || ''), 'pt-BR'))
+            .forEach(turma => {
+                const professor = turma.professor?.pessoa?.nome || 'Professor não informado';
+                const option = new Option(`${turma.nomeTurma} · ${turma.grau} · ${turma.ano} · ${professor}`, turma.codigo);
+                option.selected = Number(turma.codigo) === Number(matricula.turma?.codigo);
+                select.add(option);
+            });
+        document.getElementById('assignStudentName').textContent = matricula.aluno?.nome || 'Aluno';
+        document.getElementById('matriculaTurmaForm').dataset.matriculaNr = matricula.nr;
+        document.getElementById('saveMatriculaTurma').disabled = data.turmas.length === 0;
+        window.bootstrap.Modal.getOrCreateInstance(document.getElementById('matriculaTurmaModal')).show();
     }
 
-    async function submitForm(form, url, payload, successMessage, afterSave) {
+    async function saveClassAssignment(event) {
+        event.preventDefault();
+        const form = event.currentTarget;
         if (!form.reportValidity()) return;
-        const submitButton = form.querySelector('[type="submit"]');
-        submitButton.disabled = true;
+
+        const button = document.getElementById('saveMatriculaTurma');
+        const originalText = button.textContent;
+        button.disabled = true;
+        button.textContent = 'Salvando...';
         try {
-            await request(url, { method: 'POST', body: JSON.stringify(payload) });
-            form.reset();
-            await afterSave();
-            window.showAppAlert(successMessage, 'success');
+            await request(`${endpoints.matriculas}/${form.dataset.matriculaNr}/turma`, {
+                method: 'PATCH',
+                body: JSON.stringify({ turmaCodigo: Number(document.getElementById('matriculaTurmaSelect').value) })
+            });
+            window.bootstrap.Modal.getOrCreateInstance(document.getElementById('matriculaTurmaModal')).hide();
+            await refreshDashboard();
+            window.showAppAlert('Turma atribuída à matrícula com sucesso.', 'success');
         } catch (error) {
-            window.showAppAlert(error.message || 'Não foi possível concluir a operação.', 'danger');
+            window.showAppAlert(error.message || 'Não foi possível atribuir a turma.', 'danger');
         } finally {
-            submitButton.disabled = false;
+            button.disabled = false;
+            button.textContent = originalText;
         }
     }
 
-    function wireForms() {
-        const turmaForm = document.getElementById('novaTurmaForm');
-        turmaForm.addEventListener('submit', event => {
-            event.preventDefault();
-            const professorCodigo = Number(document.getElementById('select-prof-turma').value);
-            submitForm(turmaForm, `${endpoints.turmas}/salvar`, {
-                nomeTurma: formValue('nova-turma-nome'),
-                ano: Number(formValue('nova-turma-ano')),
-                grau: document.getElementById('nova-turma-grau').value,
-                professor: { pessoaCodigo: professorCodigo }
-            }, 'Turma cadastrada com sucesso.', refreshDashboard);
-        });
-
-    }
-
     async function atualizarStatusMatricula(nr, status, button) {
+        let motivoRejeicao = null;
+        if (status === 3) {
+            motivoRejeicao = window.prompt('Informe o motivo da rejeição da matrícula:');
+            if (motivoRejeicao === null) return;
+            motivoRejeicao = motivoRejeicao.trim();
+            if (!motivoRejeicao) {
+                window.showAppAlert('Informe o motivo da rejeição.', 'danger');
+                return;
+            }
+        }
+
         button.disabled = true;
         const textoOriginal = button.textContent;
         button.textContent = 'Atualizando...';
         try {
             await request(`${endpoints.matriculas}/${nr}/status`, {
                 method: 'PATCH',
-                body: JSON.stringify({ status })
+                body: JSON.stringify({ status, motivoRejeicao })
             });
             await refreshDashboard();
             window.showAppAlert('Status da matrícula atualizado com sucesso.', 'success');
@@ -442,12 +542,40 @@
         .forEach(tbody => setTableState(tbody, Number(tbody.dataset.columns), 'Carregando dados...'));
 
     document.querySelector('#matriculas tbody').addEventListener('click', event => {
+        const assignButton = event.target.closest('[data-assign-matricula]');
+        if (assignButton) {
+            openClassAssignment(Number(assignButton.dataset.assignMatricula));
+            return;
+        }
         const button = event.target.closest('[data-matricula-action]');
         if (!button) return;
         atualizarStatusMatricula(Number(button.dataset.matriculaNr), Number(button.dataset.matriculaStatus), button);
     });
+    document.getElementById('turmasGrid').addEventListener('click', event => {
+        const button = event.target.closest('[data-delete-classroom]');
+        if (button) openClassroomDeletion(button);
+    });
+    document.getElementById('confirmDeleteClassroom').addEventListener('click', event => {
+        deleteClassroom(event.currentTarget);
+    });
+    document.getElementById('matriculaTurmaForm').addEventListener('submit', saveClassAssignment);
     document.getElementById('matriculaFiltro').addEventListener('change', renderMatriculas);
-    wireForms();
+    document.getElementById('professorSearchForm').addEventListener('submit', event => {
+        event.preventDefault();
+        renderProfessorTable();
+    });
+    document.getElementById('matriculaSearchForm').addEventListener('submit', event => {
+        event.preventDefault();
+        renderMatriculas();
+    });
+    document.getElementById('alunoSearchForm').addEventListener('submit', event => {
+        event.preventDefault();
+        renderAlunos();
+    });
+    document.getElementById('responsavelSearchForm').addEventListener('submit', event => {
+        event.preventDefault();
+        renderResponsaveis();
+    });
     wireNavigation();
     initializeSessionGreeting();
     refreshDashboard();

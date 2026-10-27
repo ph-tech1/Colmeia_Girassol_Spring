@@ -34,7 +34,8 @@ public class MatriculaController {
         try {
             MatriculaEntity matricula = matriculaService.atualizarStatus(
                     nr,
-                    request == null ? null : request.status()
+                    request == null ? null : request.status(),
+                    request == null ? null : request.motivoRejeicao()
             );
             return ResponseEntity.ok(matricula);
         } catch (IllegalArgumentException exception) {
@@ -42,7 +43,26 @@ public class MatriculaController {
         }
     }
 
-    private record AtualizarStatusRequest(Integer status) {
+    @PatchMapping("/{nr}/turma")
+    public ResponseEntity<?> atribuirTurma(
+            @PathVariable Integer nr,
+            @RequestBody AtribuirTurmaRequest request
+    ) {
+        try {
+            MatriculaEntity matricula = matriculaService.atribuirTurma(
+                    nr,
+                    request == null ? null : request.turmaCodigo()
+            );
+            return ResponseEntity.ok(matricula);
+        } catch (IllegalArgumentException exception) {
+            return ResponseEntity.badRequest().body(new ErroResponse(exception.getMessage()));
+        }
+    }
+
+    private record AtualizarStatusRequest(Integer status, String motivoRejeicao) {
+    }
+
+    private record AtribuirTurmaRequest(Integer turmaCodigo) {
     }
 
     private record ErroResponse(String mensagem) {

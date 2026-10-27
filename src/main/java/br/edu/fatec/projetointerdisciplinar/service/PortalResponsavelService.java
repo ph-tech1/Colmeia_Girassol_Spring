@@ -110,15 +110,13 @@ public class PortalResponsavelService {
                 .stream()
                 .findFirst()
                 .orElse(null);
-        if (matricula != null && (matricula.getStatus() == null || matricula.getStatus() != 0)) {
-            throw new IllegalArgumentException("Esta matrícula não está disponível para uma nova solicitação.");
+        if (matricula != null) {
+            throw new IllegalArgumentException("Já existe uma matrícula para esta criança.");
         }
 
-        if (matricula == null) {
-            matricula = new MatriculaEntity();
-            matricula.setAluno(vinculo.getAluno());
-        }
-        matricula.setStatus(1);
+        matricula = new MatriculaEntity();
+        matricula.setAluno(vinculo.getAluno());
+        matricula.setStatus(0);
         matricula.setDataEnvio(LocalDateTime.now());
         matricula.setDataDecisao(null);
         matricula.setMotivoRejeicao(null);
@@ -132,12 +130,31 @@ public class PortalResponsavelService {
                 .stream()
                 .findFirst()
                 .orElseThrow(() -> new IllegalArgumentException("Não foi encontrada uma matrícula para cancelar."));
-        if (matricula.getStatus() == null || matricula.getStatus() != 2) {
-            throw new IllegalArgumentException("Só é possível cancelar uma matrícula confirmada.");
+        if (matricula.getStatus() == null || matricula.getStatus() == 4) {
+            throw new IllegalArgumentException("Esta matrícula já está cancelada ou possui status inválido.");
         }
 
-        matricula.setStatus(3);
+        matricula.setStatus(4);
         matricula.setDataDecisao(LocalDateTime.now());
+        matriculaRepository.save(matricula);
+    }
+
+    @Transactional
+    public void retomarMatricula(String cpfAutenticado, Integer alunoCodigo) {
+        buscarVinculoResponsavel(cpfAutenticado, alunoCodigo);
+        MatriculaEntity matricula = matriculaRepository.findByAlunoCodigoOrderByNrDesc(alunoCodigo)
+                .stream()
+                .findFirst()
+                .orElseThrow(() -> new IllegalArgumentException("Não foi encontrada uma matrícula para retomar."));
+        if (matricula.getStatus() == null || matricula.getStatus() != 4) {
+            throw new IllegalArgumentException("Só é possível retomar uma matrícula cancelada.");
+        }
+
+        matricula.setStatus(0);
+        matricula.setDataEnvio(LocalDateTime.now());
+        matricula.setDataDecisao(null);
+        matricula.setMotivoRejeicao(null);
+        matricula.setTurma(null);
         matriculaRepository.save(matricula);
     }
 

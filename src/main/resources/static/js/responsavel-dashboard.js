@@ -80,7 +80,7 @@
     document.querySelectorAll('[data-matricula-action]').forEach((button) => {
         button.addEventListener('click', async () => {
             const cancelar = button.dataset.matriculaAction === 'cancelar';
-            if (cancelar && !window.confirm('Deseja realmente cancelar esta matrícula confirmada?')) return;
+            if (cancelar && !window.confirm('Deseja realmente cancelar esta solicitação de matrícula?')) return;
 
             if (!csrfToken || !csrfHeader) {
                 mostrarFeedback(
@@ -113,7 +113,13 @@
                     throw new Error(corpo?.mensagem || 'Não foi possível atualizar a matrícula. Tente novamente.');
                 }
                 window.showAppAlert(
-                    corpo?.mensagem || (cancelar ? 'Matrícula cancelada.' : 'Solicitação enviada.'),
+                    corpo?.mensagem || (
+                        cancelar
+                            ? 'Matrícula cancelada.'
+                            : button.dataset.matriculaAction === 'retomar'
+                                ? 'Matrícula retomada.'
+                                : 'Solicitação enviada.'
+                    ),
                     'success'
                 );
                 window.setTimeout(() => window.location.reload(), 700);

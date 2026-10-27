@@ -39,6 +39,11 @@
 
     function validateField(field) {
         const $field = $(field);
+        if ($field.closest('[data-validation="off"]').length) {
+            $field.removeClass('is-invalid is-valid');
+            $field.closest('.input-group').removeClass('has-invalid-field has-valid-field');
+            return true;
+        }
         if (!$field.is(':visible') || $field.is(':disabled')) return true;
         const value = String($field.val() || '').trim();
         const id = $field.attr('id') || '';
@@ -99,6 +104,7 @@
         $('.uf-field').on('input', function () { this.value = this.value.replace(/[^a-zA-Z]/g, '').toUpperCase().slice(0, 2); });
 
         $('form').on('submit', function (event) {
+            if (this.dataset.validation === 'off') return;
             if (!validateForm(this)) event.preventDefault();
         });
 

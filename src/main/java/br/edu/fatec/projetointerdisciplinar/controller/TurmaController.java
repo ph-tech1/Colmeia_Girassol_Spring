@@ -22,7 +22,33 @@ public class TurmaController {
     }
 
     @PostMapping("/salvar")
-    public ResponseEntity<TurmaEntity> salvar(@RequestBody TurmaEntity turma) {
-        return ResponseEntity.status(HttpStatus.CREATED).body(turmaService.salvar(turma));
+    public ResponseEntity<?> salvar(@RequestBody TurmaEntity turma) {
+        try {
+            return ResponseEntity.status(HttpStatus.CREATED).body(turmaService.salvar(turma));
+        } catch (IllegalArgumentException exception) {
+            return ResponseEntity.badRequest().body(new ErroResponse(exception.getMessage()));
+        }
+    }
+
+    @PutMapping("/{codigo}")
+    public ResponseEntity<?> atualizar(@PathVariable Integer codigo, @RequestBody TurmaEntity turma) {
+        try {
+            return ResponseEntity.ok(turmaService.atualizar(codigo, turma));
+        } catch (IllegalArgumentException exception) {
+            return ResponseEntity.badRequest().body(new ErroResponse(exception.getMessage()));
+        }
+    }
+
+    @DeleteMapping("/{codigo}")
+    public ResponseEntity<?> deletar(@PathVariable Integer codigo) {
+        try {
+            turmaService.deletar(codigo);
+            return ResponseEntity.noContent().build();
+        } catch (IllegalArgumentException exception) {
+            return ResponseEntity.badRequest().body(new ErroResponse(exception.getMessage()));
+        }
+    }
+
+    private record ErroResponse(String mensagem) {
     }
 }

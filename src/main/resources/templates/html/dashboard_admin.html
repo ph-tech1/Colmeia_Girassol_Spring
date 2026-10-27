@@ -12,7 +12,7 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
     <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
-    <link rel="stylesheet" th:href="@{/css/style.css(v='1.9.3')}">
+    <link rel="stylesheet" th:href="@{/css/style.css(v='1.10.8')}">
     <style>
         .dashboard-section { display: none; }
         .dashboard-section.active { display: block; }
@@ -79,7 +79,7 @@
 
         <!-- Main Content -->
         <main class="main-content" id="adminDashboard"
-              th:attr="data-alunos-url=@{/api/alunos},data-professores-url=@{/api/admin/professores},data-turmas-url=@{/api/turmas},data-matriculas-url=@{/api/matriculas},data-responsaveis-url=@{/api/responsaveis},data-vinculos-url=@{/api/responsaveis-alunos},data-diarios-url=@{/api/diarios-bordo}">
+              th:attr="data-alunos-url=@{/api/alunos},data-professores-url=@{/api/admin/professores},data-turmas-url=@{/api/turmas},data-matriculas-url=@{/api/matriculas},data-responsaveis-url=@{/api/responsaveis},data-vinculos-url=@{/api/responsaveis-alunos},data-diarios-url=@{/api/diarios-bordo},data-classroom-roster-url=@{/html/turma_alunos.html},data-classroom-edit-url=@{/html/cadastro_turma.html}">
             <header class="dashboard-header admin-dashboard-header" data-aos="fade-down">
                 <div>
                     <div class="admin-dashboard-kicker"><span aria-hidden="true"></span>Painel administrativo</div>
@@ -137,6 +137,16 @@
                         <i class="fa-solid fa-plus me-2"></i>Novo Professor
                     </a>
                 </div>
+                <form class="dashboard-search mb-3" id="professorSearchForm" role="search" data-validation="off">
+                    <label class="visually-hidden" for="professorSearchInput">Buscar professores</label>
+                    <div class="input-group">
+                        <input class="form-control" id="professorSearchInput" type="search"
+                               placeholder="Buscar por nome, formação ou status" autocomplete="off">
+                        <button class="btn btn-dark-blue rounded-end-pill px-4" type="submit">
+                            <i class="fa-solid fa-magnifying-glass me-2" aria-hidden="true"></i>Pesquisar
+                        </button>
+                    </div>
+                </form>
                 <div class="table-custom">
                     <table class="table table-hover mb-0">
                         <thead>
@@ -156,40 +166,9 @@
             <section id="cadastro-turma" class="dashboard-section mb-5" data-aos="fade-up">
                 <div class="d-flex justify-content-between align-items-center mb-4">
                     <h4 class="fw-bold text-dark-blue mb-0">Gestão de Turmas</h4>
-                    <button class="btn btn-dark-blue rounded-pill px-4" data-bs-toggle="collapse" data-bs-target="#formTurma">
+                    <a class="btn btn-dark-blue rounded-pill px-4" th:href="@{/html/cadastro_turma.html}">
                         <i class="fa-solid fa-plus me-2"></i>Nova Turma
-                    </button>
-                </div>
-                <div class="collapse mb-4" id="formTurma">
-                    <div class="form-card">
-                        <form id="novaTurmaForm" class="row g-3">
-                            <div class="col-md-4">
-                                <label for="nova-turma-nome" class="form-label fw-bold">Nome da Turma</label>
-                                <input type="text" class="form-control rounded-3" id="nova-turma-nome" maxlength="50" required>
-                            </div>
-                            <div class="col-md-2">
-                                <label for="nova-turma-ano" class="form-label fw-bold">Ano</label>
-                                <input type="number" class="form-control rounded-3" id="nova-turma-ano" required min="2000" max="2100">
-                            </div>
-                            <div class="col-md-3">
-                                <label for="nova-turma-grau" class="form-label fw-bold">Nível</label>
-                                <select class="form-select rounded-3" id="nova-turma-grau" required>
-                                    <option value="" selected disabled>Selecione o nível</option>
-                                    <option value="Berçário">Berçário</option>
-                                    <option value="Infantil">Infantil</option>
-                                </select>
-                            </div>
-                            <div class="col-md-3">
-                                <label for="select-prof-turma" class="form-label fw-bold">Professor Regente</label>
-                                <select class="form-select rounded-3" id="select-prof-turma" required>
-                                    <option value="" selected disabled>Carregando professores...</option>
-                                </select>
-                            </div>
-                            <div class="col-12 text-end mt-2">
-                                <button type="submit" class="btn btn-custom btn-yellow-main rounded-pill px-5">Criar Turma</button>
-                            </div>
-                        </form>
-                    </div>
+                    </a>
                 </div>
                 <div class="row g-4" id="turmasGrid">
                     <div class="col-12 text-center text-muted py-4">Carregando turmas...</div>
@@ -206,41 +185,58 @@
                     </div>
                     <label class="small fw-semibold text-dark-blue" for="matriculaFiltro">
                         Mostrar
-                        <select class="form-select mt-1" id="matriculaFiltro" aria-label="Filtrar solicitações por status">
+                        <select class="form-select mt-1" id="matriculaFiltro" aria-label="Filtrar solicitações por status" data-validation="off">
                             <option value="todos">Todos os pedidos</option>
-                            <option value="1">Pendentes</option>
-                            <option value="2">Confirmadas</option>
-                            <option value="3">Canceladas</option>
-                            <option value="4">Encerradas</option>
+                            <option value="0">Aguardando análise</option>
+                            <option value="1">Em análise</option>
+                            <option value="2">Aprovadas</option>
+                            <option value="3">Rejeitadas</option>
+                            <option value="4">Canceladas</option>
                         </select>
                     </label>
                 </div>
                 <div class="row g-3 mb-4" aria-label="Resumo de solicitações">
-                    <div class="col-6 col-xl-3">
+                    <div class="col-6 col-xl">
                         <div class="stat-card py-3">
-                            <span class="small text-muted d-block">Pendentes</span>
+                            <span class="small text-muted d-block">Aguardando análise</span>
+                            <strong class="h4 mb-0 text-primary" id="matriculas-aguardando">—</strong>
+                        </div>
+                    </div>
+                    <div class="col-6 col-xl">
+                        <div class="stat-card py-3">
+                            <span class="small text-muted d-block">Em análise</span>
                             <strong class="h4 mb-0 text-warning" id="matriculas-pendentes">—</strong>
                         </div>
                     </div>
-                    <div class="col-6 col-xl-3">
+                    <div class="col-6 col-xl">
                         <div class="stat-card py-3">
-                            <span class="small text-muted d-block">Confirmadas</span>
-                            <strong class="h4 mb-0 text-success" id="matriculas-confirmadas">—</strong>
+                            <span class="small text-muted d-block">Aprovadas</span>
+                            <strong class="h4 mb-0 text-success" id="matriculas-aprovadas">—</strong>
                         </div>
                     </div>
-                    <div class="col-6 col-xl-3">
+                    <div class="col-6 col-xl">
+                        <div class="stat-card py-3">
+                            <span class="small text-muted d-block">Rejeitadas</span>
+                            <strong class="h4 mb-0 text-danger" id="matriculas-rejeitadas">—</strong>
+                        </div>
+                    </div>
+                    <div class="col-6 col-xl">
                         <div class="stat-card py-3">
                             <span class="small text-muted d-block">Canceladas</span>
                             <strong class="h4 mb-0 text-secondary" id="matriculas-canceladas">—</strong>
                         </div>
                     </div>
-                    <div class="col-6 col-xl-3">
-                        <div class="stat-card py-3">
-                            <span class="small text-muted d-block">Encerradas</span>
-                            <strong class="h4 mb-0 text-dark-blue" id="matriculas-encerradas">—</strong>
-                        </div>
-                    </div>
                 </div>
+                <form class="dashboard-search mb-3" id="matriculaSearchForm" role="search" data-validation="off">
+                    <label class="visually-hidden" for="matriculaSearchInput">Buscar matrículas</label>
+                    <div class="input-group">
+                        <input class="form-control" id="matriculaSearchInput" type="search"
+                               placeholder="Buscar por número, aluno, turma ou motivo" autocomplete="off">
+                        <button class="btn btn-dark-blue rounded-end-pill px-4" type="submit">
+                            <i class="fa-solid fa-magnifying-glass me-2" aria-hidden="true"></i>Pesquisar
+                        </button>
+                    </div>
+                </form>
                 <div class="table-custom">
                     <table class="table table-hover align-middle mb-0">
                         <thead>
@@ -263,6 +259,16 @@
                 <div class="d-flex align-items-center mb-4">
                     <h4 class="fw-bold text-dark-blue mb-0">Lista de Alunos</h4>
                 </div>
+                <form class="dashboard-search mb-3" id="alunoSearchForm" role="search" data-validation="off">
+                    <label class="visually-hidden" for="alunoSearchInput">Buscar alunos</label>
+                    <div class="input-group">
+                        <input class="form-control" id="alunoSearchInput" type="search"
+                               placeholder="Buscar por aluno, turma ou responsável" autocomplete="off">
+                        <button class="btn btn-dark-blue rounded-end-pill px-4" type="submit">
+                            <i class="fa-solid fa-magnifying-glass me-2" aria-hidden="true"></i>Pesquisar
+                        </button>
+                    </div>
+                </form>
                 <div class="table-custom">
                     <table class="table table-hover mb-0">
                         <thead>
@@ -282,6 +288,16 @@
                 <div class="d-flex justify-content-between align-items-center mb-4">
                     <h4 class="fw-bold text-dark-blue mb-0">Responsáveis Cadastrados</h4>
                 </div>
+                <form class="dashboard-search mb-3" id="responsavelSearchForm" role="search" data-validation="off">
+                    <label class="visually-hidden" for="responsavelSearchInput">Buscar responsáveis</label>
+                    <div class="input-group">
+                        <input class="form-control" id="responsavelSearchInput" type="search"
+                               placeholder="Buscar por nome, CPF, telefone ou e-mail" autocomplete="off">
+                        <button class="btn btn-dark-blue rounded-end-pill px-4" type="submit">
+                            <i class="fa-solid fa-magnifying-glass me-2" aria-hidden="true"></i>Pesquisar
+                        </button>
+                    </div>
+                </form>
                 <div class="table-custom">
                     <table class="table table-hover mb-0">
                         <thead>
@@ -321,13 +337,66 @@
         </main>
     </div>
 
+    <div class="modal fade" id="matriculaTurmaModal" tabindex="-1" aria-labelledby="matriculaTurmaTitle" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content border-0 rounded-4 shadow">
+                <form id="matriculaTurmaForm">
+                    <div class="modal-header border-0 pb-0">
+                        <div>
+                            <span class="admin-dashboard-kicker"><span aria-hidden="true"></span>Organização da turma</span>
+                            <h2 class="modal-title fs-5 fw-bold text-dark-blue" id="matriculaTurmaTitle">Atribuir turma</h2>
+                        </div>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Fechar"></button>
+                    </div>
+                    <div class="modal-body">
+                        <p class="text-muted mb-3">Aluno: <strong id="assignStudentName"></strong></p>
+                        <label class="form-label fw-semibold" for="matriculaTurmaSelect">Turma</label>
+                        <select class="form-select" id="matriculaTurmaSelect" required>
+                            <option value="" selected disabled>Selecione uma turma</option>
+                        </select>
+                        <small class="text-muted d-block mt-2">A matrícula permanece vinculada a apenas uma turma por vez.</small>
+                    </div>
+                    <div class="modal-footer border-0 pt-0">
+                        <button type="button" class="btn btn-outline-dark-blue rounded-pill" data-bs-dismiss="modal">Cancelar</button>
+                        <button type="submit" class="btn btn-dark-blue rounded-pill" id="saveMatriculaTurma">Salvar turma</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal fade" id="deleteClassroomModal" tabindex="-1" aria-labelledby="deleteClassroomTitle" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content border-0 rounded-4 shadow">
+                <div class="modal-header border-0 pb-0">
+                    <div>
+                        <span class="admin-dashboard-kicker"><span aria-hidden="true"></span>Cuidado com esta mudança</span>
+                        <h2 class="modal-title fs-5 fw-bold text-dark-blue" id="deleteClassroomTitle">Excluir turma?</h2>
+                    </div>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Fechar"></button>
+                </div>
+                <div class="modal-body">
+                    <p class="mb-2">Você está prestes a excluir <strong id="deleteClassroomName"></strong>.</p>
+                    <p class="small text-muted mb-0" id="deleteClassroomImpact"></p>
+                    <p class="small text-danger mt-3 mb-0">Esta ação não pode ser desfeita.</p>
+                </div>
+                <div class="modal-footer border-0 pt-0">
+                    <button type="button" class="btn btn-outline-dark-blue rounded-pill" data-bs-dismiss="modal">Manter turma</button>
+                    <button type="button" class="btn btn-danger rounded-pill" id="confirmDeleteClassroom">
+                        <i class="fa-solid fa-trash-can me-2" aria-hidden="true"></i>Excluir turma
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.mask/1.14.16/jquery.mask.min.js"></script>
-    <script th:src="@{/js/validation.js(v='1.2.0')}"></script>
+    <script th:src="@{/js/validation.js(v='1.2.1')}"></script>
     <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
     <script>AOS.init();</script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
     <script th:src="@{/js/theme.js(v='1.4.0')}"></script>
-    <script th:src="@{/js/admin-dashboard.js(v='1.0.1')}"></script>
+    <script th:src="@{/js/admin-dashboard.js(v='1.5.0')}"></script>
 </body>
 </html>

@@ -1,7 +1,9 @@
 package br.edu.fatec.projetointerdisciplinar.service;
 
 import br.edu.fatec.projetointerdisciplinar.model.MatriculaEntity;
+import br.edu.fatec.projetointerdisciplinar.model.TurmaEntity;
 import br.edu.fatec.projetointerdisciplinar.repository.MatriculaRepository;
+import br.edu.fatec.projetointerdisciplinar.repository.TurmaRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
@@ -17,6 +19,7 @@ import java.util.Optional;
 public class MatriculaService {
 
     private final MatriculaRepository matriculaRepository;
+    private final TurmaRepository turmaRepository;
 
     public List<MatriculaEntity> listarTodos() {
         return matriculaRepository.findAll();
@@ -31,21 +34,49 @@ public class MatriculaService {
     }
 
     @Transactional
-    public MatriculaEntity atualizarStatus(Integer nr, Integer novoStatus) {
-        if (novoStatus == null || novoStatus < 1 || novoStatus > 4) {
+    public MatriculaEntity atualizarStatus(Integer nr, Integer novoStatus, String motivoRejeicao) {
+        if (novoStatus == null || novoStatus < 1 || novoStatus > 3) {
             throw new IllegalArgumentException("Informe um status válido para a matrícula.");
         }
+        String motivo = motivoRejeicao == null ? null : motivoRejeicao.trim();
+        if (novoStatus == 3 && (motivo == null || motivo.isEmpty())) {
+            throw new IllegalArgumentException("Informe o motivo da rejeição.");
+        }
+        if (motivo != null && motivo.length() > 500) {
+            throw new IllegalArgumentException("O motivo da rejeição deve ter no máximo 500 caracteres.");
+        }
+
         MatriculaEntity matricula = matriculaRepository.findById(nr)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Matrícula não encontrada."));
-        int statusAtual = matricula.getStatus();
-        boolean transicaoPermitida = (statusAtual == 1 && (novoStatus == 2 || novoStatus == 3))
-                || (statusAtual == 2 && (novoStatus == 3 || novoStatus == 4));
+        Integer statusAtual = matricula.getStatus();
+        boolean transicaoPermitida = statusAtual != null
+                && ((statusAtual == 0 && novoStatus == 1)
+                || (statusAtual == 1 && (novoStatus == 2 || novoStatus == 3)));
         if (!transicaoPermitida) {
             throw new IllegalArgumentException("Esta matrícula não pode ser alterada para o status informado.");
         }
 
         matricula.setStatus(novoStatus);
         matricula.setDataDecisao(LocalDateTime.now());
+        matricula.setMotivoRejeicao(novoStatus == 3 ? motivo : null);
+        return matriculaRepository.save(matricula);
+    }
+
+    @Transactional
+    public MatriculaEntity atribuirTurma(Integer nr, Integer turmaCodigo) {
+        if (turmaCodigo == null) {
+            throw new IllegalArgumentException("Selecione uma turma.");
+        }
+
+        MatriculaEntity matricula = matriculaRepository.findById(nr)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Matrícula não encontrada."));
+        if (!Integer.valueOf(2).equals(matricula.getStatus())) {
+            throw new IllegalArgumentException("Só é possível atribuir turma a uma matrícula aprovada.");
+        }
+
+        TurmaEntity turma = turmaRepository.findById(turmaCodigo)
+                .orElseThrow(() -> new IllegalArgumentException("A turma selecionada não foi encontrada."));
+        matricula.setTurma(turma);
         return matriculaRepository.save(matricula);
     }
 

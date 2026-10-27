@@ -101,6 +101,19 @@ public class PortalResponsavelController {
         }
     }
 
+    @PostMapping("/criancas/{codigo}/matricula/retomar")
+    public ResponseEntity<?> retomarMatricula(
+            @PathVariable Integer codigo,
+            Authentication authentication
+    ) {
+        try {
+            portalResponsavelService.retomarMatricula(authentication.getName(), codigo);
+            return ResponseEntity.ok(new SucessoResponse("Matrícula retomada e enviada para análise."));
+        } catch (IllegalArgumentException exception) {
+            return ResponseEntity.badRequest().body(new ErroResponse(exception.getMessage()));
+        }
+    }
+
     private record PerfilResponse(String nome, String telefone) {
     }
 

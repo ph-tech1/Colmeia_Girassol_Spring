@@ -60,7 +60,7 @@ public class DashboardResponsavelController {
                     .orElse(null);
 
             boolean matriculaAtiva = matricula != null
-                    && (matricula.getStatus() == 2 || matricula.getStatus() == 4)
+                    && matricula.getStatus() == 2
                     && matricula.getTurma() != null;
             DiarioBordoEntity diario = !matriculaAtiva ? null
                     : diarioBordoRepository.findByMatriculaNrOrderByCodigoDesc(matricula.getNr())
