@@ -4,18 +4,25 @@ import br.edu.fatec.projetointerdisciplinar.dto.AdicionarAutorizadoBuscaRequest;
 import br.edu.fatec.projetointerdisciplinar.dto.AdicionarCriancaRequest;
 import br.edu.fatec.projetointerdisciplinar.dto.AtualizarCriancaRequest;
 import br.edu.fatec.projetointerdisciplinar.dto.AtualizarPerfilResponsavelRequest;
+import br.edu.fatec.projetointerdisciplinar.dto.ConsultarAutorizadoRequest;
+import br.edu.fatec.projetointerdisciplinar.dto.ConsultarAutorizadoResponse;
 import br.edu.fatec.projetointerdisciplinar.enums.UnidadeFederativa;
+import br.edu.fatec.projetointerdisciplinar.enums.EstadoCivil;
 import br.edu.fatec.projetointerdisciplinar.model.AlunoEntity;
+import br.edu.fatec.projetointerdisciplinar.model.AutorizadoEntity;
 import br.edu.fatec.projetointerdisciplinar.model.AutorizadoBuscaEntity;
 import br.edu.fatec.projetointerdisciplinar.model.MatriculaEntity;
 import br.edu.fatec.projetointerdisciplinar.model.PessoaEntity;
+import br.edu.fatec.projetointerdisciplinar.model.ParentescoEntity;
 import br.edu.fatec.projetointerdisciplinar.model.ResponsavelAlunoEntity;
 import br.edu.fatec.projetointerdisciplinar.model.ResponsavelAlunoId;
 import br.edu.fatec.projetointerdisciplinar.model.ResponsavelEntity;
 import br.edu.fatec.projetointerdisciplinar.repository.AlunoRepository;
+import br.edu.fatec.projetointerdisciplinar.repository.AutorizadoRepository;
 import br.edu.fatec.projetointerdisciplinar.repository.AutorizadoBuscaRepository;
 import br.edu.fatec.projetointerdisciplinar.repository.MatriculaRepository;
 import br.edu.fatec.projetointerdisciplinar.repository.PessoaRepository;
+import br.edu.fatec.projetointerdisciplinar.repository.ParentescoRepository;
 import br.edu.fatec.projetointerdisciplinar.repository.ResponsavelAlunoRepository;
 import br.edu.fatec.projetointerdisciplinar.repository.ResponsavelRepository;
 import lombok.RequiredArgsConstructor;
@@ -34,6 +41,8 @@ public class PortalResponsavelService {
     private final AlunoRepository alunoRepository;
     private final ResponsavelAlunoRepository responsavelAlunoRepository;
     private final AutorizadoBuscaRepository autorizadoBuscaRepository;
+    private final AutorizadoRepository autorizadoRepository;
+    private final ParentescoRepository parentescoRepository;
     private final MatriculaRepository matriculaRepository;
 
     @Transactional
@@ -45,13 +54,17 @@ public class PortalResponsavelService {
 
         pessoa.setNome(request.nome().trim());
         pessoa.setTelefone(apenasDigitos(request.telefone()));
+        pessoa.setSexo(request.sexo().trim().toUpperCase());
         pessoa.setCep(apenasDigitos(request.cep()));
         pessoa.setCidade(request.cidade().trim());
         pessoa.setUf(request.uf().trim().toUpperCase());
+        pessoa.setBairro(request.bairro().trim());
         pessoa.setEndereco(request.endereco().trim());
-        responsavel.setLocalTrabalho(request.localTrabalho().trim());
-        responsavel.setTelefoneTrabalho(apenasDigitos(request.telefoneTrabalho()));
-        responsavel.setEstadoCivil(request.estadoCivil().trim());
+        pessoa.setNumero(request.numero().trim());
+        pessoa.setComplemento(valorOpcional(request.complemento()));
+        responsavel.setLocalTrabalho(valorOpcional(request.localTrabalho()));
+        responsavel.setTelefoneTrabalho(valorOpcional(apenasDigitos(request.telefoneTrabalho())));
+        responsavel.setEstadoCivil(estadoCivilOuNull(request.estadoCivil()));
 
         pessoaRepository.save(pessoa);
         responsavelRepository.save(responsavel);
@@ -68,16 +81,18 @@ public class PortalResponsavelService {
         AlunoEntity aluno = new AlunoEntity();
         aluno.setNome(request.nome().trim());
         aluno.setDataNascimento(request.dataNascimento());
-        aluno.setAlergias(valorOuNenhum(request.alergias()));
-        aluno.setRestricoesAlimentar(valorOuNenhum(request.restricoesAlimentares()));
-        aluno.setNecessidadesEspeciais(valorOuNenhum(request.necessidadesEspeciais()));
+        aluno.setSexo(request.sexo().trim().toUpperCase());
+        aluno.setAlergias(valorOpcional(request.alergias()));
+        aluno.setRestricoesAlimentares(valorOpcional(request.restricoesAlimentares()));
+        aluno.setNecessidadesEspeciais(valorOpcional(request.necessidadesEspeciais()));
         aluno = alunoRepository.save(aluno);
 
         ResponsavelAlunoEntity vinculo = new ResponsavelAlunoEntity();
         vinculo.setId(new ResponsavelAlunoId(responsavel.getPessoaCodigo(), aluno.getCodigo()));
         vinculo.setResponsavel(responsavel);
         vinculo.setAluno(aluno);
-        vinculo.setGrauParentesco(request.grauParentesco().trim());
+        vinculo.setParentesco(parentescoRepository.findById(request.parentescoCodigo())
+                .orElseThrow(() -> new IllegalArgumentException("Selecione um parentesco válido.")));
         vinculo.setEspFinanceiro(true);
         vinculo.setOrdemContato(1);
         responsavelAlunoRepository.save(vinculo);
@@ -97,9 +112,10 @@ public class PortalResponsavelService {
         AlunoEntity aluno = vinculo.getAluno();
         aluno.setNome(request.nome().trim());
         aluno.setDataNascimento(request.dataNascimento());
-        aluno.setAlergias(valorOuNenhum(request.alergias()));
-        aluno.setRestricoesAlimentar(valorOuNenhum(request.restricoesAlimentares()));
-        aluno.setNecessidadesEspeciais(valorOuNenhum(request.necessidadesEspeciais()));
+        aluno.setSexo(request.sexo().trim().toUpperCase());
+        aluno.setAlergias(valorOpcional(request.alergias()));
+        aluno.setRestricoesAlimentares(valorOpcional(request.restricoesAlimentares()));
+        aluno.setNecessidadesEspeciais(valorOpcional(request.necessidadesEspeciais()));
         return alunoRepository.save(aluno);
     }
 
@@ -167,42 +183,158 @@ public class PortalResponsavelService {
                 .orElseThrow(() -> new IllegalArgumentException("Esta criança não está vinculada à sua conta."));
     }
 
+    @Transactional(readOnly = true)
+    public ConsultarAutorizadoResponse consultarAutorizado(
+            String cpfAutenticado,
+            ConsultarAutorizadoRequest request
+    ) {
+        validarConsultaAutorizado(request);
+        String cpf = apenasDigitos(request.cpf());
+        validarVinculoResponsavel(cpfAutenticado, request.alunoCodigo());
+        validarNaoResponsavelDoAluno(cpf, request.alunoCodigo());
+
+        return autorizadoRepository.findByCpf(cpf)
+                .map(autorizado -> new ConsultarAutorizadoResponse(true, mascararNome(autorizado.getNome())))
+                .or(() -> pessoaRepository.findByCpf(cpf)
+                        .map(pessoa -> new ConsultarAutorizadoResponse(true, mascararNome(pessoa.getNome()))))
+                .orElseGet(() -> new ConsultarAutorizadoResponse(false, null));
+    }
+
     @Transactional
     public void adicionarAutorizado(String cpfAutenticado, AdicionarAutorizadoBuscaRequest request) {
-        if (request == null || request.alunoCodigo() == null || vazio(request.nome())
-                || vazio(request.telefone())
-                || vazio(request.grauParentesco())) {
-            throw new IllegalArgumentException("Informe a criança, o nome, o telefone e o vínculo da pessoa autorizada.");
+        if (request == null || request.alunoCodigo() == null || vazio(request.cpf())
+                || request.parentescoCodigo() == null) {
+            throw new IllegalArgumentException("Informe a criança, o CPF e o parentesco da pessoa autorizada.");
         }
 
-        String nome = request.nome().trim();
-        String telefone = apenasDigitos(request.telefone());
-        String grauParentesco = request.grauParentesco().trim();
-        if (nome.length() < 3 || nome.length() > 100
-                || telefone.length() < 10 || telefone.length() > 15
-                || grauParentesco.length() > 50) {
-            throw new IllegalArgumentException("Confira o nome, o telefone e o vínculo informados.");
+        String cpf = apenasDigitos(request.cpf());
+        if (cpf.length() != 11) {
+            throw new IllegalArgumentException("O CPF deve conter 11 números.");
         }
 
-        PessoaEntity pessoaResponsavel = buscarPessoa(cpfAutenticado);
-        ResponsavelEntity responsavel = responsavelRepository.findById(pessoaResponsavel.getCodigo())
-                .orElseThrow(() -> new IllegalArgumentException("Cadastro de responsável não encontrado."));
-        ResponsavelAlunoEntity vinculo = responsavelAlunoRepository.findById(
-                        new ResponsavelAlunoId(responsavel.getPessoaCodigo(), request.alunoCodigo()))
+        ResponsavelAlunoEntity vinculo = validarVinculoResponsavel(cpfAutenticado, request.alunoCodigo());
+        validarNaoResponsavelDoAluno(cpf, request.alunoCodigo());
+        ParentescoEntity parentesco = parentescoRepository.findById(request.parentescoCodigo())
+                .orElseThrow(() -> new IllegalArgumentException("Selecione um parentesco válido."));
+
+        AutorizadoEntity autorizado = autorizadoRepository.findByCpf(cpf).orElse(null);
+        if (autorizado == null) {
+            PessoaEntity pessoaExistente = pessoaRepository.findByCpf(cpf).orElse(null);
+            if (pessoaExistente != null) {
+                if (!request.confirmarPessoaExistente()) {
+                    throw new IllegalArgumentException("Confirme que a pessoa identificada pelo nome mascarado é a correta.");
+                }
+                autorizado = new AutorizadoEntity();
+                autorizado.setCpf(cpf);
+                autorizado.setPessoa(pessoaExistente);
+                autorizado = autorizadoRepository.save(autorizado);
+            }
+        }
+        if (autorizado == null) {
+            String nome = request.nome() == null ? "" : request.nome().trim();
+            String rg = vazio(request.rg()) ? null : apenasDigitos(request.rg());
+            String telefone = apenasDigitos(request.telefone());
+            if (nome.length() < 3 || nome.length() > 100
+                    || (rg != null && rg.length() > 20)
+                    || telefone.length() < 10 || telefone.length() > 15) {
+                throw new IllegalArgumentException("Informe nome e telefone válidos para a nova pessoa autorizada.");
+            }
+
+            autorizado = new AutorizadoEntity();
+            autorizado.setCpf(cpf);
+            autorizado.setNome(nome);
+            autorizado.setRg(rg);
+            autorizado.setTelefone(telefone);
+            autorizado = autorizadoRepository.save(autorizado);
+        } else if (!request.confirmarPessoaExistente()) {
+            throw new IllegalArgumentException("Confirme que a pessoa identificada pelo nome mascarado é a correta.");
+        }
+
+        if (autorizado.getPessoa() == null) {
+            PessoaEntity pessoaExistente = pessoaRepository.findByCpf(cpf).orElse(null);
+            if (pessoaExistente != null) {
+                autorizado.setPessoa(pessoaExistente);
+                autorizado.setNome(null);
+                autorizado.setRg(null);
+                autorizado.setTelefone(null);
+                autorizadoRepository.save(autorizado);
+            }
+        }
+
+        AutorizadoBuscaEntity autorizacao = autorizadoBuscaRepository
+                .findByAutorizado_CodigoAndVinculo_Aluno_Codigo(autorizado.getCodigo(), request.alunoCodigo())
+                .orElseGet(AutorizadoBuscaEntity::new);
+        if (autorizacao.getCodigo() != null && Boolean.TRUE.equals(autorizacao.getAtivo())) {
+            throw new IllegalArgumentException("Esta pessoa já está autorizada a buscar este aluno.");
+        }
+
+        autorizacao.setAutorizado(autorizado);
+        if (autorizacao.getCodigo() == null) {
+            autorizacao.setVinculo(vinculo);
+        }
+        autorizacao.setParentesco(parentesco);
+        autorizacao.setAtivo(true);
+        autorizadoBuscaRepository.save(autorizacao);
+    }
+
+    @Transactional
+    public void desativarAutorizado(String cpfAutenticado, Integer autorizadoBuscaCodigo) {
+        AutorizadoBuscaEntity autorizacao = autorizadoBuscaRepository.findById(autorizadoBuscaCodigo)
+                .orElseThrow(() -> new IllegalArgumentException("Autorização não encontrada."));
+        ResponsavelEntity responsavel = buscarResponsavel(cpfAutenticado);
+        Integer alunoCodigo = autorizacao.getVinculo().getAluno().getCodigo();
+        if (!responsavelAlunoRepository.findById(
+                new ResponsavelAlunoId(responsavel.getPessoaCodigo(), alunoCodigo)).isPresent()) {
+            throw new IllegalArgumentException("Esta autorização não pertence a uma criança vinculada à sua conta.");
+        }
+        autorizacao.setAtivo(false);
+        autorizadoBuscaRepository.save(autorizacao);
+    }
+
+    private ResponsavelAlunoEntity validarVinculoResponsavel(String cpfAutenticado, Integer alunoCodigo) {
+        ResponsavelEntity responsavel = buscarResponsavel(cpfAutenticado);
+        return responsavelAlunoRepository.findById(new ResponsavelAlunoId(responsavel.getPessoaCodigo(), alunoCodigo))
                 .orElseThrow(() -> new IllegalArgumentException("Esta criança não está vinculada à sua conta."));
-        if (autorizadoBuscaRepository
-                .existsByAluno_CodigoAndResponsavel_PessoaCodigoAndNomeIgnoreCaseAndTelefone(
-                        request.alunoCodigo(), responsavel.getPessoaCodigo(), nome, telefone)) {
-            throw new IllegalArgumentException("Essa pessoa já está autorizada a buscar esta criança.");
-        }
+    }
 
-        AutorizadoBuscaEntity autorizado = new AutorizadoBuscaEntity();
-        autorizado.setNome(nome);
-        autorizado.setTelefone(telefone);
-        autorizado.setAluno(vinculo.getAluno());
-        autorizado.setResponsavel(responsavel);
-        autorizado.setGrauParentesco(grauParentesco);
-        autorizadoBuscaRepository.save(autorizado);
+    private ResponsavelEntity buscarResponsavel(String cpfAutenticado) {
+        PessoaEntity pessoa = buscarPessoa(cpfAutenticado);
+        return responsavelRepository.findById(pessoa.getCodigo())
+                .orElseThrow(() -> new IllegalArgumentException("Cadastro de responsável não encontrado."));
+    }
+
+    private void validarNaoResponsavelDoAluno(String cpf, Integer alunoCodigo) {
+        if (responsavelAlunoRepository.existsByResponsavel_Pessoa_CpfAndAluno_Codigo(cpf, alunoCodigo)) {
+            throw new IllegalArgumentException("esta pessoa já é responsável por este aluno");
+        }
+    }
+
+    private void validarConsultaAutorizado(ConsultarAutorizadoRequest request) {
+        if (request == null || request.alunoCodigo() == null || vazio(request.cpf())
+                || apenasDigitos(request.cpf()).length() != 11) {
+            throw new IllegalArgumentException("Informe uma criança e um CPF válido com 11 números.");
+        }
+    }
+
+    private String mascararNome(String nome) {
+        String[] partes = nome.trim().split("\\s+");
+        if (partes.length == 0 || partes[0].isBlank()) {
+            return "Nome cadastrado";
+        }
+        StringBuilder mascarado = new StringBuilder(mascararParteNome(partes[0], true));
+        for (int i = 1; i < partes.length; i++) {
+            mascarado.append(' ').append(mascararParteNome(partes[i], false));
+        }
+        return mascarado.toString();
+    }
+
+    private String mascararParteNome(String parte, boolean primeiroNome) {
+        if (parte.length() == 1) {
+            return "*";
+        }
+        return primeiroNome
+                ? parte.substring(0, Math.min(2, parte.length())) + "**"
+                : parte.charAt(0) + "****";
     }
 
     private PessoaEntity buscarPessoa(String cpfAutenticado) {
@@ -212,52 +344,64 @@ public class PortalResponsavelService {
 
     private void validarPerfil(AtualizarPerfilResponsavelRequest request) {
         if (request == null || vazio(request.nome()) || vazio(request.telefone()) || vazio(request.cep())
-                || vazio(request.cidade()) || vazio(request.uf()) || vazio(request.endereco())
-                || vazio(request.localTrabalho()) || vazio(request.telefoneTrabalho()) || vazio(request.estadoCivil())) {
+                || vazio(request.cidade()) || vazio(request.uf()) || vazio(request.bairro())
+                || vazio(request.endereco()) || vazio(request.numero()) || vazio(request.sexo())) {
             throw new IllegalArgumentException("Preencha todos os campos do perfil.");
         }
         if (request.nome().trim().length() < 3 || request.nome().trim().length() > 50
                 || request.cidade().trim().length() > 50
+                || request.bairro().trim().length() > 60 || request.numero().trim().length() > 10
+                || (request.complemento() != null && request.complemento().trim().length() > 50)
                 || !UnidadeFederativa.contemSigla(request.uf()) || request.endereco().trim().length() > 100
-                || request.localTrabalho().trim().length() > 50 || request.estadoCivil().trim().length() > 50) {
+                || (request.localTrabalho() != null && request.localTrabalho().trim().length() > 100)) {
             throw new IllegalArgumentException("Um ou mais campos excedem o tamanho permitido.");
+        }
+        if (!request.sexo().trim().matches("(?i)[FMO]")) {
+            throw new IllegalArgumentException("Informe um sexo válido: F, M ou O.");
         }
         if (apenasDigitos(request.telefone()).length() < 10
                 || apenasDigitos(request.telefone()).length() > 15
-                || apenasDigitos(request.telefoneTrabalho()).length() < 10
-                || apenasDigitos(request.telefoneTrabalho()).length() > 15
+                || (!vazio(request.telefoneTrabalho())
+                    && (apenasDigitos(request.telefoneTrabalho()).length() < 10
+                    || apenasDigitos(request.telefoneTrabalho()).length() > 15))
                 || apenasDigitos(request.cep()).length() != 8) {
             throw new IllegalArgumentException("Confira o telefone e o CEP informados.");
         }
+        validarEstadoCivil(request.estadoCivil());
     }
 
     private void validarCrianca(AdicionarCriancaRequest request) {
         if (request == null || vazio(request.nome()) || request.dataNascimento() == null
-                || vazio(request.grauParentesco())) {
+                || request.parentescoCodigo() == null || vazio(request.sexo())) {
             throw new IllegalArgumentException("Informe o nome, nascimento e parentesco da criança.");
         }
         if (request.nome().trim().length() < 3 || request.nome().trim().length() > 100
-                || request.grauParentesco().trim().length() < 2 || request.grauParentesco().trim().length() > 20
-                || (request.alergias() != null && request.alergias().trim().length() > 50)
-                || (request.restricoesAlimentares() != null && request.restricoesAlimentares().trim().length() > 50)) {
+                || (request.alergias() != null && request.alergias().trim().length() > 100)
+                || (request.restricoesAlimentares() != null && request.restricoesAlimentares().trim().length() > 100)) {
             throw new IllegalArgumentException("Um ou mais campos excedem o tamanho permitido.");
         }
         if (request.dataNascimento().isAfter(LocalDate.now())) {
             throw new IllegalArgumentException("A data de nascimento não pode estar no futuro.");
+        }
+        if (!request.sexo().trim().matches("(?i)[FMO]")) {
+            throw new IllegalArgumentException("Informe um sexo válido para a criança: F, M ou O.");
         }
     }
 
     private void validarAtualizacaoCrianca(AtualizarCriancaRequest request) {
-        if (request == null || vazio(request.nome()) || request.dataNascimento() == null) {
+        if (request == null || vazio(request.nome()) || request.dataNascimento() == null || vazio(request.sexo())) {
             throw new IllegalArgumentException("Informe o nome e a data de nascimento da criança.");
         }
         if (request.nome().trim().length() < 3 || request.nome().trim().length() > 100
-                || (request.alergias() != null && request.alergias().trim().length() > 50)
-                || (request.restricoesAlimentares() != null && request.restricoesAlimentares().trim().length() > 50)) {
+                || (request.alergias() != null && request.alergias().trim().length() > 100)
+                || (request.restricoesAlimentares() != null && request.restricoesAlimentares().trim().length() > 100)) {
             throw new IllegalArgumentException("Um ou mais campos excedem o tamanho permitido.");
         }
         if (request.dataNascimento().isAfter(LocalDate.now())) {
             throw new IllegalArgumentException("A data de nascimento não pode estar no futuro.");
+        }
+        if (!request.sexo().trim().matches("(?i)[FMO]")) {
+            throw new IllegalArgumentException("Informe um sexo válido para a criança: F, M ou O.");
         }
     }
 
@@ -269,7 +413,21 @@ public class PortalResponsavelService {
         return valor == null ? "" : valor.replaceAll("\\D", "");
     }
 
-    private String valorOuNenhum(String valor) {
-        return vazio(valor) ? "Nenhuma" : valor.trim();
+    private String valorOpcional(String valor) {
+        return vazio(valor) ? null : valor.trim();
+    }
+
+    private EstadoCivil estadoCivilOuNull(String valor) {
+        return vazio(valor) ? null : EstadoCivil.valueOf(valor.trim().toUpperCase());
+    }
+
+    private void validarEstadoCivil(String valor) {
+        if (!vazio(valor)) {
+            try {
+                EstadoCivil.valueOf(valor.trim().toUpperCase());
+            } catch (IllegalArgumentException exception) {
+                throw new IllegalArgumentException("Selecione um estado civil válido.");
+            }
+        }
     }
 }

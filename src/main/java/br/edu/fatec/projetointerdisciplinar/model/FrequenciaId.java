@@ -11,6 +11,8 @@ import java.io.Serializable;
 @AllArgsConstructor
 @EqualsAndHashCode
 public class FrequenciaId implements Serializable {
+    @jakarta.persistence.Column(name = "aula_planejamentos_codigo")
     private Integer aulaPlanejamentosCodigo;
+    @jakarta.persistence.Column(name = "matricula_codigo")
     private Integer matriculaCodigo;
 }

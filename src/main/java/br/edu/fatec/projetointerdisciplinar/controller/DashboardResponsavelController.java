@@ -4,6 +4,7 @@ import br.edu.fatec.projetointerdisciplinar.model.AlunoEntity;
 import br.edu.fatec.projetointerdisciplinar.enums.UnidadeFederativa;
 import br.edu.fatec.projetointerdisciplinar.model.AutorizadoBuscaEntity;
 import br.edu.fatec.projetointerdisciplinar.model.DiarioBordoEntity;
+import br.edu.fatec.projetointerdisciplinar.model.FrequenciaEntity;
 import br.edu.fatec.projetointerdisciplinar.model.MatriculaEntity;
 import br.edu.fatec.projetointerdisciplinar.model.PessoaEntity;
 import br.edu.fatec.projetointerdisciplinar.model.ResponsavelAlunoEntity;
@@ -11,7 +12,9 @@ import br.edu.fatec.projetointerdisciplinar.model.ResponsavelAlunoId;
 import br.edu.fatec.projetointerdisciplinar.model.ResponsavelEntity;
 import br.edu.fatec.projetointerdisciplinar.repository.AutorizadoBuscaRepository;
 import br.edu.fatec.projetointerdisciplinar.repository.DiarioBordoRepository;
+import br.edu.fatec.projetointerdisciplinar.repository.FrequenciaRepository;
 import br.edu.fatec.projetointerdisciplinar.repository.MatriculaRepository;
+import br.edu.fatec.projetointerdisciplinar.repository.ParentescoRepository;
 import br.edu.fatec.projetointerdisciplinar.repository.PessoaRepository;
 import br.edu.fatec.projetointerdisciplinar.repository.ResponsavelAlunoRepository;
 import br.edu.fatec.projetointerdisciplinar.repository.ResponsavelRepository;
@@ -40,7 +43,9 @@ public class DashboardResponsavelController {
     private final ResponsavelAlunoRepository responsavelAlunoRepository;
     private final MatriculaRepository matriculaRepository;
     private final DiarioBordoRepository diarioBordoRepository;
+    private final FrequenciaRepository frequenciaRepository;
     private final AutorizadoBuscaRepository autorizadoBuscaRepository;
+    private final ParentescoRepository parentescoRepository;
 
     @GetMapping("/html/dashboard_responsavel.html")
     @Transactional(readOnly = true)
@@ -62,24 +67,27 @@ public class DashboardResponsavelController {
             boolean matriculaAtiva = matricula != null
                     && matricula.getStatus() == 2
                     && matricula.getTurma() != null;
-            DiarioBordoEntity diario = !matriculaAtiva ? null
-                    : diarioBordoRepository.findByMatriculaNrOrderByCodigoDesc(matricula.getNr())
+            RegistroDiario diario = !matriculaAtiva ? null
+                    : frequenciaRepository.findByMatricula_NrOrderByAulaPlanejamento_DataAulaDesc(matricula.getNr())
                     .stream()
                     .findFirst()
+                    .map(this::paraRegistroDiario)
                     .orElse(null);
 
             String professorNome = matriculaAtiva
                     ? matricula.getTurma().getProfessor().getPessoa().getNome()
                     : null;
-            alunos.add(new AlunoDashboard(aluno, vinculo.getGrauParentesco(), matricula, professorNome, diario));
+            alunos.add(new AlunoDashboard(
+                    aluno, vinculo.getParentesco().getDescricao(), matricula, professorNome, diario));
 
             for (AutorizadoBuscaEntity autorizado : autorizadoBuscaRepository
-                    .findByAluno_CodigoAndResponsavel_PessoaCodigo(aluno.getCodigo(), responsavel.getPessoaCodigo())) {
+                    .findByVinculo_Aluno_CodigoAndAtivoTrue(aluno.getCodigo())) {
                 autorizados.add(new ContatoAutorizado(
+                        autorizado.getCodigo(),
                         aluno.getNome(),
-                        autorizado.getNome(),
-                        autorizado.getGrauParentesco(),
-                        autorizado.getTelefone()
+                        autorizado.getAutorizado().getNome(),
+                        autorizado.getParentesco().getDescricao(),
+                        autorizado.getAutorizado().getTelefone()
                 ));
             }
         }
@@ -106,6 +114,7 @@ public class DashboardResponsavelController {
     @Transactional(readOnly = true)
     public String adicionarCrianca(Authentication authentication, Model model) {
         model.addAttribute("responsavel", buscarPessoaAutenticada(authentication));
+        model.addAttribute("parentescos", parentescoRepository.findAll());
         return "html/adicionar_crianca";
     }
 
@@ -116,6 +125,7 @@ public class DashboardResponsavelController {
         ResponsavelEntity responsavel = buscarResponsavel(pessoa);
         model.addAttribute("vinculos",
                 responsavelAlunoRepository.findByIdResponsavelCodigo(responsavel.getPessoaCodigo()));
+        model.addAttribute("parentescos", parentescoRepository.findAll());
         return "html/adicionar_autorizado";
     }
 
@@ -139,26 +149,30 @@ public class DashboardResponsavelController {
                 .filter(item -> item.getStatus() != null && item.getStatus() == 2)
                 .findFirst()
                 .orElse(null);
-        List<DiarioBordoEntity> diarios = new ArrayList<>();
+        List<FrequenciaEntity> registrosFrequencia = new ArrayList<>();
         for (MatriculaEntity matricula : matriculas) {
-            diarios.addAll(diarioBordoRepository.findByMatriculaNrOrderByCodigoDesc(matricula.getNr()));
+            registrosFrequencia.addAll(frequenciaRepository.findByMatricula_Nr(matricula.getNr()));
         }
-        diarios.sort(Comparator.comparing(DiarioBordoEntity::getCodigo).reversed());
+        registrosFrequencia.sort(Comparator.comparing(
+                (FrequenciaEntity registro) -> registro.getAulaPlanejamento().getDataAula()).reversed());
 
-        long diasPresentes = diarios.stream().filter(DiarioBordoEntity::getCompareceu).count();
-        long diasAusentes = diarios.size() - diasPresentes;
-        int frequencia = diarios.isEmpty() ? 0 : (int) Math.round(diasPresentes * 100.0 / diarios.size());
+        long diasPresentes = registrosFrequencia.stream()
+                .filter(registro -> "P".equals(registro.getStatusPresenca())).count();
+        long diasAusentes = registrosFrequencia.size() - diasPresentes;
+        int frequencia = registrosFrequencia.isEmpty() ? 0
+                : (int) Math.round(diasPresentes * 100.0 / registrosFrequencia.size());
         String professorNome = matriculaAtiva == null || matriculaAtiva.getTurma() == null
                 ? null
                 : matriculaAtiva.getTurma().getProfessor().getPessoa().getNome();
 
         model.addAttribute("responsavel", pessoa);
         model.addAttribute("aluno", aluno);
-        model.addAttribute("parentesco", vinculo.getGrauParentesco());
+        model.addAttribute("parentesco", vinculo.getParentesco().getDescricao());
         model.addAttribute("matricula", matriculaAtiva);
         model.addAttribute("professorNome", professorNome);
-        model.addAttribute("diarios", diarios.stream().limit(10).toList());
-        model.addAttribute("diasRegistrados", diarios.size());
+        model.addAttribute("diarios", registrosFrequencia.stream().limit(10)
+                .map(this::paraRegistroDiario).toList());
+        model.addAttribute("diasRegistrados", registrosFrequencia.size());
         model.addAttribute("diasPresentes", diasPresentes);
         model.addAttribute("diasAusentes", diasAusentes);
         model.addAttribute("frequencia", frequencia);
@@ -179,16 +193,45 @@ public class DashboardResponsavelController {
                         "Não foi possível localizar o cadastro de responsável."));
     }
 
+    private RegistroDiario paraRegistroDiario(FrequenciaEntity frequencia) {
+        DiarioBordoEntity diario = "P".equals(frequencia.getStatusPresenca())
+                ? diarioBordoRepository.findById(frequencia.getId()).orElse(null)
+                : null;
+        return new RegistroDiario(
+                frequencia.getAulaPlanejamento().getDataAula(),
+                "P".equals(frequencia.getStatusPresenca()),
+                frequencia.getStatusPresenca(),
+                diario == null ? null : diario.getHumor(),
+                diario == null ? null : diario.getAlimentacao(),
+                diario == null ? null : diario.getSono(),
+                diario == null ? null : diario.getBanheiroFralda(),
+                diario == null ? null : diario.getObservacoes()
+        );
+    }
+
+    public record RegistroDiario(
+            LocalDate dataRegistro,
+            Boolean compareceu,
+            String statusPresenca,
+            String humor,
+            String alimentacao,
+            String sono,
+            String banheiroFralda,
+            String observacoes
+    ) {
+    }
+
     public record AlunoDashboard(
             AlunoEntity aluno,
             String grauParentesco,
             MatriculaEntity matricula,
             String professorNome,
-            DiarioBordoEntity diario
+            RegistroDiario diario
     ) {
     }
 
     public record ContatoAutorizado(
+            Integer codigo,
             String alunoNome,
             String nome,
             String grauParentesco,

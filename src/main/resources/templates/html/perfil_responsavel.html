@@ -73,6 +73,14 @@
                     <label for="perfilTelefone" class="form-label fw-semibold">Telefone</label>
                     <input id="perfilTelefone" name="telefone" class="form-control phone-mask" maxlength="15" required th:value="${responsavel.telefone}">
                 </div>
+                <div class="col-md-6">
+                    <label for="perfilSexo" class="form-label fw-semibold">Sexo</label>
+                    <select id="perfilSexo" name="sexo" class="form-select" required>
+                        <option value="F" th:selected="${responsavel.sexo == 'F'}">Feminino</option>
+                        <option value="M" th:selected="${responsavel.sexo == 'M'}">Masculino</option>
+                        <option value="O" th:selected="${responsavel.sexo == 'O'}">Outro</option>
+                    </select>
+                </div>
                 <div class="col-md-3">
                     <label for="perfilCep" class="form-label fw-semibold">CEP</label>
                     <input id="perfilCep" name="cep" class="form-control cep-mask" data-cep maxlength="9" required th:value="${responsavel.cep}">
@@ -88,6 +96,18 @@
                         <option th:each="uf : ${unidadesFederativas}" th:value="${uf.sigla}" th:text="${uf.sigla + ' - ' + uf.nome}" th:selected="${uf.sigla == responsavel.uf}"></option>
                     </select>
                 </div>
+                <div class="col-md-6">
+                    <label for="perfilBairro" class="form-label fw-semibold">Bairro</label>
+                    <input id="perfilBairro" name="bairro" class="form-control" data-cep-field="bairro" maxlength="60" required th:value="${responsavel.bairro}">
+                </div>
+                <div class="col-md-3">
+                    <label for="perfilNumero" class="form-label fw-semibold">Número</label>
+                    <input id="perfilNumero" name="numero" class="form-control" maxlength="10" placeholder="Número ou S/N" required th:value="${responsavel.numero}">
+                </div>
+                <div class="col-md-3">
+                    <label for="perfilComplemento" class="form-label fw-semibold">Complemento</label>
+                    <input id="perfilComplemento" name="complemento" class="form-control" maxlength="50" th:value="${responsavel.complemento}">
+                </div>
                 <div class="col-12">
                     <label for="perfilEndereco" class="form-label fw-semibold">Endereço</label>
                     <input id="perfilEndereco" name="endereco" class="form-control" data-cep-field="logradouro" minlength="3" maxlength="100" required th:value="${responsavel.endereco}">
@@ -97,20 +117,22 @@
                 <div class="row g-3">
                     <div class="col-md-6">
                         <label for="perfilLocalTrabalho" class="form-label fw-semibold">Local de trabalho</label>
-                        <input id="perfilLocalTrabalho" name="localTrabalho" class="form-control" maxlength="50" required th:value="${cadastroResponsavel.localTrabalho}">
+                        <input id="perfilLocalTrabalho" name="localTrabalho" class="form-control" maxlength="100" th:value="${cadastroResponsavel.localTrabalho}">
                     </div>
                     <div class="col-md-6">
                         <label for="perfilTelefoneTrabalho" class="form-label fw-semibold">Telefone de trabalho</label>
-                        <input id="perfilTelefoneTrabalho" name="telefoneTrabalho" class="form-control phone-mask" maxlength="15" required th:value="${cadastroResponsavel.telefoneTrabalho}">
+                        <input id="perfilTelefoneTrabalho" name="telefoneTrabalho" class="form-control phone-mask" maxlength="15" th:value="${cadastroResponsavel.telefoneTrabalho}">
                     </div>
                     <div class="col-md-6">
                         <label for="perfilEstadoCivil" class="form-label fw-semibold">Estado civil</label>
-                        <select id="perfilEstadoCivil" name="estadoCivil" class="form-select" required>
-                            <option value="" disabled>Selecione</option>
-                            <option value="Solteiro(a)" th:selected="${#strings.startsWith(#strings.toLowerCase(cadastroResponsavel.estadoCivil), 'solteir')}">Solteiro(a)</option>
-                            <option value="Casado(a)" th:selected="${#strings.startsWith(#strings.toLowerCase(cadastroResponsavel.estadoCivil), 'casad')}">Casado(a)</option>
-                            <option value="Divorciado(a)" th:selected="${#strings.startsWith(#strings.toLowerCase(cadastroResponsavel.estadoCivil), 'divorciad')}">Divorciado(a)</option>
-                            <option value="Viúvo(a)" th:selected="${#strings.startsWith(#strings.toLowerCase(cadastroResponsavel.estadoCivil), 'viúv')}">Viúvo(a)</option>
+                        <select id="perfilEstadoCivil" name="estadoCivil" class="form-select">
+                            <option value="" th:selected="${cadastroResponsavel.estadoCivil == null}">Não informado</option>
+                            <option value="SOLTEIRO" th:selected="${cadastroResponsavel.estadoCivil != null and cadastroResponsavel.estadoCivil.name() == 'SOLTEIRO'}">Solteiro(a)</option>
+                            <option value="CASADO" th:selected="${cadastroResponsavel.estadoCivil != null and cadastroResponsavel.estadoCivil.name() == 'CASADO'}">Casado(a)</option>
+                            <option value="UNIAO_ESTAVEL" th:selected="${cadastroResponsavel.estadoCivil != null and cadastroResponsavel.estadoCivil.name() == 'UNIAO_ESTAVEL'}">União estável</option>
+                            <option value="SEPARADO" th:selected="${cadastroResponsavel.estadoCivil != null and cadastroResponsavel.estadoCivil.name() == 'SEPARADO'}">Separado(a)</option>
+                            <option value="DIVORCIADO" th:selected="${cadastroResponsavel.estadoCivil != null and cadastroResponsavel.estadoCivil.name() == 'DIVORCIADO'}">Divorciado(a)</option>
+                            <option value="VIUVO" th:selected="${cadastroResponsavel.estadoCivil != null and cadastroResponsavel.estadoCivil.name() == 'VIUVO'}">Viúvo(a)</option>
                         </select>
                     </div>
                 </div>

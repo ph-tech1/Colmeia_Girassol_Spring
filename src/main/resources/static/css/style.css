@@ -1403,6 +1403,13 @@ html[data-theme="dark"] body.cadastro-page .btn-outline-dark-blue {
 .child-form-note i { color: #c84e68; }
 .profile-form-note i { color: #327c89; }
 
+.responsavel-form-confirmation {
+    padding: 1rem;
+    border: 1px solid rgba(178, 140, 10, 0.3);
+    border-radius: 0.9rem;
+    background: rgba(242, 213, 68, 0.12);
+}
+
 .responsavel-form-card-body {
     min-width: 0;
     padding: clamp(1.4rem, 3.5vw, 2.75rem);
@@ -2073,6 +2080,11 @@ html[data-theme="dark"] body.responsavel-page .responsavel-form-card .form-label
 html[data-theme="dark"] body.responsavel-page .responsavel-form-section-icon {
     background: rgba(126, 200, 217, 0.18);
     color: #a9e2eb;
+}
+
+html[data-theme="dark"] body.responsavel-page .responsavel-form-confirmation {
+    border-color: rgba(245, 220, 112, 0.28);
+    background: rgba(245, 220, 112, 0.08);
 }
 
 html[data-theme="dark"] body.responsavel-page .responsavel-form-divider {

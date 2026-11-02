@@ -1,10 +1,12 @@
 package br.edu.fatec.projetointerdisciplinar.controller;
 
+import br.edu.fatec.projetointerdisciplinar.dto.RegistrarDiarioBordoRequest;
 import br.edu.fatec.projetointerdisciplinar.model.DiarioBordoEntity;
 import br.edu.fatec.projetointerdisciplinar.service.DiarioBordoService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -22,7 +24,21 @@ public class DiarioBordoController {
     }
 
     @PostMapping("/salvar")
-    public ResponseEntity<DiarioBordoEntity> salvar(@RequestBody DiarioBordoEntity diarioBordo) {
-        return ResponseEntity.status(HttpStatus.CREATED).body(diarioBordoService.salvar(diarioBordo));
+    public ResponseEntity<DiarioBordoEntity> salvar(
+            @RequestBody RegistrarDiarioBordoRequest request,
+            Authentication authentication
+    ) {
+        return ResponseEntity.status(HttpStatus.CREATED)
+                .body(diarioBordoService.salvar(request, authentication.getName()));
+    }
+
+    @DeleteMapping("/{aulaCodigo}/{matriculaCodigo}")
+    public ResponseEntity<Void> deletar(
+            @PathVariable Integer aulaCodigo,
+            @PathVariable Integer matriculaCodigo,
+            Authentication authentication
+    ) {
+        diarioBordoService.deletar(aulaCodigo, matriculaCodigo, authentication.getName());
+        return ResponseEntity.noContent().build();
     }
 }

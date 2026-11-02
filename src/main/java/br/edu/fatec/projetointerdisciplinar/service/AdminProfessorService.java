@@ -46,22 +46,23 @@ public class AdminProfessorService {
         if (pessoaRepository.findByEmail(email).isPresent()) {
             throw new IllegalStateException("Já existe uma pessoa cadastrada com este e-mail.");
         }
-        if (rg != null && pessoaRepository.findByRg(rg).isPresent()) {
-            throw new IllegalStateException("Já existe uma pessoa cadastrada com este RG.");
-        }
-
         PessoaEntity pessoa = new PessoaEntity();
         pessoa.setNome(request.nome().trim());
         pessoa.setEmail(email);
         pessoa.setCpf(cpf);
         pessoa.setRg(rg);
         pessoa.setDataNascimento(request.dataNascimento());
+        pessoa.setSexo(request.sexo().trim().toUpperCase());
         pessoa.setSenha(passwordEncoder.encode(request.senha()));
         pessoa.setTipoPerfil("PROFESSOR");
         pessoa.setCep(digitos(request.cep()));
         pessoa.setCidade(request.cidade().trim());
         pessoa.setUf(request.uf().trim().toUpperCase());
+        pessoa.setBairro(request.bairro().trim());
         pessoa.setEndereco(request.endereco().trim());
+        pessoa.setNumero(request.numero().trim());
+        pessoa.setComplemento(request.complemento() == null || request.complemento().isBlank()
+                ? null : request.complemento().trim());
         pessoa.setTelefone(digitos(request.telefone()));
         pessoa = pessoaRepository.save(pessoa);
 
@@ -89,8 +90,9 @@ public class AdminProfessorService {
 
     private void validar(NovoProfessorRequest request) {
         if (request == null || vazio(request.nome()) || vazio(request.email()) || vazio(request.cpf())
-                || request.dataNascimento() == null || vazio(request.senha()) || vazio(request.cep())
-                || vazio(request.cidade()) || vazio(request.uf()) || vazio(request.endereco())
+                || request.dataNascimento() == null || vazio(request.sexo()) || vazio(request.senha()) || vazio(request.cep())
+                || vazio(request.cidade()) || vazio(request.uf()) || vazio(request.bairro())
+                || vazio(request.endereco()) || vazio(request.numero())
                 || vazio(request.telefone()) || vazio(request.formacao()) || request.dataContratacao() == null) {
             throw new IllegalArgumentException("Preencha todos os campos obrigatórios do professor.");
         }
@@ -101,9 +103,13 @@ public class AdminProfessorService {
         String uf = request.uf().trim();
         String email = request.email().trim();
         String senha = request.senha();
+        String sexo = request.sexo().trim().toUpperCase();
 
         if (cpf.length() != 11) {
             throw new IllegalArgumentException("O CPF deve conter 11 números.");
+        }
+        if (!sexo.matches("[FMO]")) {
+            throw new IllegalArgumentException("Informe um sexo válido: F, M ou O.");
         }
         if (email.length() > 100 || !email.matches("^[^\\s@]+@[^\\s@]+\\.[^\\s@]+$")) {
             throw new IllegalArgumentException("E-mail inválido.");
@@ -111,7 +117,9 @@ public class AdminProfessorService {
         if (request.nome().trim().length() > 100 || request.formacao().trim().length() > 100) {
             throw new IllegalArgumentException("Nome e formação devem ter no máximo 100 caracteres.");
         }
-        if (request.cidade().trim().length() > 50 || request.endereco().trim().length() > 100) {
+        if (request.cidade().trim().length() > 50 || request.bairro().trim().length() > 60
+                || request.endereco().trim().length() > 100 || request.numero().trim().length() > 10
+                || (request.complemento() != null && request.complemento().trim().length() > 50)) {
             throw new IllegalArgumentException("Cidade ou endereço excede o limite de caracteres do cadastro.");
         }
         if (cep.length() != 8) {

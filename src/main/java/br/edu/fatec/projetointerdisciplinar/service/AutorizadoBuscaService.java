@@ -28,14 +28,18 @@ public class AutorizadoBuscaService {
 
     public Optional<AutorizadoBuscaEntity> atualizar(Integer codigo, AutorizadoBuscaEntity autorizadoBuscaAtualizado) {
         return autorizadoBuscaRepository.findById(codigo).map(autorizado -> {
-            autorizado.setNome(autorizadoBuscaAtualizado.getNome());
-            autorizado.setTelefone(autorizadoBuscaAtualizado.getTelefone());
-            autorizado.setGrauParentesco(autorizadoBuscaAtualizado.getGrauParentesco());
+            autorizado.setAutorizado(autorizadoBuscaAtualizado.getAutorizado());
+            autorizado.setVinculo(autorizadoBuscaAtualizado.getVinculo());
+            autorizado.setParentesco(autorizadoBuscaAtualizado.getParentesco());
+            autorizado.setAtivo(autorizadoBuscaAtualizado.getAtivo());
             return autorizadoBuscaRepository.save(autorizado);
         });
     }
 
     public void deletar(Integer id) {
-        autorizadoBuscaRepository.deleteById(id);
+        AutorizadoBuscaEntity autorizado = autorizadoBuscaRepository.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("Autorização não encontrada."));
+        autorizado.setAtivo(false);
+        autorizadoBuscaRepository.save(autorizado);
     }
 }

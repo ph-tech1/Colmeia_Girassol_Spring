@@ -1,5 +1,6 @@
 package br.edu.fatec.projetointerdisciplinar.model;
 
+import br.edu.fatec.projetointerdisciplinar.enums.EstadoCivil;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -20,14 +21,15 @@ public class ResponsavelEntity {
     @JoinColumn(name = "pessoa_codigo")
     private PessoaEntity pessoa;
 
-    @Column(name = "local_trabalho", nullable = false, length = 50)
+    @Column(name = "local_trabalho", length = 100)
     private String localTrabalho;
 
-    @Column(name = "telefone_trabalho", nullable = false, length = 15)
+    @Column(name = "telefone_trabalho", length = 15)
     private String telefoneTrabalho;
 
-    @Column(name = "estado_civil", nullable = false, length = 50)
-    private String estadoCivil;
+    @Enumerated(EnumType.STRING)
+    @Column(name = "estado_civil", length = 20)
+    private EstadoCivil estadoCivil;
 
     @Column(name = "status", nullable = false)
     private Integer status;

@@ -33,6 +33,9 @@ public class SecurityConfig {
                         .requestMatchers("/html/dashboard_admin.html", "/html/cadastro_professor.html",
                                 "/html/cadastro_turma.html", "/html/turma_alunos.html").hasRole("ADMIN")
                         .requestMatchers("/api/admin/**").hasRole("ADMIN")
+                        .requestMatchers(HttpMethod.PUT, "/api/autorizados/**").hasRole("SECRETARIA")
+                        .requestMatchers("/api/autorizados-busca/**").hasAnyRole("SECRETARIA", "ADMIN")
+                        .requestMatchers("/api/autorizados/**").hasAnyRole("SECRETARIA", "ADMIN")
                         .requestMatchers(HttpMethod.POST, "/api/matriculas/**").hasRole("ADMIN")
                         .requestMatchers(HttpMethod.PATCH, "/api/matriculas/**").hasRole("ADMIN")
                         .requestMatchers(HttpMethod.POST, "/api/professores/**").hasRole("ADMIN")

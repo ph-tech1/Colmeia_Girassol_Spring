@@ -220,12 +220,25 @@
                             </div>
                             <div class="col-md-6">
                                 <div class="form-floating">
-                                    <select class="form-select" id="estadoCivilResp" aria-label="Estado Civil" required>
+                                    <select class="form-select" id="sexoResp" required>
                                         <option value="" selected disabled>Selecione...</option>
-                                        <option value="Solteiro(a)">Solteiro(a)</option>
-                                        <option value="Casado(a)">Casado(a)</option>
-                                        <option value="Divorciado(a)">Divorciado(a)</option>
-                                        <option value="Viúvo(a)">Viúvo(a)</option>
+                                        <option value="F">Feminino</option>
+                                        <option value="M">Masculino</option>
+                                        <option value="O">Outro</option>
+                                    </select>
+                                    <label for="sexoResp">Sexo</label>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-floating">
+                                    <select class="form-select" id="estadoCivilResp" aria-label="Estado Civil">
+                                        <option value="" selected>Não informado</option>
+                                        <option value="SOLTEIRO">Solteiro(a)</option>
+                                        <option value="CASADO">Casado(a)</option>
+                                        <option value="UNIAO_ESTAVEL">União estável</option>
+                                        <option value="SEPARADO">Separado(a)</option>
+                                        <option value="DIVORCIADO">Divorciado(a)</option>
+                                        <option value="VIUVO">Viúvo(a)</option>
                                     </select>
                                     <label for="estadoCivilResp">Estado Civil</label>
                                 </div>
@@ -272,8 +285,26 @@
                             </div>
                             <div class="col-md-8">
                                 <div class="form-floating">
-                                    <input type="text" class="form-control" id="enderecoResp" data-cep-field="logradouro" placeholder="Endereço" required>
-                                    <label for="enderecoResp">Endereço</label>
+                                    <input type="text" class="form-control" id="enderecoResp" data-cep-field="logradouro" placeholder="Logradouro" required maxlength="100">
+                                    <label for="enderecoResp">Logradouro</label>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-floating">
+                                    <input type="text" class="form-control" id="bairroResp" data-cep-field="bairro" placeholder="Bairro" required maxlength="60">
+                                    <label for="bairroResp">Bairro</label>
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <div class="form-floating">
+                                    <input type="text" class="form-control" id="numeroResp" placeholder="Número ou S/N" required maxlength="10">
+                                    <label for="numeroResp">Número</label>
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <div class="form-floating">
+                                    <input type="text" class="form-control" id="complementoResp" placeholder="Complemento" maxlength="50">
+                                    <label for="complementoResp">Complemento</label>
                                 </div>
                             </div>
                             <div class="col-md-8">
@@ -307,14 +338,14 @@
                             <div class="col-md-6">
                                 <div class="form-floating">
                                     <input type="text" class="form-control phone-mask" id="telTrabResp"
-                                        placeholder=" " required>
+                                        placeholder=" ">
                                     <label for="telTrabResp">Telefone do Trabalho</label>
                                 </div>
                             </div>
                             <div class="col-md-12">
                                 <div class="form-floating">
                                     <input type="text" class="form-control" id="localTrabResp"
-                                        placeholder="Local de Trabalho" required>
+                                        placeholder="Local de Trabalho" maxlength="100">
                                     <label for="localTrabResp">Local de Trabalho</label>
                                 </div>
                             </div>
@@ -351,13 +382,20 @@
                             </div>
                             <div class="col-md-6">
                                 <div class="form-floating">
+                                    <select class="form-select" id="sexoAluno" required>
+                                        <option value="" selected disabled>Selecione...</option>
+                                        <option value="F">Feminino</option>
+                                        <option value="M">Masculino</option>
+                                        <option value="O">Outro</option>
+                                    </select>
+                                    <label for="sexoAluno">Sexo</label>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-floating">
                                     <select class="form-select" id="grauParentesco" aria-label="Grau de Parentesco" required>
                                         <option value="" selected disabled>Selecione...</option>
-                                        <option value="Mãe">Mãe</option>
-                                        <option value="Pai">Pai</option>
-                                        <option value="Avô/Avó">Avô/Avó</option>
-                                        <option value="Tio(a)">Tio(a)</option>
-                                        <option value="Responsável Legal">Responsável Legal</option>
+                                        <option th:each="parentesco : ${parentescos}" th:value="${parentesco.codigo}" th:text="${parentesco.descricao}">Parentesco</option>
                                     </select>
                                     <label for="grauParentesco">Grau de Parentesco</label>
                                 </div>
@@ -369,14 +407,14 @@
                             </div>
                             <div class="col-md-12">
                                 <div class="form-floating">
-                                    <input type="text" class="form-control" id="alergias" placeholder="Alergias">
+                                    <input type="text" class="form-control" id="alergias" placeholder="Alergias" maxlength="100">
                                     <label for="alergias">Alergias (Deixe em branco se não houver)</label>
                                 </div>
                             </div>
                             <div class="col-md-12">
                                 <div class="form-floating">
                                     <input type="text" class="form-control" id="restricoes"
-                                        placeholder="Restrições Alimentares">
+                                        placeholder="Restrições Alimentares" maxlength="100">
                                     <label for="restricoes">Restrições Alimentares (Deixe em branco se não
                                         houver)</label>
                                 </div>

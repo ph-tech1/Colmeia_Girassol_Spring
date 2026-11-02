@@ -10,5 +10,4 @@ import java.util.Optional;
 public interface PessoaRepository extends JpaRepository<PessoaEntity, Integer> {
     Optional<PessoaEntity> findByCpf(String cpf);
     Optional<PessoaEntity> findByEmail(String email);
-    Optional<PessoaEntity> findByRg(String rg);
 }

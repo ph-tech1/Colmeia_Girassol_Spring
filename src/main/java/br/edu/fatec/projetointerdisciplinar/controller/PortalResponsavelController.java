@@ -4,6 +4,7 @@ import br.edu.fatec.projetointerdisciplinar.dto.AdicionarAutorizadoBuscaRequest;
 import br.edu.fatec.projetointerdisciplinar.dto.AdicionarCriancaRequest;
 import br.edu.fatec.projetointerdisciplinar.dto.AtualizarCriancaRequest;
 import br.edu.fatec.projetointerdisciplinar.dto.AtualizarPerfilResponsavelRequest;
+import br.edu.fatec.projetointerdisciplinar.dto.ConsultarAutorizadoRequest;
 import br.edu.fatec.projetointerdisciplinar.model.AlunoEntity;
 import br.edu.fatec.projetointerdisciplinar.model.PessoaEntity;
 import br.edu.fatec.projetointerdisciplinar.service.PortalResponsavelService;
@@ -56,6 +57,32 @@ public class PortalResponsavelController {
             portalResponsavelService.adicionarAutorizado(authentication.getName(), request);
             return ResponseEntity.status(HttpStatus.CREATED)
                     .body(new SucessoResponse("Pessoa autorizada cadastrada com sucesso."));
+        } catch (IllegalArgumentException exception) {
+            return ResponseEntity.badRequest().body(new ErroResponse(exception.getMessage()));
+        }
+    }
+
+    @PostMapping("/autorizados/consultar")
+    public ResponseEntity<?> consultarAutorizado(
+            @RequestBody ConsultarAutorizadoRequest request,
+            Authentication authentication
+    ) {
+        try {
+            return ResponseEntity.ok(
+                    portalResponsavelService.consultarAutorizado(authentication.getName(), request));
+        } catch (IllegalArgumentException exception) {
+            return ResponseEntity.badRequest().body(new ErroResponse(exception.getMessage()));
+        }
+    }
+
+    @DeleteMapping("/autorizados/{codigo}")
+    public ResponseEntity<?> desativarAutorizado(
+            @PathVariable Integer codigo,
+            Authentication authentication
+    ) {
+        try {
+            portalResponsavelService.desativarAutorizado(authentication.getName(), codigo);
+            return ResponseEntity.ok(new SucessoResponse("Autorização desativada com sucesso."));
         } catch (IllegalArgumentException exception) {
             return ResponseEntity.badRequest().body(new ErroResponse(exception.getMessage()));
         }

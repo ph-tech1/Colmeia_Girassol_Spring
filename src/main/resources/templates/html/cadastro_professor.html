@@ -99,6 +99,16 @@
                             <div class="invalid-feedback"></div>
                         </div>
                         <div class="col-lg-4 col-md-6">
+                            <label for="professorSexo" class="form-label">Sexo <span>*</span></label>
+                            <select id="professorSexo" class="form-select" required>
+                                <option value="" selected disabled>Selecione</option>
+                                <option value="F">Feminino</option>
+                                <option value="M">Masculino</option>
+                                <option value="O">Outro</option>
+                            </select>
+                            <div class="invalid-feedback"></div>
+                        </div>
+                        <div class="col-lg-4 col-md-6">
                             <label for="professorEmail" class="form-label">E-mail <span>*</span></label>
                             <input id="professorEmail" class="form-control" type="email" maxlength="100"
                                    autocomplete="email" placeholder="nome@email.com" required>
@@ -151,8 +161,23 @@
                         <div class="col-lg-6 col-md-8">
                             <label for="professorEndereco" class="form-label">Endereço <span>*</span></label>
                             <input id="professorEndereco" class="form-control" type="text" maxlength="100"
-                                   autocomplete="street-address" data-cep-field="logradouro" placeholder="Rua e número" required>
+                                   autocomplete="street-address" data-cep-field="logradouro" placeholder="Logradouro" required>
                             <div class="invalid-feedback"></div>
+                        </div>
+                        <div class="col-lg-4 col-md-6">
+                            <label for="professorBairro" class="form-label">Bairro <span>*</span></label>
+                            <input id="professorBairro" class="form-control" type="text" maxlength="60"
+                                   autocomplete="address-level3" data-cep-field="bairro" required>
+                            <div class="invalid-feedback"></div>
+                        </div>
+                        <div class="col-lg-2 col-md-3">
+                            <label for="professorNumero" class="form-label">Número <span>*</span></label>
+                            <input id="professorNumero" class="form-control" type="text" maxlength="10" placeholder="Número ou S/N" required>
+                            <div class="invalid-feedback"></div>
+                        </div>
+                        <div class="col-lg-3 col-md-3">
+                            <label for="professorComplemento" class="form-label">Complemento</label>
+                            <input id="professorComplemento" class="form-control" type="text" maxlength="50">
                         </div>
                         <div class="col-lg-3">
                             <label for="professorTelefone" class="form-label">Telefone <span>*</span></label>

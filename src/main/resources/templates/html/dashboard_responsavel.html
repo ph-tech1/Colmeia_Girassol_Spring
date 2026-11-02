@@ -118,8 +118,10 @@
                             <button th:if="${item.matricula != null and item.matricula.status != 4}"
                                     class="btn btn-outline-danger rounded-pill px-3 mb-4 ms-sm-2"
                                     type="button" data-matricula-action="cancelar"
-                                    th:attr="data-matricula-url=@{/api/portal-responsavel/criancas/{codigo}/matricula/cancelar(codigo=${item.aluno.codigo})}">
-                                <i class="fa-solid fa-ban me-2" aria-hidden="true"></i>Cancelar solicitação
+                                    th:attr="data-matricula-tipo=${item.matricula.status == 2 ? 'matrícula' : 'solicitação'},
+                                             data-matricula-url=@{/api/portal-responsavel/criancas/{codigo}/matricula/cancelar(codigo=${item.aluno.codigo})}">
+                                <i class="fa-solid fa-ban me-2" aria-hidden="true"></i>
+                                <span th:text="${item.matricula.status == 2} ? 'Cancelar matrícula' : 'Cancelar solicitação'">Cancelar solicitação</span>
                             </button>
                             <button th:if="${item.matricula != null and item.matricula.status == 4}"
                                     class="btn btn-yellow-main rounded-pill px-3 mb-4 ms-sm-2"
@@ -180,8 +182,8 @@
 
                             <div class="student-details">
                                 <h4 class="small fw-bold text-dark-blue mb-3">Informações importantes</h4>
-                                <p class="mb-2"><i class="fa-solid fa-shield-virus text-warning me-2"></i><strong>Alergias:</strong> <span th:text="${item.aluno.alergias}">—</span></p>
-                                <p class="mb-2"><i class="fa-solid fa-utensils text-primary me-2"></i><strong>Restrições:</strong> <span th:text="${item.aluno.restricoesAlimentar}">—</span></p>
+                                <p class="mb-2"><i class="fa-solid fa-shield-virus text-warning me-2"></i><strong>Alergias:</strong> <span th:text="${item.aluno.alergias ?: 'Nenhuma informada'}">—</span></p>
+                                <p class="mb-2"><i class="fa-solid fa-utensils text-primary me-2"></i><strong>Restrições:</strong> <span th:text="${item.aluno.restricoesAlimentares ?: 'Nenhuma informada'}">—</span></p>
                                 <p class="mb-0"><i class="fa-solid fa-heart-pulse text-danger me-2"></i><strong>Necessidades:</strong> <span th:text="${item.aluno.necessidadesEspeciais ?: 'Nenhuma'}">—</span></p>
                             </div>
                         </div>
@@ -189,22 +191,25 @@
                         <div class="col-lg-8">
                             <div class="diary-panel h-100">
                                 <div class="d-flex flex-wrap justify-content-between align-items-center gap-2 mb-3">
-                                    <h4 class="h5 fw-bold text-dark-blue mb-0"><i class="fa-solid fa-book-open text-warning me-2"></i>Diário de bordo</h4>
+                                    <h4 class="h5 fw-bold text-dark-blue mb-0"><i class="fa-solid fa-book-open text-warning me-2"></i>Presença e diário</h4>
                                     <span th:if="${item.diario != null}" class="small text-muted">
                                         Registro de <time th:text="${item.diario.dataRegistro}">data</time>
                                     </span>
                                 </div>
                                 <div th:if="${item.diario != null}">
                                     <span class="badge rounded-pill mb-3"
-                                          th:classappend="${item.diario.compareceu} ? 'text-bg-success' : 'text-bg-secondary'"
-                                          th:text="${item.diario.compareceu} ? 'Compareceu neste registro' : 'Não compareceu neste registro'">Frequência</span>
-                                    <div class="row g-3">
+                                          th:classappend="${item.diario.statusPresenca == 'P'} ? 'text-bg-success' : (${item.diario.statusPresenca == 'J'} ? 'text-bg-warning' : 'text-bg-secondary')"
+                                          th:text="${item.diario.statusPresenca == 'P'} ? 'Presente' : (${item.diario.statusPresenca == 'J'} ? 'Falta justificada' : 'Falta')">Frequência</span>
+                                    <div class="row g-3" th:if="${item.diario.statusPresenca == 'P'}">
                                         <div class="col-sm-4">
                                             <div class="diary-detail">
                                                 <span class="small text-muted d-block">Humor</span>
                                                 <span class="fw-semibold" th:text="${item.diario.humor ?: 'Sem registro'}">—</span>
                                             </div>
                                         </div>
+                                        <p th:if="${item.diario.statusPresenca != 'P'}" class="text-muted mb-0">
+                                            Não há diário de bordo para esta data, pois a criança não estava presente.
+                                        </p>
                                         <div class="col-sm-4">
                                             <div class="diary-detail">
                                                 <span class="small text-muted d-block">Alimentação</span>
@@ -258,6 +263,7 @@
                         <th>Nome</th>
                         <th>Parentesco</th>
                         <th>Telefone</th>
+                        <th>Ação</th>
                     </tr>
                     </thead>
                     <tbody>
@@ -266,9 +272,16 @@
                         <td th:text="${contato.nome}">Nome</td>
                         <td th:text="${contato.grauParentesco}">Parentesco</td>
                         <td class="telefone" th:text="${contato.telefone}">Telefone</td>
+                        <td>
+                            <button type="button" class="btn btn-sm btn-outline-danger"
+                                    th:attr="data-autorizado-desativar=${contato.codigo}">
+                                Desativar
+                            </button>
+                            <span class="small text-danger d-block" data-autorizado-feedback hidden></span>
+                        </td>
                     </tr>
                     <tr th:if="${#lists.isEmpty(autorizados)}">
-                        <td colspan="4" class="text-center text-muted py-4">Nenhuma outra pessoa autorizada está cadastrada.</td>
+                        <td colspan="5" class="text-center text-muted py-4">Nenhuma outra pessoa autorizada está cadastrada.</td>
                     </tr>
                     </tbody>
                 </table>
@@ -294,6 +307,6 @@ document.querySelectorAll(".telefone").forEach((elemento) => {
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.mask/1.14.16/jquery.mask.min.js"></script>
 <script th:src="@{/js/validation.js(v='1.2.0')}"></script>
 <script th:src="@{/js/cep.js(v='1.1.0')}"></script>
-<script th:src="@{/js/responsavel-dashboard.js(v='1.4.0')}"></script>
+<script th:src="@{/js/responsavel-dashboard.js(v='1.6.0')}"></script>
 </body>
 </html>

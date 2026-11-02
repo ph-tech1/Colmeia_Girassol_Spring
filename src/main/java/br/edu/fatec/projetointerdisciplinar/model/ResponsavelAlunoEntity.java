@@ -24,8 +24,9 @@ public class ResponsavelAlunoEntity {
     @JoinColumn(name = "aluno_codigo")
     private AlunoEntity aluno;
 
-    @Column(name = "grau_parentesco", nullable = false, length = 20)
-    private String grauParentesco;
+    @ManyToOne
+    @JoinColumn(name = "parentesco_codigo", nullable = false)
+    private ParentescoEntity parentesco;
 
     @Column(name = "esp_financeiro", nullable = false)
     private Boolean espFinanceiro;

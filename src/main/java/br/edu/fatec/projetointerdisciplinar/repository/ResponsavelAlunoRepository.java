@@ -11,4 +11,5 @@ import java.util.List;
 public interface ResponsavelAlunoRepository extends JpaRepository<ResponsavelAlunoEntity, ResponsavelAlunoId> {
     List<ResponsavelAlunoEntity> findByIdAlunoCodigo(Integer alunoCodigo);
     List<ResponsavelAlunoEntity> findByIdResponsavelCodigo(Integer responsavelCodigo);
+    boolean existsByResponsavel_Pessoa_CpfAndAluno_Codigo(String cpf, Integer alunoCodigo);
 }

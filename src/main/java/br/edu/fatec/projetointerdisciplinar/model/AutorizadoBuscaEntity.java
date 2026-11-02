@@ -3,8 +3,16 @@ package br.edu.fatec.projetointerdisciplinar.model;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.time.LocalDateTime;
+
 @Entity
-@Table(name = "autorizados_busca")
+@Table(
+        name = "autorizados_busca",
+        uniqueConstraints = @UniqueConstraint(
+                name = "UQ_ab_autorizado_aluno",
+                columnNames = {"autorizado_codigo", "aluno_codigo"}
+        )
+)
 @Getter
 @Setter
 @NoArgsConstructor
@@ -17,19 +25,23 @@ public class AutorizadoBuscaEntity {
     private Integer codigo;
 
     @ManyToOne
-    @JoinColumn(name = "aluno_codigo", nullable = false)
-    private AlunoEntity aluno;
+    @JoinColumn(name = "autorizado_codigo", nullable = false)
+    private AutorizadoEntity autorizado;
 
     @ManyToOne
-    @JoinColumn(name = "responsavel_codigo", nullable = false)
-    private ResponsavelEntity responsavel;
+    @JoinColumns({
+            @JoinColumn(name = "responsavel_codigo", referencedColumnName = "responsavel_codigo", nullable = false),
+            @JoinColumn(name = "aluno_codigo", referencedColumnName = "aluno_codigo", nullable = false)
+    })
+    private ResponsavelAlunoEntity vinculo;
 
-    @Column(name = "nome", nullable = false, length = 100)
-    private String nome;
+    @ManyToOne
+    @JoinColumn(name = "parentesco_codigo", nullable = false)
+    private ParentescoEntity parentesco;
 
-    @Column(name = "telefone", nullable = false, length = 15)
-    private String telefone;
+    @Column(name = "ativo", nullable = false)
+    private Boolean ativo = true;
 
-    @Column(name = "grau_parentesco", nullable = false, length = 50)
-    private String grauParentesco;
+    @Column(name = "criado_em", nullable = false, insertable = false, updatable = false)
+    private LocalDateTime criadoEm;
 }

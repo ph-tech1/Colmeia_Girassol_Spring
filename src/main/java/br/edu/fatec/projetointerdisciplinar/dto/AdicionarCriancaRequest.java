@@ -5,7 +5,8 @@ import java.time.LocalDate;
 public record AdicionarCriancaRequest(
         String nome,
         LocalDate dataNascimento,
-        String grauParentesco,
+        String sexo,
+        Integer parentescoCodigo,
         String alergias,
         String restricoesAlimentares,
         String necessidadesEspeciais

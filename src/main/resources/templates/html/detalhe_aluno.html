@@ -95,9 +95,17 @@
                     <input id="alunoNascimento" name="dataNascimento" type="date" class="form-control" required th:value="${aluno.dataNascimento}">
                 </div>
                 <div class="col-md-4">
+                    <label for="alunoSexo" class="form-label fw-semibold">Sexo</label>
+                    <select id="alunoSexo" name="sexo" class="form-select" required>
+                        <option value="F" th:selected="${aluno.sexo == 'F'}">Feminino</option>
+                        <option value="M" th:selected="${aluno.sexo == 'M'}">Masculino</option>
+                        <option value="O" th:selected="${aluno.sexo == 'O'}">Outro</option>
+                    </select>
+                </div>
+                <div class="col-md-4">
                     <label for="alunoAlergias" class="form-label fw-semibold">Alergias</label>
                     <div class="student-suggestion-field">
-                        <input id="alunoAlergias" name="alergias" class="form-control" maxlength="50"
+                        <input id="alunoAlergias" name="alergias" class="form-control" maxlength="100"
                                autocomplete="off" aria-describedby="sugestoesAlergiasAjuda"
                                th:value="${aluno.alergias}">
                         <button class="student-suggestion-toggle" type="button" aria-label="Ver sugestões de alergias"
@@ -105,7 +113,6 @@
                             <i class="fa-solid fa-chevron-down" aria-hidden="true"></i>
                         </button>
                         <div id="sugestoesAlergias" class="student-suggestion-menu d-none" role="listbox" aria-label="Sugestões de alergias">
-                            <button type="button" role="option" data-sugestao-campo="alunoAlergias">Nenhuma</button>
                             <button type="button" role="option" data-sugestao-campo="alunoAlergias">Leite</button>
                             <button type="button" role="option" data-sugestao-campo="alunoAlergias">Lactose</button>
                             <button type="button" role="option" data-sugestao-campo="alunoAlergias">Ovo</button>
@@ -120,15 +127,14 @@
                 <div class="col-md-4">
                     <label for="alunoRestricoes" class="form-label fw-semibold">Restrições alimentares</label>
                     <div class="student-suggestion-field">
-                        <input id="alunoRestricoes" name="restricoesAlimentares" class="form-control" maxlength="50"
+                        <input id="alunoRestricoes" name="restricoesAlimentares" class="form-control" maxlength="100"
                                autocomplete="off" aria-describedby="sugestoesRestricoesAjuda"
-                               th:value="${aluno.restricoesAlimentar}">
+                               th:value="${aluno.restricoesAlimentares}">
                         <button class="student-suggestion-toggle" type="button" aria-label="Ver sugestões de restrições alimentares"
                                 aria-expanded="false" aria-controls="sugestoesRestricoes">
                             <i class="fa-solid fa-chevron-down" aria-hidden="true"></i>
                         </button>
                         <div id="sugestoesRestricoes" class="student-suggestion-menu d-none" role="listbox" aria-label="Sugestões de restrições alimentares">
-                            <button type="button" role="option" data-sugestao-campo="alunoRestricoes">Nenhuma</button>
                             <button type="button" role="option" data-sugestao-campo="alunoRestricoes">Sem lactose</button>
                             <button type="button" role="option" data-sugestao-campo="alunoRestricoes">Sem glúten</button>
                             <button type="button" role="option" data-sugestao-campo="alunoRestricoes">Vegetariana</button>
@@ -222,7 +228,7 @@
                 </div>
                 <div class="student-info-row">
                     <i class="fa-solid fa-utensils text-primary" aria-hidden="true"></i>
-                    <div><span class="small text-muted d-block">Restrições alimentares</span><strong th:text="${aluno.restricoesAlimentar ?: 'Nenhuma informada'}">—</strong></div>
+                    <div><span class="small text-muted d-block">Restrições alimentares</span><strong th:text="${aluno.restricoesAlimentares ?: 'Nenhuma informada'}">—</strong></div>
                 </div>
                 <div class="student-info-row">
                     <i class="fa-solid fa-hand-holding-heart text-danger" aria-hidden="true"></i>
@@ -235,8 +241,8 @@
             <div class="form-card p-4 h-100">
                 <div class="d-flex flex-wrap justify-content-between align-items-center gap-2 mb-3">
                     <div>
-                        <h2 id="diarioTitulo" class="h5 fw-bold text-dark-blue mb-1"><i class="fa-solid fa-book-open text-warning me-2"></i>Diário de bordo</h2>
-                        <p class="small text-muted mb-0">Até os 10 registros mais recentes compartilhados pela equipe.</p>
+                        <h2 id="diarioTitulo" class="h5 fw-bold text-dark-blue mb-1"><i class="fa-solid fa-book-open text-warning me-2"></i>Presença e diário de bordo</h2>
+                        <p class="small text-muted mb-0">Até as 10 datas mais recentes registradas pela equipe.</p>
                     </div>
                     <span class="badge rounded-pill student-record-count" th:text="${diasRegistrados + ' registros'}">0 registros</span>
                 </div>
@@ -254,10 +260,10 @@
                             <div class="d-flex flex-wrap justify-content-between align-items-center gap-2 mb-2">
                                 <time class="fw-semibold text-dark-blue" th:text="${diario.dataRegistro}">Data do registro</time>
                                 <span class="badge rounded-pill"
-                                      th:classappend="${diario.compareceu} ? 'text-bg-success' : 'text-bg-secondary'"
-                                      th:text="${diario.compareceu} ? 'Presente' : 'Ausente'">Frequência</span>
+                                      th:classappend="${diario.statusPresenca == 'P'} ? 'text-bg-success' : (${diario.statusPresenca == 'J'} ? 'text-bg-warning' : 'text-bg-secondary')"
+                                      th:text="${diario.statusPresenca == 'P'} ? 'Presente' : (${diario.statusPresenca == 'J'} ? 'Falta justificada' : 'Falta')">Frequência</span>
                             </div>
-                            <div class="row g-2">
+                            <div class="row g-2" th:if="${diario.statusPresenca == 'P'}">
                                 <div class="col-sm-4"><span class="small text-muted d-block">Humor</span><span th:text="${diario.humor ?: 'Sem registro'}">—</span></div>
                                 <div class="col-sm-4"><span class="small text-muted d-block">Alimentação</span><span th:text="${diario.alimentacao ?: 'Sem registro'}">—</span></div>
                                 <div class="col-sm-4"><span class="small text-muted d-block">Sono</span><span th:text="${diario.sono ?: 'Sem registro'}">—</span></div>
@@ -268,6 +274,7 @@
                                     <span class="small text-muted d-block">Observações da equipe</span><p class="mb-0" th:text="${diario.observacoes}">Observações</p>
                                 </div>
                             </div>
+                            <p th:if="${diario.statusPresenca != 'P'}" class="small text-muted mb-0">Não há diário de bordo para esta data, pois a criança não estava presente.</p>
                         </div>
                     </article>
                 </div>

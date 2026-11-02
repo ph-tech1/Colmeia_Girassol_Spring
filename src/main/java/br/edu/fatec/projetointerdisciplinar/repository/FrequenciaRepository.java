@@ -11,4 +11,6 @@ import java.util.List;
 public interface FrequenciaRepository extends JpaRepository<FrequenciaEntity, FrequenciaId> {
     List<FrequenciaEntity> findByIdAulaPlanejamentosCodigo(Integer aulaCodigo);
     List<FrequenciaEntity> findByIdMatriculaCodigo(Integer matriculaCodigo);
+    List<FrequenciaEntity> findByMatricula_NrOrderByAulaPlanejamento_DataAulaDesc(Integer matriculaCodigo);
+    List<FrequenciaEntity> findByMatricula_Nr(Integer matriculaCodigo);
 }

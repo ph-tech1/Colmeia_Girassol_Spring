@@ -68,18 +68,23 @@
                 </div>
                 <div class="row g-3">
                     <div class="col-md-6">
+                        <label for="criancaSexo" class="form-label fw-semibold">Sexo <span class="text-warning">*</span></label>
+                        <select id="criancaSexo" name="sexo" class="form-select" required>
+                            <option value="" selected disabled>Selecione...</option>
+                            <option value="F">Feminino</option>
+                            <option value="M">Masculino</option>
+                            <option value="O">Outro</option>
+                        </select>
+                    </div>
+                    <div class="col-md-6">
                         <label for="criancaNascimento" class="form-label fw-semibold">Data de nascimento <span class="text-warning">*</span></label>
                         <input id="criancaNascimento" name="dataNascimento" type="date" class="form-control" required>
                     </div>
                     <div class="col-md-6">
                         <label for="criancaParentesco" class="form-label fw-semibold">Seu parentesco <span class="text-warning">*</span></label>
-                        <select id="criancaParentesco" name="grauParentesco" class="form-select" required>
+                        <select id="criancaParentesco" name="parentescoCodigo" class="form-select" required>
                             <option value="" selected disabled>Selecione...</option>
-                            <option value="Mãe">Mãe</option>
-                            <option value="Pai">Pai</option>
-                            <option value="Avô/Avó">Avô/Avó</option>
-                            <option value="Tio(a)">Tio(a)</option>
-                            <option value="Responsável Legal">Responsável Legal</option>
+                            <option th:each="parentesco : ${parentescos}" th:value="${parentesco.codigo}" th:text="${parentesco.descricao}">Parentesco</option>
                         </select>
                     </div>
                 </div>
@@ -87,11 +92,11 @@
                 <div class="row g-3">
                     <div class="col-md-6">
                         <label for="criancaAlergias" class="form-label fw-semibold">Alergias</label>
-                        <input id="criancaAlergias" name="alergias" class="form-control" maxlength="50" placeholder="Se houver">
+                        <input id="criancaAlergias" name="alergias" class="form-control" maxlength="100" placeholder="Se houver">
                     </div>
                     <div class="col-md-6">
                         <label for="criancaRestricoes" class="form-label fw-semibold">Restrições alimentares</label>
-                        <input id="criancaRestricoes" name="restricoesAlimentares" class="form-control" maxlength="50" placeholder="Se houver">
+                        <input id="criancaRestricoes" name="restricoesAlimentares" class="form-control" maxlength="100" placeholder="Se houver">
                     </div>
                     <div class="col-12">
                         <label for="criancaNecessidades" class="form-label fw-semibold">Necessidades especiais</label>

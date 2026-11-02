@@ -79,7 +79,7 @@
         details.append(
             makeDetail('Idade', calculateAge(aluno.dataNascimento), 'fa-cake-candles'),
             makeDetail('Alergias', aluno.alergias, 'fa-kit-medical'),
-            makeDetail('Restrições alimentares', aluno.restricoesAlimentar, 'fa-utensils'),
+            makeDetail('Restrições alimentares', aluno.restricoesAlimentares, 'fa-utensils'),
             makeDetail('Necessidades especiais', aluno.necessidadesEspeciais, 'fa-heart')
         );
         card.append(number, identity, details);
