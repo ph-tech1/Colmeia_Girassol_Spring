@@ -4,37 +4,47 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Portal do Professor - Colmeia Girassol</title>
+    <meta name="_csrf" th:content="${_csrf.token}">
+    <meta name="_csrf_header" th:content="${_csrf.headerName}">
+    <script>try { document.documentElement.dataset.theme = localStorage.getItem('colmeia-theme') === 'dark' ? 'dark' : 'light'; } catch (error) { document.documentElement.dataset.theme = 'light'; }</script>
     <link rel="icon" th:href="@{/images/abelha.png}">
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700&display=swap" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
     <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
-    <link rel="stylesheet" th:href="@{/css/style.css(v='1.9.0')}">
+    <link rel="stylesheet" th:href="@{/css/style.css(v='1.14.0')}">
 </head>
-<body>
+<body class="professor-dashboard admin-dashboard">
 
-    <div class="dashboard-container">
+    <div class="dashboard-container" id="professor-dashboard" th:attr="data-dashboard-url=@{/api/professor/dashboard},data-frequency-url=@{/api/frequencias/salvar},data-diary-url=@{/api/diarios-bordo/salvar},data-plan-url=@{/api/professor/dashboard/planejamentos}">
         <!-- Mobile Top Navbar -->
         <nav class="navbar navbar-dark bg-dark-blue d-lg-none py-3 px-3 shadow-sm w-100 position-sticky top-0 z-3">
             <div class="container-fluid d-flex justify-content-between align-items-center">
-                <a class="navbar-brand d-flex align-items-center gap-2" href="#">
+                <a class="navbar-brand d-flex align-items-center gap-2" href="#inicio" data-section="inicio">
                     <img th:src="@{/images/logo.png}" alt="Logo" style="height: 35px;">
                     <span class="fw-bold text-white small">Colmeia Girassol</span>
                 </a>
-                <div class="dropdown">
-                    <button class="btn btn-outline-light dropdown-toggle rounded-pill px-3 py-1 btn-sm" type="button" id="mobileMenuDropdown" data-bs-toggle="dropdown" aria-expanded="false">
-                        <i class="fa-solid fa-bars me-1"></i> Menu
+                <div class="d-flex align-items-center gap-2">
+                    <button class="btn btn-outline-light theme-toggle" type="button" data-theme-toggle
+                            aria-label="Ativar modo escuro" aria-pressed="false" title="Ativar modo escuro">
+                        <i class="fa-solid fa-moon" aria-hidden="true"></i>
                     </button>
-                    <ul class="dropdown-menu dropdown-menu-end shadow border-0 rounded-3 mt-2" aria-labelledby="mobileMenuDropdown">
-                        <li><a class="dropdown-item nav-link-custom py-2 active" data-section="inicio"><i class="fa-solid fa-house me-2"></i>Início</a></li>
-                        <li><a class="dropdown-item nav-link-custom py-2" data-section="planejamento-section"><i class="fa-solid fa-calendar-check me-2"></i>Planejamento</a></li>
-                        <li><a class="dropdown-item nav-link-custom py-2" data-section="minha-turma-section"><i class="fa-solid fa-users me-2"></i>Minha Turma</a></li>
-                        <li><hr class="dropdown-divider"></li>
-                        <li><form th:action="@{/logout}" method="post">
-                            <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}">
-                            <button type="submit" class="dropdown-item text-danger py-2"><i class="fa-solid fa-right-from-bracket me-2"></i>Sair</button>
-                        </form></li>
-                    </ul>
+                    <div class="dropdown">
+                        <button class="btn btn-outline-light dropdown-toggle rounded-pill px-3 py-1 btn-sm" type="button" id="mobileMenuDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+                            <i class="fa-solid fa-bars me-1"></i> Menu
+                        </button>
+                        <ul class="dropdown-menu dropdown-menu-end shadow border-0 rounded-3 mt-2" aria-labelledby="mobileMenuDropdown">
+                            <li><a class="dropdown-item nav-link-custom py-2 active" data-section="inicio"><i class="fa-solid fa-house me-2"></i>Início</a></li>
+                            <li><a class="dropdown-item nav-link-custom py-2" data-section="planejamento-section"><i class="fa-solid fa-calendar-check me-2"></i>Planejamento</a></li>
+                            <li><a class="dropdown-item nav-link-custom py-2" data-section="diario-section"><i class="fa-solid fa-book-open me-2"></i>Diário de bordo</a></li>
+                            <li><a class="dropdown-item nav-link-custom py-2" data-section="minha-turma-section"><i class="fa-solid fa-users me-2"></i>Minha Turma</a></li>
+                            <li><hr class="dropdown-divider"></li>
+                            <li><form th:action="@{/logout}" method="post">
+                                <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}">
+                                <button type="submit" class="dropdown-item text-danger py-2"><i class="fa-solid fa-right-from-bracket me-2"></i>Sair</button>
+                            </form></li>
+                        </ul>
+                    </div>
                 </div>
             </div>
         </nav>
@@ -57,6 +67,11 @@
                     </a>
                 </li>
                 <li class="nav-item mb-2">
+                    <a href="#" class="nav-link nav-link-custom" data-section="diario-section">
+                        <i class="fa-solid fa-book-open me-3"></i>Diário de bordo
+                    </a>
+                </li>
+                <li class="nav-item mb-2">
                     <a href="#" class="nav-link nav-link-custom" data-section="minha-turma-section">
                         <i class="fa-solid fa-users me-3"></i>Minha Turma
                     </a>
@@ -70,21 +85,25 @@
 
         <!-- Main Content -->
         <main class="main-content">
-            <header class="dashboard-header" data-aos="fade-down">
+            <header class="dashboard-header admin-dashboard-header" data-aos="fade-down">
                 <div>
+                    <div class="admin-dashboard-kicker"><span aria-hidden="true"></span>Painel do professor</div>
                     <h2 class="fw-bold text-dark-blue mb-0" id="saudacao-prof">Olá, Professor(a)</h2>
-                    <p class="text-muted">Tenha um ótimo dia de aula com seus pequenos!</p>
+                    <p class="text-muted mb-0">Acompanhe suas turmas e organize a rotina de aprendizagem.</p>
                 </div>
                 <div class="d-flex align-items-center gap-3">
+                    <button class="btn btn-outline-dark-blue theme-toggle d-none d-lg-inline-grid" type="button"
+                            data-theme-toggle aria-label="Ativar modo escuro" aria-pressed="false" title="Ativar modo escuro">
+                        <i class="fa-solid fa-moon" aria-hidden="true"></i>
+                    </button>
                     <div class="text-end d-none d-md-block">
                         <h6 class="fw-bold text-dark-blue mb-0" id="header-prof-nome">—</h6>
                         <small class="text-muted" id="header-prof-info">—</small>
                     </div>
-                    <img id="header-prof-avatar"
-                         src="https://ui-avatars.com/api/?name=Professor&background=7EC8D9&color=fff"
-                         alt="Professor" class="rounded-circle shadow-sm" style="width: 45px;">
+                    <div id="header-prof-avatar" class="professor-avatar" aria-label="Professor">CG</div>
                 </div>
             </header>
+            <div class="alert d-none" id="professor-alert" role="status" aria-live="polite"></div>
 
             <!-- Seção Início -->
             <section id="inicio" class="dashboard-section active">
@@ -107,62 +126,69 @@
                     <div class="col-md-4">
                         <div class="stat-card">
                             <div class="stat-icon bg-green-light text-success"><i class="fa-solid fa-book-open"></i></div>
-                            <h3 class="fw-bold mb-0">10</h3>
+                            <h3 class="fw-bold mb-0" id="stat-prof-diarios">0</h3>
                             <p class="text-muted small mb-0">Registros no Diário</p>
                         </div>
                     </div>
                 </div>
 
-                <!-- Formulário Rápido de Diário -->
-                <div class="form-card" data-aos="fade-up">
+            </section>
+
+            <section id="diario-section" class="dashboard-section" data-aos="fade-up">
+                <div class="professor-section-heading mb-4">
+                    <span class="professor-workspace-kicker">Acompanhamento individual</span>
+                    <h2 class="fw-bold text-dark-blue mb-2">Diário de bordo</h2>
+                    <p class="text-muted mb-0">Registre como foi o dia de cada criança presente e compartilhe com os responsáveis.</p>
+                </div>
+                <div class="form-card">
                     <div class="d-flex align-items-center gap-3 mb-4">
                         <div class="stat-icon bg-yellow-light text-warning mb-0"><i class="fa-solid fa-book"></i></div>
-                        <h4 class="fw-bold text-dark-blue mb-0">Novo Registro no Diário de Bordo</h4>
+                        <h4 class="fw-bold text-dark-blue mb-0">Novo registro</h4>
                     </div>
                     <div class="row g-3">
                         <div class="col-md-6">
-                            <label class="form-label fw-bold">Selecionar Aluno</label>
-                            <select class="form-select rounded-3 shadow-sm" id="select-aluno-diario">
-                                <!-- render.js preenche -->
+                            <label class="form-label fw-bold" for="diario-aula">Aula</label>
+                            <select class="form-select rounded-3 shadow-sm" id="diario-aula" required>
+                                <option value="">Selecione uma aula</option>
+                            </select>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label fw-bold" for="select-aluno-diario">Aluno presente</label>
+                            <select class="form-select rounded-3 shadow-sm" id="select-aluno-diario" required disabled>
+                                <option value="">Selecione primeiro uma aula</option>
                             </select>
                         </div>
                         <div class="col-md-3">
-                            <label class="form-label fw-bold">Humor</label>
+                            <label class="form-label fw-bold" for="diario-humor">Humor</label>
                             <select class="form-select rounded-3 shadow-sm" id="diario-humor">
-                                <option>Feliz</option>
-                                <option>Tranquilo</option>
-                                <option>Agitado</option>
-                                <option>Choroso</option>
+                                <option>Feliz</option><option>Tranquilo</option><option>Agitado</option><option>Choroso</option>
                             </select>
                         </div>
                         <div class="col-md-3">
-                            <label class="form-label fw-bold">Alimentação</label>
+                            <label class="form-label fw-bold" for="diario-alimentacao">Alimentação</label>
                             <select class="form-select rounded-3 shadow-sm" id="diario-alimentacao">
-                                <option>Comeu tudo</option>
-                                <option>Comeu bem</option>
-                                <option>Comeu pouco</option>
-                                <option>Recusou</option>
+                                <option>Comeu tudo</option><option>Comeu bem</option><option>Comeu pouco</option><option>Recusou</option>
                             </select>
                         </div>
                         <div class="col-md-4">
-                            <label class="form-label fw-bold">Sono</label>
-                            <input type="text" class="form-control rounded-3 shadow-sm" id="diario-sono" placeholder="Ex: Dormiu 1h30" required>
+                            <label class="form-label fw-bold" for="diario-sono">Sono</label>
+                            <input type="text" maxlength="50" class="form-control rounded-3 shadow-sm" id="diario-sono" placeholder="Ex: Dormiu 1h30">
                         </div>
                         <div class="col-md-4">
-                            <label class="form-label fw-bold">Troca / Banheiro</label>
-                            <input type="text" class="form-control rounded-3 shadow-sm" id="diario-fraldas" placeholder="Ex: Normal / 3 trocas" required>
+                            <label class="form-label fw-bold" for="diario-fraldas">Troca / Banheiro</label>
+                            <input type="text" maxlength="50" class="form-control rounded-3 shadow-sm" id="diario-fraldas" placeholder="Ex: Normal / 3 trocas">
                         </div>
                         <div class="col-md-4">
-                            <label class="form-label fw-bold">Saúde / Medicamento</label>
-                            <input type="text" class="form-control rounded-3 shadow-sm" placeholder="Nenhuma observação">
+                            <label class="form-label fw-bold" for="diario-saude">Saúde / Medicamento</label>
+                            <input type="text" maxlength="100" class="form-control rounded-3 shadow-sm" id="diario-saude" placeholder="Nenhuma observação">
                         </div>
                         <div class="col-12">
-                            <label class="form-label fw-bold">Observações do Dia</label>
-                            <textarea class="form-control rounded-3 shadow-sm" rows="3" id="diario-obs" placeholder="Conte como foi o desenvolvimento da criança hoje..."></textarea>
+                            <label class="form-label fw-bold" for="diario-obs">Observações do dia</label>
+                            <textarea class="form-control rounded-3 shadow-sm" rows="3" maxlength="500" id="diario-obs" placeholder="Conte como foi o desenvolvimento da criança hoje..."></textarea>
                         </div>
                         <div class="col-12 text-end mt-2">
-                            <button class="btn btn-custom btn-dark-blue rounded-pill px-5 shadow" onclick="salvarDiario()">
-                                <i class="fa-solid fa-paper-plane me-2"></i>Enviar para os Pais
+                            <button type="button" id="salvar-diario" class="btn btn-custom btn-dark-blue rounded-pill px-5 shadow" onclick="salvarDiario()">
+                                <i class="fa-solid fa-paper-plane me-2"></i>Enviar para os pais
                             </button>
                         </div>
                     </div>
@@ -172,119 +198,140 @@
             <!-- Seção Planejamento -->
             <section id="planejamento-section" class="dashboard-section" data-aos="fade-up">
                 <div class="d-flex justify-content-between align-items-center mb-4">
-                    <h4 class="fw-bold text-dark-blue mb-0">Planejamento de Aulas</h4>
-                    <button class="btn btn-light-blue rounded-pill px-4 shadow-sm" data-bs-toggle="modal" data-bs-target="#modalPlanejamento">
+                    <div>
+                        <span class="professor-workspace-kicker">Visão geral da rotina</span>
+                        <h2 class="fw-bold text-dark-blue mb-0">Planejamento de aulas</h2>
+                    </div>
+                    <button type="button" id="abrir-atividade" class="btn btn-light-blue rounded-pill px-4 shadow-sm" data-open-activity>
                         <i class="fa-solid fa-plus me-2"></i>Nova Atividade
                     </button>
                 </div>
-                <div class="row g-4" id="planejamentos-lista-prof">
-                    <!-- render.js preenche -->
+                <div class="professor-calendar-toolbar">
+                    <button type="button" class="btn btn-outline-dark-blue rounded-circle" id="calendario-mes-anterior" aria-label="Mês anterior"><i class="fa-solid fa-chevron-left"></i></button>
+                    <h3 id="calendario-mes-titulo" class="h5 fw-bold text-dark-blue mb-0" aria-live="polite"></h3>
+                    <button type="button" class="btn btn-outline-dark-blue rounded-circle" id="calendario-mes-proximo" aria-label="Próximo mês"><i class="fa-solid fa-chevron-right"></i></button>
+                    <button type="button" class="btn btn-outline-dark-blue rounded-pill px-3" id="calendario-hoje">Hoje</button>
+                    <span class="professor-calendar-hint"><i class="fa-solid fa-hand me-1"></i>Arraste uma aula para mudar a data</span>
+                </div>
+                <div class="professor-calendar-legend" aria-label="Legenda do calendário">
+                    <span><i class="professor-calendar-dot professor-calendar-dot-today"></i>Hoje</span>
+                    <span><i class="professor-calendar-dot professor-calendar-dot-done"></i>Aula dada</span>
+                    <span><i class="professor-calendar-dot professor-calendar-dot-pending"></i>Ainda não dada</span>
+                </div>
+                <div class="professor-calendar-board">
+                    <div class="professor-calendar-weekdays" aria-hidden="true">
+                        <span>Seg</span><span>Ter</span><span>Qua</span><span>Qui</span><span>Sex</span><span>Sáb</span><span>Dom</span>
+                    </div>
+                    <div class="professor-calendar-grid" id="planejamentos-lista-prof" aria-live="polite">
+                        <div class="professor-calendar-loading"><span class="spinner-border spinner-border-sm me-2"></span>Carregando calendário...</div>
+                    </div>
+                </div>
+                <div class="professor-calendar-history">
+                    <p id="calendario-historico-resumo" class="small text-muted mb-2"></p>
+                    <button type="button" class="btn btn-link p-0 fw-bold" id="calendario-mostrar-historico" hidden>
+                        <i class="fa-solid fa-clock-rotate-left me-2"></i>Mostrar histórico
+                    </button>
                 </div>
             </section>
 
             <!-- Seção Minha Turma -->
             <section id="minha-turma-section" class="dashboard-section" data-aos="fade-up">
                 <h4 class="fw-bold text-dark-blue mb-4">Minha Turma</h4>
-                <div class="form-card" id="minhas-turmas-lista">
+                <div class="professor-turmas-grid" id="minhas-turmas-lista" aria-live="polite">
                     <div class="text-center py-4 text-muted">
                         <span class="spinner-border spinner-border-sm me-2"></span>Carregando...
                     </div>
                 </div>
             </section>
+
+            <section id="atividade-editor-section" class="dashboard-section professor-workspace-screen" aria-labelledby="atividade-titulo">
+                <div class="professor-workspace-heading">
+                    <button type="button" class="btn btn-outline-dark-blue rounded-pill px-3" data-workspace-back="planejamento-section">
+                        <i class="fa-solid fa-arrow-left me-2"></i>Voltar ao planejamento
+                    </button>
+                    <span class="professor-workspace-step"><i class="fa-solid fa-calendar-plus me-2"></i>Planejamento</span>
+                </div>
+                <div class="professor-workspace-intro">
+                    <span class="professor-workspace-kicker" id="atividade-kicker">Nova atividade</span>
+                    <h2 class="fw-bold text-dark-blue mb-2" id="atividade-titulo">Vamos planejar uma aula?</h2>
+                    <p class="text-muted mb-0" id="atividade-subtitulo">Organize a proposta e os detalhes da atividade para sua turma.</p>
+                </div>
+                <div class="professor-workspace-layout">
+                    <aside class="professor-workspace-aside professor-activity-aside">
+                        <span class="professor-workspace-aside-icon"><i class="fa-solid fa-lightbulb"></i></span>
+                        <h3 class="h5 fw-bold">Uma boa experiência começa com intenção.</h3>
+                        <p class="mb-0">Escolha a turma e descreva a proposta com clareza. O planejamento ficará disponível para você organizar a chamada no dia da aula.</p>
+                    </aside>
+                    <form class="professor-workspace-form form-card" id="form-planejamento" novalidate>
+                        <div class="professor-form-section-title">
+                            <span class="professor-form-step">1</span>
+                            <div>
+                                <h3 class="h5 fw-bold text-dark-blue mb-1">Detalhes da atividade</h3>
+                                <p class="small text-muted mb-0">Preencha as informações principais da aula.</p>
+                            </div>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label fw-bold" for="plano-turma">Turma</label>
+                            <select class="form-select rounded-3" id="plano-turma" required>
+                                <option value="">Selecione uma turma</option>
+                            </select>
+                            <small id="plano-turma-ajuda" class="form-text text-muted d-none">A turma não pode ser alterada ao editar uma aula.</small>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label fw-bold" for="plano-titulo">Atividade / Título</label>
+                            <input type="text" class="form-control rounded-3" id="plano-titulo" placeholder="Ex.: Pintura com elementos da natureza" required minlength="3" maxlength="200">
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label fw-bold" for="plano-desc">Descrição da dinâmica</label>
+                            <textarea class="form-control rounded-3" rows="5" id="plano-desc" placeholder="Conte como a atividade será realizada e quais materiais serão utilizados." required minlength="5"></textarea>
+                        </div>
+                        <div class="mb-4">
+                            <label class="form-label fw-bold" for="plano-data">Data da aula</label>
+                            <input type="date" class="form-control rounded-3" id="plano-data" required>
+                        </div>
+                        <div class="d-flex flex-wrap justify-content-end gap-2 professor-workspace-actions">
+                            <button type="button" class="btn btn-outline-dark-blue rounded-pill px-4" data-workspace-back="planejamento-section">Cancelar</button>
+                            <button type="submit" id="salvar-planejamento" class="btn btn-yellow-main rounded-pill px-4 fw-bold">
+                                <i class="fa-solid fa-floppy-disk me-2"></i>Salvar planejamento
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </section>
+
+            <section id="chamada-section" class="dashboard-section professor-workspace-screen" aria-labelledby="chamada-titulo">
+                <div class="professor-workspace-heading">
+                    <button type="button" class="btn btn-outline-dark-blue rounded-pill px-3" data-workspace-back="planejamento-section">
+                        <i class="fa-solid fa-arrow-left me-2"></i>Voltar aos planejamentos
+                    </button>
+                    <span class="professor-workspace-step"><i class="fa-solid fa-list-check me-2"></i>Registro de presença</span>
+                </div>
+                <div class="professor-workspace-intro professor-attendance-intro">
+                    <span class="professor-workspace-kicker">Chamada da turma</span>
+                    <h2 class="fw-bold text-dark-blue mb-2" id="chamada-titulo">Vamos conferir quem veio?</h2>
+                    <p class="text-muted mb-0" id="chamada-subtitulo">Marque a situação de cada criança para registrar a chamada.</p>
+                </div>
+                <div class="alert d-none professor-workspace-alert" id="chamada-alert" role="status" aria-live="polite"></div>
+                <div class="professor-roster-summary form-card">
+                    <span class="professor-roster-icon"><i class="fa-solid fa-clipboard-user"></i></span>
+                    <div>
+                        <strong id="chamada-resumo-turma">Turma</strong>
+                        <span id="chamada-resumo-aula">Aula</span>
+                    </div>
+                    <span class="professor-roster-count" id="chamada-resumo-alunos">0 alunos</span>
+                </div>
+                <div class="professor-roster-list" id="listaChamadaAlunos" aria-live="polite"></div>
+                <div class="professor-workspace-footer">
+                    <p class="small text-muted mb-0"><i class="fa-solid fa-circle-info me-2"></i>Confira a situação de cada criança antes de salvar.</p>
+                    <button type="button" class="btn btn-dark-blue rounded-pill px-4" id="salvar-chamada">
+                        <i class="fa-solid fa-check me-2"></i>Salvar chamada
+                    </button>
+                </div>
+            </section>
         </main>
     </div>
 
-    <!-- Modal Planejamento -->
-    <div class="modal fade" id="modalPlanejamento" tabindex="-1" aria-hidden="true">
-        <div class="modal-dialog modal-dialog-centered">
-            <div class="modal-content border-0 rounded-4 shadow">
-                <div class="modal-header border-0 pb-0">
-                    <h5 class="fw-bold text-dark-blue">Planejar Nova Aula</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-                </div>
-                <div class="modal-body p-4">
-                    <div class="mb-3">
-                        <label class="form-label fw-bold">Atividade / Título</label>
-                        <input type="text" class="form-control rounded-3" id="plano-titulo" placeholder="Ex: Aula de Artes" required minlength="3">
-                    </div>
-                    <div class="mb-3">
-                        <label class="form-label fw-bold">Descrição da Dinâmica</label>
-                        <textarea class="form-control rounded-3" rows="3" id="plano-desc" required minlength="5"></textarea>
-                    </div>
-                    <div class="row">
-                        <div class="col-md-6 mb-3">
-                            <label class="form-label fw-bold">Data</label>
-                            <input type="date" class="form-control rounded-3 future-date" id="plano-data" required>
-                        </div>
-                    </div>
-                    <button class="btn btn-yellow-main w-100 rounded-pill py-2 fw-bold mt-2" onclick="salvarPlanejamento()">
-                        Salvar Planejamento
-                    </button>
-                </div>
-            </div>
-        </div>
-    </div>
-    <!-- Modal Autorizados -->
-    <div class="modal fade" id="modalAutorizados" tabindex="-1" aria-hidden="true">
-        <div class="modal-dialog modal-dialog-centered">
-            <div class="modal-content border-0 rounded-4 shadow">
-                <div class="modal-header border-0 pb-0">
-                    <h5 class="fw-bold text-dark-blue" id="modalAutorizadosTitulo">Pessoas Autorizadas</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-                </div>
-                <div class="modal-body p-4">
-                    <div id="lista-autorizados-modal">
-                        <!-- preenchido pelo render.js -->
-                    </div>
-                </div>
-                <div class="modal-footer border-0">
-                    <button type="button" class="btn btn-light rounded-pill px-4" data-bs-dismiss="modal">Fechar</button>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- Modal Chamada -->
-    <div class="modal fade" id="modalChamada" tabindex="-1" aria-hidden="true">
-        <div class="modal-dialog modal-dialog-centered">
-            <div class="modal-content border-0 rounded-4 shadow">
-                <div class="modal-header border-0 bg-dark-blue text-white">
-                    <h5 class="fw-bold mb-0" id="modalChamadaTitulo">Chamada</h5>
-                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
-                </div>
-                <div class="modal-body p-0">
-                    <div class="table-responsive">
-                        <table class="table table-hover align-middle mb-0">
-                            <thead class="table-light">
-                                <tr><th>Aluno</th><th class="text-center">Presença</th><th>Status</th></tr>
-                            </thead>
-                            <tbody id="listaChamadaAlunos"></tbody>
-                        </table>
-                    </div>
-                </div>
-                <div class="modal-footer border-0">
-                    <button class="btn btn-dark-blue w-100 rounded-pill" data-bs-dismiss="modal">Finalizar Chamada</button>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- Modal de sucesso -->
-    <div class="modal fade" id="modalSucesso" tabindex="-1" aria-hidden="true">
-        <div class="modal-dialog modal-dialog-centered modal-sm">
-            <div class="modal-content border-0 rounded-4 shadow text-center p-4">
-                <i class="fa-solid fa-circle-check text-success fs-1 mb-3"></i>
-                <h5 class="fw-bold text-dark-blue" id="modal-sucesso-msg">Salvo com sucesso!</h5>
-                <button class="btn btn-dark-blue rounded-pill px-4 mt-2" data-bs-dismiss="modal">OK</button>
-            </div>
-        </div>
-    </div>
-
-    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.mask/1.14.16/jquery.mask.min.js"></script>
-    <script th:src="@{/js/validation.js(v='1.2.0')}"></script>
-    <script th:src="@{/js/database.js(v='1.0.3')}"></script>
-    <script th:src="@{/js/render.js(v='1.0.4')}"></script>
+    <script th:src="@{/js/dashboard-professor.js(v='1.1.0')}"></script>
     <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
     <script>AOS.init();</script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>

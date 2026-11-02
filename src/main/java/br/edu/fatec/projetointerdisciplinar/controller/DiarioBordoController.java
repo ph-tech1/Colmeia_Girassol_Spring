@@ -24,12 +24,16 @@ public class DiarioBordoController {
     }
 
     @PostMapping("/salvar")
-    public ResponseEntity<DiarioBordoEntity> salvar(
+    public ResponseEntity<?> salvar(
             @RequestBody RegistrarDiarioBordoRequest request,
             Authentication authentication
     ) {
-        return ResponseEntity.status(HttpStatus.CREATED)
-                .body(diarioBordoService.salvar(request, authentication.getName()));
+        try {
+            return ResponseEntity.status(HttpStatus.CREATED)
+                    .body(diarioBordoService.salvar(request, authentication.getName()));
+        } catch (IllegalArgumentException exception) {
+            return ResponseEntity.badRequest().body(new ErroResponse(exception.getMessage()));
+        }
     }
 
     @DeleteMapping("/{aulaCodigo}/{matriculaCodigo}")
@@ -40,5 +44,8 @@ public class DiarioBordoController {
     ) {
         diarioBordoService.deletar(aulaCodigo, matriculaCodigo, authentication.getName());
         return ResponseEntity.noContent().build();
+    }
+
+    private record ErroResponse(String mensagem) {
     }
 }

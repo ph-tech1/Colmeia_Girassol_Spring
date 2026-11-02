@@ -24,11 +24,18 @@ public class FrequenciaController {
     }
 
     @PostMapping("/salvar")
-    public ResponseEntity<FrequenciaEntity> salvar(
+    public ResponseEntity<?> salvar(
             @RequestBody RegistrarFrequenciaRequest request,
             Authentication authentication
     ) {
-        return ResponseEntity.status(HttpStatus.CREATED)
-                .body(frequenciaService.salvar(request, authentication.getName()));
+        try {
+            return ResponseEntity.status(HttpStatus.CREATED)
+                    .body(frequenciaService.salvar(request, authentication.getName()));
+        } catch (IllegalArgumentException exception) {
+            return ResponseEntity.badRequest().body(new ErroResponse(exception.getMessage()));
+        }
+    }
+
+    private record ErroResponse(String mensagem) {
     }
 }

@@ -11,4 +11,6 @@ import java.util.List;
 public interface AulaPlanejamentoRepository extends JpaRepository<AulaPlanejamentoEntity, Integer> {
     List<AulaPlanejamentoEntity> findByTurmaCodigo(Integer turmaCodigo);
     List<AulaPlanejamentoEntity> findByDataAula(LocalDate dataAula);
+    boolean existsByTurmaCodigoAndDataAula(Integer turmaCodigo, LocalDate dataAula);
+    boolean existsByTurmaCodigoAndDataAulaAndCodigoNot(Integer turmaCodigo, LocalDate dataAula, Integer codigo);
 }
