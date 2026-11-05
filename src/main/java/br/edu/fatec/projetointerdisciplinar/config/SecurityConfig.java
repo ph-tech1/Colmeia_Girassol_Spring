@@ -51,24 +51,7 @@ public class SecurityConfig {
                         .loginPage("/Login")
                         .loginProcessingUrl("/login")
                         .failureUrl("/html/login.html?error")
-                        .successHandler((request, response, authentication) -> {
-                            boolean professor = authentication.getAuthorities().stream()
-                                    .anyMatch(authority -> authority.getAuthority().equals("ROLE_PROFESSOR"));
-                            boolean responsavel = authentication.getAuthorities().stream()
-                                    .anyMatch(authority -> authority.getAuthority().equals("ROLE_RESPONSAVEL"));
-                            boolean admin = authentication.getAuthorities().stream()
-                                    .anyMatch(authority -> authority.getAuthority().equals("ROLE_ADMIN"));
-
-                            if (admin) {
-                                response.sendRedirect(request.getContextPath() + "/html/dashboard_admin.html");
-                            } else if (professor) {
-                                response.sendRedirect(request.getContextPath() + "/html/dashboard_professor.html");
-                            } else if (responsavel) {
-                                response.sendRedirect(request.getContextPath() + "/html/dashboard_responsavel.html");
-                            } else {
-                                response.sendRedirect(request.getContextPath() + "/html/login.html?error");
-                            }
-                        })
+                        .successHandler(new LoginSuccessHandler())
                         .permitAll())
                 .logout(logout -> logout
                         .logoutUrl("/logout")

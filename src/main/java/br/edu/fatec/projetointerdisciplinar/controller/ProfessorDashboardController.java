@@ -13,6 +13,7 @@ import br.edu.fatec.projetointerdisciplinar.repository.FrequenciaRepository;
 import br.edu.fatec.projetointerdisciplinar.repository.MatriculaRepository;
 import br.edu.fatec.projetointerdisciplinar.repository.PessoaRepository;
 import br.edu.fatec.projetointerdisciplinar.repository.ProfessorRepository;
+import br.edu.fatec.projetointerdisciplinar.repository.ResponsavelAlunoRepository;
 import br.edu.fatec.projetointerdisciplinar.repository.TurmaRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -44,6 +45,7 @@ public class ProfessorDashboardController {
     private final AulaPlanejamentoRepository aulaPlanejamentoRepository;
     private final FrequenciaRepository frequenciaRepository;
     private final DiarioBordoRepository diarioBordoRepository;
+    private final ResponsavelAlunoRepository responsavelAlunoRepository;
 
     @GetMapping
     @Transactional(readOnly = true)
@@ -59,10 +61,28 @@ public class ProfessorDashboardController {
             List<AlunoResumo> alunos = matriculaRepository.findByTurmaCodigo(turma.getCodigo()).stream()
                     .filter(matricula -> Integer.valueOf(2).equals(matricula.getStatus()))
                     .filter(matricula -> matricula.getAluno() != null)
-                    .map(matricula -> new AlunoResumo(
-                            matricula.getNr(),
-                            matricula.getAluno().getCodigo(),
-                            matricula.getAluno().getNome()))
+                    .map(matricula -> {
+                        var responsavel = responsavelAlunoRepository.findByIdAlunoCodigo(matricula.getAluno().getCodigo())
+                                .stream()
+                                .sorted(Comparator.comparingInt(item -> item.getOrdemContato() == null ? 999 : item.getOrdemContato()))
+                                .findFirst()
+                                .orElse(null);
+
+                        String nomeResponsavel = responsavel != null && responsavel.getResponsavel() != null
+                                && responsavel.getResponsavel().getPessoa() != null
+                                ? responsavel.getResponsavel().getPessoa().getNome() : null;
+                        String telefoneResponsavel = responsavel != null && responsavel.getResponsavel() != null
+                                && responsavel.getResponsavel().getPessoa() != null
+                                ? responsavel.getResponsavel().getPessoa().getTelefone() : null;
+
+                        return new AlunoResumo(
+                                matricula.getNr(),
+                                matricula.getAluno().getCodigo(),
+                                matricula.getAluno().getNome(),
+                                nomeResponsavel,
+                                telefoneResponsavel);
+                    })
+                    .sorted(Comparator.comparing(AlunoResumo::nome, Comparator.nullsLast(String::compareToIgnoreCase)))
                     .toList();
             turmasResumo.add(new TurmaResumo(
                     turma.getCodigo(), turma.getNomeTurma(), turma.getAno(), turma.getGrau(), alunos));
@@ -228,7 +248,8 @@ public class ProfessorDashboardController {
     ) {
     }
 
-    public record AlunoResumo(Integer matriculaCodigo, Integer codigo, String nome) {
+    public record AlunoResumo(Integer matriculaCodigo, Integer codigo, String nome,
+                             String nomeResponsavel, String telefoneResponsavel) {
     }
 
     public record PlanejamentoResumo(

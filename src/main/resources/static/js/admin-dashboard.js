@@ -11,6 +11,7 @@
         vinculos: [],
         diarios: []
     };
+    const loadedCollections = new Set();
 
     const endpoints = {
         alunos: dashboard.dataset.alunosUrl,
@@ -105,6 +106,7 @@
             throw new Error(`O servidor retornou um formato inesperado para ${name}.`);
         }
         data[name] = response;
+        loadedCollections.add(name);
     }
 
     function renderCount(name, count) {
@@ -124,6 +126,244 @@
         const normalizedQuery = normalizeSearch(query);
         if (!normalizedQuery) return true;
         return normalizeSearch(values.filter(value => value != null).join(' ')).includes(normalizedQuery);
+    }
+
+    function latestEnrollmentsByStudent() {
+        const latestByStudent = new Map();
+        data.matriculas.forEach(matricula => {
+            const studentCode = matricula.aluno?.codigo;
+            if (studentCode == null) return;
+            const current = latestByStudent.get(String(studentCode));
+            if (!current || Number(matricula.nr) > Number(current.nr)) {
+                latestByStudent.set(String(studentCode), matricula);
+            }
+        });
+        return [...latestByStudent.values()];
+    }
+
+    function renderOverview() {
+        const stats = [
+            ['stat-alunos', 'alunos', () => data.alunos.length],
+            ['stat-professores', 'professores', () => data.professores.filter(professor => Number(professor.status) === 1).length],
+            ['stat-turmas', 'turmas', () => data.turmas.length],
+            ['stat-matriculas', 'matriculas', () => data.matriculas.filter(item => [0, 1].includes(Number(item.status))).length]
+        ];
+        stats.forEach(([elementId, collection, getValue]) => {
+            const element = document.getElementById(elementId);
+            const available = loadedCollections.has(collection);
+            element.textContent = available ? getValue() : '!';
+            element.title = available ? '' : 'Não foi possível carregar estes dados.';
+        });
+
+        renderClassChart();
+        renderEnrollmentChart();
+        renderPriorities();
+
+        const updated = document.getElementById('admin-overview-updated');
+        if (loadedCollections.size) {
+            const now = new Date();
+            const timestamp = new Intl.DateTimeFormat('pt-BR', { dateStyle: 'short', timeStyle: 'short' }).format(now);
+            updated.textContent = `Atualizado em ${timestamp}${loadedCollections.size < Object.keys(endpoints).length ? ' · dados parciais' : ''}`;
+        } else {
+            updated.textContent = 'Não foi possível carregar os indicadores.';
+        }
+    }
+
+    function renderClassChart() {
+        const chart = document.getElementById('adminClassChart');
+        chart.replaceChildren();
+        chart.classList.remove('text-danger', 'text-muted');
+        if (!loadedCollections.has('turmas') || !loadedCollections.has('matriculas')) {
+            chart.textContent = 'Não foi possível carregar os dados de turmas e matrículas.';
+            chart.classList.add('text-danger');
+            return;
+        }
+
+        if (!data.turmas.length) {
+            chart.textContent = 'Nenhuma turma cadastrada.';
+            chart.classList.add('text-muted');
+            return;
+        }
+
+        const counts = new Map(data.turmas.map(turma => [String(turma.codigo), 0]));
+        latestEnrollmentsByStudent()
+            .filter(matricula => Number(matricula.status) === 2 && matricula.turma?.codigo != null)
+            .forEach(matricula => {
+                const turmaCode = String(matricula.turma.codigo);
+                if (counts.has(turmaCode)) counts.set(turmaCode, counts.get(turmaCode) + 1);
+            });
+
+        const rows = data.turmas
+            .map(turma => ({ name: turma.nomeTurma || 'Turma sem nome', count: counts.get(String(turma.codigo)) || 0 }))
+            .sort((left, right) => right.count - left.count || left.name.localeCompare(right.name, 'pt-BR'));
+        const maxCount = Math.max(...rows.map(row => row.count), 1);
+        rows.forEach(row => {
+            const item = document.createElement('div');
+            item.className = 'admin-class-chart-row';
+            item.setAttribute('role', 'listitem');
+            const heading = document.createElement('div');
+            heading.className = 'admin-class-chart-heading';
+            const name = document.createElement('span');
+            name.className = 'text-truncate';
+            name.textContent = row.name;
+            const count = document.createElement('strong');
+            count.textContent = String(row.count);
+            count.setAttribute('aria-label', `${row.count} alunos`);
+            heading.append(name, count);
+            const track = document.createElement('div');
+            track.className = 'admin-class-chart-track';
+            track.setAttribute('aria-hidden', 'true');
+            const bar = document.createElement('span');
+            bar.className = 'admin-class-chart-bar';
+            bar.style.width = `${(row.count / maxCount) * 100}%`;
+            track.append(bar);
+            item.append(heading, track);
+            chart.append(item);
+        });
+        chart.setAttribute('role', 'list');
+        chart.setAttribute('aria-label', 'Quantidade de matrículas aprovadas por turma');
+    }
+
+    function renderEnrollmentChart() {
+        const chart = document.getElementById('adminEnrollmentChart');
+        chart.replaceChildren();
+        if (!loadedCollections.has('matriculas')) {
+            chart.textContent = 'Não foi possível carregar os dados de matrículas.';
+            chart.classList.add('text-danger');
+            return;
+        }
+        chart.classList.remove('text-danger', 'text-muted');
+
+        const statuses = [
+            { code: 0, label: 'Aguardando análise', color: '#3478c8' },
+            { code: 1, label: 'Em análise', color: '#e5a72c' },
+            { code: 2, label: 'Aprovadas', color: '#3e9b73' },
+            { code: 3, label: 'Rejeitadas', color: '#d85b5b' },
+            { code: 4, label: 'Canceladas', color: '#84919b' }
+        ];
+        const requests = data.matriculas.filter(item => statuses.some(status => status.code === Number(item.status)));
+        const counts = statuses.map(status => ({
+            ...status,
+            count: requests.filter(item => Number(item.status) === status.code).length
+        }));
+        const total = requests.length;
+        const donut = document.createElement('div');
+        donut.className = 'admin-enrollment-donut';
+        donut.setAttribute('aria-hidden', 'true');
+        const segments = [];
+        let progress = 0;
+        counts.filter(status => status.count > 0).forEach(status => {
+            const end = progress + (status.count / total) * 100;
+            segments.push(`${status.color} ${progress}% ${end}%`);
+            progress = end;
+        });
+        donut.style.background = total ? `conic-gradient(${segments.join(', ')})` : 'conic-gradient(#e8edf0 0 100%)';
+        const totalLabel = document.createElement('span');
+        const totalValue = document.createElement('strong');
+        totalValue.textContent = String(total);
+        const totalDescription = document.createElement('small');
+        totalDescription.textContent = 'pedidos';
+        totalLabel.append(totalValue, totalDescription);
+        donut.append(totalLabel);
+
+        const layout = document.createElement('div');
+        layout.className = 'admin-enrollment-chart-layout';
+        layout.append(donut);
+        const legend = document.createElement('ul');
+        legend.className = 'admin-enrollment-legend list-unstyled mb-0';
+        counts.forEach(status => {
+            const item = document.createElement('li');
+            const label = document.createElement('span');
+            label.className = 'admin-enrollment-label';
+            const marker = document.createElement('span');
+            marker.className = 'admin-enrollment-marker';
+            marker.style.backgroundColor = status.color;
+            marker.setAttribute('aria-hidden', 'true');
+            const text = document.createElement('span');
+            text.textContent = status.label;
+            label.append(marker, text);
+            const value = document.createElement('strong');
+            value.textContent = String(status.count);
+            item.append(label, value);
+            legend.append(item);
+        });
+        layout.append(legend);
+        chart.append(layout);
+        chart.setAttribute('aria-label', `Solicitações de matrícula: ${counts.map(status => `${status.label}: ${status.count}`).join(', ')}.`);
+    }
+
+    function renderPriorities() {
+        const container = document.getElementById('adminPriorities');
+        container.replaceChildren();
+        if (!loadedCollections.has('matriculas') || !loadedCollections.has('turmas')) {
+            container.textContent = 'Não foi possível carregar os dados necessários para identificar as prioridades.';
+            container.classList.add('text-danger');
+            return;
+        }
+        container.classList.remove('text-danger');
+
+        const requests = data.matriculas.filter(item => [0, 1, 2].includes(Number(item.status)));
+        const latestEnrollments = latestEnrollmentsByStudent();
+        const priorities = [
+            {
+                label: 'Solicitações aguardando análise',
+                count: requests.filter(item => Number(item.status) === 0).length,
+                icon: 'fa-inbox',
+                urgency: 'text-primary'
+            },
+            {
+                label: 'Solicitações em análise',
+                count: requests.filter(item => Number(item.status) === 1).length,
+                icon: 'fa-magnifying-glass',
+                urgency: 'text-warning'
+            },
+            {
+                label: 'Matrículas aprovadas sem turma',
+                count: latestEnrollments.filter(item => Number(item.status) === 2 && !item.turma).length,
+                icon: 'fa-user-plus',
+                urgency: 'text-danger'
+            }
+        ].filter(priority => priority.count > 0);
+        const occupiedClassrooms = new Set(
+            latestEnrollments
+                .filter(item => Number(item.status) === 2 && item.turma?.codigo != null)
+                .map(item => String(item.turma.codigo))
+        );
+        const emptyClassrooms = data.turmas.filter(turma => !occupiedClassrooms.has(String(turma.codigo))).length;
+        if (emptyClassrooms) {
+            priorities.push({
+                label: 'Turmas sem alunos matriculados',
+                count: emptyClassrooms,
+                icon: 'fa-school',
+                urgency: 'text-secondary'
+            });
+        }
+
+        if (!priorities.length) {
+            const message = document.createElement('p');
+            message.className = 'text-success small mb-0';
+            message.textContent = 'Nenhuma pendência prioritária identificada com os dados atuais.';
+            container.append(message);
+            return;
+        }
+
+        priorities.forEach(priority => {
+            const item = document.createElement('div');
+            item.className = 'admin-priority-item';
+            const label = document.createElement('span');
+            label.className = 'admin-priority-label';
+            const icon = document.createElement('i');
+            icon.className = `fa-solid ${priority.icon} ${priority.urgency}`;
+            icon.setAttribute('aria-hidden', 'true');
+            const text = document.createElement('span');
+            text.textContent = priority.label;
+            label.append(icon, text);
+            const count = document.createElement('strong');
+            count.className = `admin-priority-count ${priority.urgency}`;
+            count.textContent = String(priority.count);
+            item.append(label, count);
+            container.append(item);
+        });
     }
 
     function renderProfessorTable() {
@@ -376,10 +616,7 @@
     }
 
     function renderDashboard() {
-        renderCount('stat-alunos', data.alunos.length);
-        renderCount('stat-professores', data.professores.length);
-        renderCount('stat-turmas', data.turmas.length);
-        renderCount('stat-matriculas', data.matriculas.length);
+        renderOverview();
         renderProfessorTable();
         renderTurmas();
         renderMatriculas();
@@ -390,6 +627,7 @@
 
     async function refreshDashboard() {
         const collections = Object.keys(endpoints);
+        loadedCollections.clear();
         const results = await Promise.allSettled(collections.map(loadCollection));
         const failed = [];
         results.forEach((result, index) => {

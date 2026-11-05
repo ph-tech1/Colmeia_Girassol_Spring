@@ -31,7 +31,7 @@ public class DiarioBordoService {
         validarTamanho(request.alimentacao(), 50, "Alimentação");
         validarTamanho(request.sono(), 50, "Sono");
         validarTamanho(request.humor(), 50, "Humor");
-        validarTamanho(request.banheiroFralda(), 50, "Banheiro / fralda");
+        validarApenasNumeros(request.banheiroFralda(), "Banheiro / fralda");
         validarTamanho(request.observacoes(), 500, "Observações");
 
         FrequenciaId id = new FrequenciaId(request.aulaPlanejamentosCodigo(), request.matriculaCodigo());
@@ -87,6 +87,15 @@ public class DiarioBordoService {
     private void validarTamanho(String valor, int maximo, String campo) {
         if (valor != null && valor.trim().length() > maximo) {
             throw new IllegalArgumentException(campo + " deve ter no máximo " + maximo + " caracteres.");
+        }
+    }
+
+    private void validarApenasNumeros(String valor, String campo) {
+        if (valor == null || valor.isBlank()) {
+            return;
+        }
+        if (!valor.matches("\\d+")) {
+            throw new IllegalArgumentException(campo + " deve conter apenas números.");
         }
     }
 

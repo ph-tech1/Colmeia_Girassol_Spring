@@ -83,8 +83,8 @@
             <header class="dashboard-header admin-dashboard-header" data-aos="fade-down">
                 <div>
                     <div class="admin-dashboard-kicker"><span aria-hidden="true"></span>Painel administrativo</div>
-                    <h2 class="fw-bold text-dark-blue mb-0" id="saudacao-admin">Olá, Administrador</h2>
-                    <p class="text-muted mb-0">Gerencie os dados da escola de forma simples.</p>
+                    <h2 class="fw-bold text-dark-blue mb-0" id="saudacao-admin">Olá, Diretora</h2>
+                    <p class="text-muted mb-0">Acompanhe os principais indicadores e prioridades da escola.</p>
                 </div>
                 <div class="d-flex align-items-center gap-3">
                     <button class="btn btn-outline-dark-blue theme-toggle d-none d-lg-inline-grid" type="button" data-theme-toggle aria-label="Ativar modo escuro" aria-pressed="false" title="Ativar modo escuro">
@@ -96,37 +96,89 @@
 
             <!-- Seção: Visão Geral -->
             <div id="visao-geral" class="dashboard-section active">
-                <!-- Stats -->
-                <div class="row g-4 mb-5" data-aos="fade-up">
-                <div class="col-md-3">
-                    <div class="stat-card">
-                        <div class="stat-icon bg-blue-light text-primary"><i class="fa-solid fa-user-graduate"></i></div>
-                        <h3 class="fw-bold mb-0" id="stat-alunos">—</h3>
-                        <p class="text-muted small mb-0">Alunos Cadastrados</p>
+                <div class="d-flex flex-wrap justify-content-between align-items-end gap-2 mb-3">
+                    <div>
+                        <span class="admin-dashboard-kicker"><span aria-hidden="true"></span>Resumo executivo</span>
+                        <h4 class="fw-bold text-dark-blue mb-1">Panorama da escola</h4>
+                        <p class="text-muted mb-0">Indicadores para apoiar as decisões do dia a dia.</p>
+                    </div>
+                    <span class="small text-muted" id="admin-overview-updated" aria-live="polite"></span>
+                </div>
+
+                <div class="row g-3 mb-4" data-aos="fade-up" aria-label="Indicadores principais">
+                    <div class="col-6 col-xl-3">
+                        <div class="stat-card admin-overview-stat">
+                            <div class="stat-icon bg-blue-light text-primary"><i class="fa-solid fa-user-graduate" aria-hidden="true"></i></div>
+                            <h3 class="fw-bold mb-0" id="stat-alunos">—</h3>
+                            <p class="text-muted small mb-0">Alunos cadastrados</p>
+                        </div>
+                    </div>
+                    <div class="col-6 col-xl-3">
+                        <div class="stat-card admin-overview-stat">
+                            <div class="stat-icon bg-green-light text-success"><i class="fa-solid fa-user-tie" aria-hidden="true"></i></div>
+                            <h3 class="fw-bold mb-0" id="stat-professores">—</h3>
+                            <p class="text-muted small mb-0">Professores ativos</p>
+                        </div>
+                    </div>
+                    <div class="col-6 col-xl-3">
+                        <div class="stat-card admin-overview-stat">
+                            <div class="stat-icon bg-yellow-light text-warning"><i class="fa-solid fa-school" aria-hidden="true"></i></div>
+                            <h3 class="fw-bold mb-0" id="stat-turmas">—</h3>
+                            <p class="text-muted small mb-0">Turmas cadastradas</p>
+                        </div>
+                    </div>
+                    <div class="col-6 col-xl-3">
+                        <div class="stat-card admin-overview-stat">
+                            <div class="stat-icon bg-purple-light text-purple"><i class="fa-solid fa-hourglass-half" aria-hidden="true"></i></div>
+                            <h3 class="fw-bold mb-0" id="stat-matriculas">—</h3>
+                            <p class="text-muted small mb-0">Solicitações pendentes</p>
+                        </div>
                     </div>
                 </div>
-                <div class="col-md-3">
-                    <div class="stat-card">
-                        <div class="stat-icon bg-green-light text-success"><i class="fa-solid fa-user-tie"></i></div>
-                        <h3 class="fw-bold mb-0" id="stat-professores">—</h3>
-                        <p class="text-muted small mb-0">Professores</p>
+
+                <div class="row g-4 mb-4">
+                    <div class="col-12 col-xl-7">
+                        <section class="stat-card admin-overview-panel h-100" aria-labelledby="turmas-chart-title">
+                            <div class="d-flex justify-content-between align-items-start gap-3 mb-3">
+                                <div>
+                                    <h5 class="fw-bold text-dark-blue mb-1" id="turmas-chart-title">Alunos por turma</h5>
+                                    <p class="text-muted small mb-0">Matrículas aprovadas e vinculadas a uma turma.</p>
+                                </div>
+                                <i class="fa-solid fa-chart-column text-primary" aria-hidden="true"></i>
+                            </div>
+                            <div id="adminClassChart" class="admin-class-chart" role="img" aria-label="Gráfico de alunos por turma">
+                                <p class="text-muted small mb-0">Carregando indicadores...</p>
+                            </div>
+                        </section>
+                    </div>
+                    <div class="col-12 col-xl-5">
+                        <section class="stat-card admin-overview-panel h-100" aria-labelledby="matriculas-chart-title">
+                            <div class="d-flex justify-content-between align-items-start gap-3 mb-3">
+                                <div>
+                                    <h5 class="fw-bold text-dark-blue mb-1" id="matriculas-chart-title">Solicitações de matrícula</h5>
+                                    <p class="text-muted small mb-0">Visão geral do andamento dos pedidos.</p>
+                                </div>
+                                <i class="fa-solid fa-chart-pie text-primary" aria-hidden="true"></i>
+                            </div>
+                            <div id="adminEnrollmentChart" class="admin-enrollment-chart" role="img" aria-label="Gráfico de situação das solicitações de matrícula">
+                                <p class="text-muted small mb-0">Carregando indicadores...</p>
+                            </div>
+                        </section>
                     </div>
                 </div>
-                <div class="col-md-3">
-                    <div class="stat-card">
-                        <div class="stat-icon bg-yellow-light text-warning"><i class="fa-solid fa-school"></i></div>
-                        <h3 class="fw-bold mb-0" id="stat-turmas">—</h3>
-                        <p class="text-muted small mb-0">Turmas</p>
+
+                <section class="stat-card admin-overview-panel mb-4" aria-labelledby="admin-priorities-title">
+                    <div class="d-flex justify-content-between align-items-start gap-3 mb-3">
+                        <div>
+                            <h5 class="fw-bold text-dark-blue mb-1" id="admin-priorities-title">Atenção da direção</h5>
+                            <p class="text-muted small mb-0">Pontos que podem precisar de acompanhamento.</p>
+                        </div>
+                        <i class="fa-solid fa-list-check text-warning" aria-hidden="true"></i>
                     </div>
-                </div>
-                <div class="col-md-3">
-                    <div class="stat-card">
-                        <div class="stat-icon bg-purple-light text-purple"><i class="fa-solid fa-id-card"></i></div>
-                        <h3 class="fw-bold mb-0" id="stat-matriculas">—</h3>
-                        <p class="text-muted small mb-0">Matrículas</p>
+                    <div id="adminPriorities" class="admin-priorities" aria-live="polite">
+                        <p class="text-muted small mb-0">Carregando prioridades...</p>
                     </div>
-                </div>
-            </div>
+                </section>
             </div>
 
             <!-- Cadastro Professor -->

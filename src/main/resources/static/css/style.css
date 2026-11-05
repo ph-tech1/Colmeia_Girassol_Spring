@@ -2391,6 +2391,210 @@ body.admin-dashboard .classroom-management-actions .btn {
     min-width: 5.25rem;
 }
 
+body.admin-dashboard .admin-overview-stat {
+    min-height: 10.5rem;
+    padding: 1.15rem;
+}
+
+body.admin-dashboard .admin-overview-stat .stat-icon {
+    width: 2.6rem;
+    height: 2.6rem;
+    margin-bottom: 0.8rem;
+    font-size: 1.15rem;
+}
+
+body.admin-dashboard .admin-overview-stat h3 {
+    font-size: clamp(1.45rem, 3vw, 1.8rem);
+}
+
+body.admin-dashboard .admin-overview-panel {
+    padding: clamp(1rem, 2.5vw, 1.5rem);
+}
+
+body.admin-dashboard .admin-overview-panel::after {
+    display: none;
+}
+
+body.admin-dashboard .admin-class-chart {
+    display: grid;
+    gap: 0.85rem;
+    max-height: 19rem;
+    overflow-y: auto;
+    padding-right: 0.35rem;
+}
+
+body.admin-dashboard .admin-class-chart-row {
+    min-width: 0;
+}
+
+body.admin-dashboard .admin-class-chart-heading {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 1rem;
+    margin-bottom: 0.3rem;
+    font-size: 0.875rem;
+}
+
+body.admin-dashboard .admin-class-chart-heading strong {
+    flex: 0 0 auto;
+}
+
+body.admin-dashboard .admin-class-chart-track {
+    height: 0.55rem;
+    overflow: hidden;
+    border-radius: 999px;
+    background: #eaf0f2;
+}
+
+body.admin-dashboard .admin-class-chart-bar {
+    display: block;
+    height: 100%;
+    min-width: 0;
+    border-radius: inherit;
+    background: linear-gradient(90deg, #4b9db6, #78c6b0);
+    transition: width 0.35s ease;
+}
+
+body.admin-dashboard .admin-enrollment-chart-layout {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 1.5rem;
+    min-height: 13rem;
+}
+
+body.admin-dashboard .admin-enrollment-donut {
+    position: relative;
+    display: grid;
+    flex: 0 0 10rem;
+    place-items: center;
+    width: 10rem;
+    height: 10rem;
+    border-radius: 50%;
+}
+
+body.admin-dashboard .admin-enrollment-donut::before {
+    position: absolute;
+    inset: 1.1rem;
+    border-radius: 50%;
+    background: #fff;
+    content: "";
+}
+
+body.admin-dashboard .admin-enrollment-donut > span {
+    position: relative;
+    z-index: 1;
+    display: grid;
+    justify-items: center;
+}
+
+body.admin-dashboard .admin-enrollment-donut strong {
+    font-size: 1.65rem;
+    line-height: 1.1;
+}
+
+body.admin-dashboard .admin-enrollment-donut small {
+    color: #607487;
+    font-size: 0.75rem;
+}
+
+body.admin-dashboard .admin-enrollment-legend {
+    display: grid;
+    flex: 1 1 12rem;
+    gap: 0.65rem;
+    max-width: 18rem;
+}
+
+body.admin-dashboard .admin-enrollment-legend li,
+body.admin-dashboard .admin-enrollment-label {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.75rem;
+}
+
+body.admin-dashboard .admin-enrollment-label {
+    justify-content: flex-start;
+    font-size: 0.82rem;
+}
+
+body.admin-dashboard .admin-enrollment-marker {
+    flex: 0 0 0.6rem;
+    width: 0.6rem;
+    height: 0.6rem;
+    border-radius: 50%;
+}
+
+body.admin-dashboard .admin-priorities {
+    display: grid;
+    gap: 0.65rem;
+}
+
+body.admin-dashboard .admin-priority-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 1rem;
+    padding: 0.75rem 0;
+    border-bottom: 1px solid rgba(45, 68, 89, 0.08);
+}
+
+body.admin-dashboard .admin-priority-item:last-child {
+    padding-bottom: 0;
+    border-bottom: 0;
+}
+
+body.admin-dashboard .admin-priority-label {
+    display: flex;
+    align-items: center;
+    gap: 0.7rem;
+    font-size: 0.9rem;
+}
+
+body.admin-dashboard .admin-priority-label i {
+    width: 1rem;
+    text-align: center;
+}
+
+body.admin-dashboard .admin-priority-count {
+    min-width: 2rem;
+    text-align: right;
+}
+
+html[data-theme="dark"] body.admin-dashboard .admin-class-chart-track {
+    background: #3a4b52;
+}
+
+html[data-theme="dark"] body.admin-dashboard .admin-enrollment-donut::before {
+    background: #26343c;
+}
+
+html[data-theme="dark"] body.admin-dashboard .admin-enrollment-donut small {
+    color: #b7c5cb;
+}
+
+html[data-theme="dark"] body.admin-dashboard .admin-priority-item {
+    border-color: rgba(229, 237, 240, 0.12);
+}
+
+@media (max-width: 575.98px) {
+    body.admin-dashboard .admin-enrollment-chart-layout {
+        gap: 1rem;
+    }
+
+    body.admin-dashboard .admin-enrollment-donut {
+        flex-basis: 8.5rem;
+        width: 8.5rem;
+        height: 8.5rem;
+    }
+
+    body.admin-dashboard .admin-enrollment-donut::before {
+        inset: 0.95rem;
+    }
+}
+
 html[data-theme="dark"] body.admin-dashboard .classroom-dashboard-card {
     border-color: rgba(229, 237, 240, 0.12);
     border-left-color: #d8bc5c;
@@ -5277,5 +5481,908 @@ html[data-theme="dark"] body.professor-dashboard .professor-calendar-history .bt
 
     body.professor-dashboard .professor-calendar-day {
         min-height: 9.5rem;
+    }
+}
+
+body.professor-dashboard .diary-workspace {
+    display: grid;
+    grid-template-columns: minmax(17rem, 0.9fr) minmax(0, 1.1fr);
+    align-items: start;
+    gap: 1.25rem;
+}
+
+body.professor-dashboard .diary-roster-panel,
+body.professor-dashboard .diary-editor {
+    min-width: 0;
+    padding: clamp(1.1rem, 2.5vw, 1.6rem);
+    border: 1px solid var(--line-soft);
+    border-radius: 1.2rem;
+    background: #fff;
+    box-shadow: 0 8px 24px rgba(45, 68, 89, 0.06);
+}
+
+body.professor-dashboard .diary-roster-heading {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 0.75rem;
+    margin-bottom: 1rem;
+}
+
+body.professor-dashboard .diary-roster-total {
+    flex: 0 0 auto;
+    padding: 0.35rem 0.65rem;
+    border-radius: 2rem;
+    background: #fff4c9;
+    color: #695b13;
+    font-size: 0.76rem;
+    font-weight: 700;
+}
+
+body.professor-dashboard .diary-search {
+    position: relative;
+    display: block;
+    margin-bottom: 1rem;
+}
+
+body.professor-dashboard .diary-search > i {
+    position: absolute;
+    top: 50%;
+    left: 0.9rem;
+    z-index: 1;
+    color: #78909a;
+    transform: translateY(-50%);
+}
+
+body.professor-dashboard .diary-search .form-control {
+    min-height: 2.9rem;
+    padding-left: 2.5rem;
+    border-color: var(--line-soft);
+    border-radius: 0.85rem;
+    background: #fffdf8;
+}
+
+body.professor-dashboard .diary-class-list {
+    display: grid;
+    gap: 0.8rem;
+    max-height: min(66vh, 48rem);
+    overflow: auto;
+    padding-right: 0.2rem;
+}
+
+body.professor-dashboard .diary-class-card {
+    padding: 0.9rem;
+    border: 1px solid var(--line-soft);
+    border-radius: 1rem;
+    background: linear-gradient(145deg, #fff 0%, #fffef9 100%);
+}
+
+body.professor-dashboard .diary-class-heading {
+    display: flex;
+    align-items: center;
+    gap: 0.7rem;
+    padding-bottom: 0.75rem;
+    border-bottom: 1px solid var(--line-soft);
+}
+
+body.professor-dashboard .diary-class-heading > div {
+    flex: 1;
+}
+
+body.professor-dashboard .diary-class-icon,
+body.professor-dashboard .diary-student-avatar {
+    display: grid;
+    flex: 0 0 auto;
+    place-items: center;
+    border-radius: 0.85rem;
+    background: #eaf6f7;
+    color: #468897;
+}
+
+body.professor-dashboard .diary-class-icon {
+    width: 2.45rem;
+    height: 2.45rem;
+}
+
+body.professor-dashboard .diary-student-list {
+    display: grid;
+    gap: 0.25rem;
+    margin: 0;
+    padding: 0.65rem 0 0;
+    list-style: none;
+}
+
+body.professor-dashboard .diary-student-button {
+    display: flex;
+    width: 100%;
+    min-height: 2.8rem;
+    align-items: center;
+    gap: 0.65rem;
+    padding: 0.35rem 0.5rem;
+    border: 1px solid transparent;
+    border-radius: 0.75rem;
+    background: transparent;
+    color: var(--dark-blue);
+    text-align: left;
+    transition: background 0.18s ease, border-color 0.18s ease, transform 0.18s ease;
+}
+
+body.professor-dashboard .diary-student-button:hover {
+    border-color: rgba(126, 200, 217, 0.45);
+    background: #f0f9f9;
+    transform: translateX(2px);
+}
+
+body.professor-dashboard .diary-student-button.active {
+    border-color: rgba(70, 136, 151, 0.32);
+    background: #eaf6f7;
+    color: #285d68;
+}
+
+body.professor-dashboard .diary-student-button .professor-student-initial {
+    flex: 0 0 2rem;
+}
+
+body.professor-dashboard .diary-student-name {
+    min-width: 0;
+    flex: 1;
+    overflow-wrap: anywhere;
+    font-weight: 600;
+}
+
+body.professor-dashboard .diary-student-button > i {
+    color: #78909a;
+    font-size: 0.75rem;
+}
+
+body.professor-dashboard .diary-class-empty {
+    padding-top: 0.75rem;
+    color: var(--ink-soft);
+    font-size: 0.88rem;
+}
+
+body.professor-dashboard .diary-editor[hidden],
+body.professor-dashboard #diario-sem-aula[hidden],
+body.professor-dashboard #diario-campos[hidden] {
+    display: none !important;
+}
+
+body.professor-dashboard .diary-editor-heading {
+    display: flex;
+    align-items: center;
+    gap: 0.9rem;
+    margin-bottom: 1.25rem;
+    padding-bottom: 1.15rem;
+    border-bottom: 1px solid var(--line-soft);
+}
+
+body.professor-dashboard .diary-student-avatar {
+    width: 3.5rem;
+    height: 3.5rem;
+    border-radius: 1.1rem;
+    background: linear-gradient(145deg, #fff1b9, #dff2f2);
+    color: var(--dark-blue);
+    font-size: 1rem;
+    font-weight: 700;
+}
+
+body.professor-dashboard .diary-session-picker {
+    margin-bottom: 1.2rem;
+    padding: 1rem;
+    border-radius: 0.9rem;
+    background: #f5faf9;
+}
+
+body.professor-dashboard .diary-session-picker-heading {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 0.75rem;
+    margin-bottom: 0.9rem;
+}
+
+body.professor-dashboard .diary-session-legend {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    color: var(--ink-soft);
+    font-size: 0.73rem;
+    white-space: nowrap;
+}
+
+body.professor-dashboard .diary-session-legend > span {
+    width: 0.55rem;
+    height: 0.55rem;
+    border-radius: 50%;
+    background: #dfab32;
+}
+
+body.professor-dashboard .diary-session-list {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 14rem), 1fr));
+    gap: 0.65rem;
+}
+
+body.professor-dashboard .diary-session-card {
+    display: flex;
+    min-width: 0;
+    min-height: 5.2rem;
+    align-items: center;
+    gap: 0.7rem;
+    padding: 0.65rem;
+    border: 1px solid rgba(45, 68, 89, 0.12);
+    border-radius: 0.85rem;
+    background: #fff;
+    color: var(--dark-blue);
+    text-align: left;
+    transition: border-color 0.18s ease, box-shadow 0.18s ease, transform 0.18s ease;
+}
+
+body.professor-dashboard .diary-session-card:hover,
+body.professor-dashboard .diary-session-card:focus-visible {
+    border-color: #7ec8d9;
+    box-shadow: 0 5px 14px rgba(45, 68, 89, 0.08);
+    outline: none;
+    transform: translateY(-1px);
+}
+
+body.professor-dashboard .diary-session-card.is-selected {
+    border-color: #468897;
+    box-shadow: 0 0 0 2px rgba(70, 136, 151, 0.13);
+}
+
+body.professor-dashboard .diary-session-card.is-today {
+    border-color: rgba(209, 166, 48, 0.62);
+    background: linear-gradient(125deg, #fff8df 0%, #fff 80%);
+}
+
+body.professor-dashboard .diary-session-card.is-today.is-selected {
+    border-color: #bd941e;
+    box-shadow: 0 0 0 2px rgba(209, 166, 48, 0.19);
+}
+
+body.professor-dashboard .diary-session-date {
+    display: flex;
+    width: 3.15rem;
+    min-width: 3.15rem;
+    align-self: stretch;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    border-radius: 0.65rem;
+    background: #edf7f8;
+    color: #356d7a;
+    line-height: 1.05;
+}
+
+body.professor-dashboard .diary-session-date strong {
+    font-size: 1.25rem;
+}
+
+body.professor-dashboard .diary-session-date > span {
+    margin-top: 0.12rem;
+    font-size: 0.72rem;
+    font-weight: 700;
+    text-transform: uppercase;
+}
+
+body.professor-dashboard .diary-session-date small {
+    margin-top: 0.15rem;
+    font-size: 0.62rem;
+}
+
+body.professor-dashboard .diary-session-copy {
+    display: grid;
+    min-width: 0;
+    flex: 1;
+    gap: 0.2rem;
+}
+
+body.professor-dashboard .diary-session-title {
+    display: -webkit-box;
+    overflow: hidden;
+    font-size: 0.84rem;
+    font-weight: 700;
+    line-height: 1.3;
+    overflow-wrap: anywhere;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 2;
+}
+
+body.professor-dashboard .diary-session-subtitle {
+    color: var(--ink-soft);
+    font-size: 0.7rem;
+}
+
+body.professor-dashboard .diary-session-badges {
+    display: flex;
+    flex: 0 0 auto;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 0.25rem;
+}
+
+body.professor-dashboard .diary-session-today,
+body.professor-dashboard .diary-session-upcoming,
+body.professor-dashboard .diary-session-status {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.25rem;
+    padding: 0.22rem 0.42rem;
+    border-radius: 2rem;
+    font-size: 0.62rem;
+    font-weight: 700;
+    line-height: 1.2;
+    white-space: nowrap;
+}
+
+body.professor-dashboard .diary-session-today {
+    background: #f7e6a0;
+    color: #735a08;
+}
+
+body.professor-dashboard .diary-session-upcoming {
+    background: #e7f2f5;
+    color: #426d78;
+}
+
+body.professor-dashboard .diary-session-status.pending {
+    background: #fff1c9;
+    color: #785d09;
+}
+
+body.professor-dashboard .diary-session-status.complete {
+    background: #e5f4ec;
+    color: #28775e;
+}
+
+body.professor-dashboard .diary-session-empty {
+    grid-column: 1 / -1;
+    padding: 0.7rem 0.1rem;
+    color: var(--ink-soft);
+    font-size: 0.83rem;
+}
+
+body.professor-dashboard .diary-history-toggle {
+    margin-top: 0.65rem;
+    padding: 0.15rem 0;
+    color: #356d7a;
+    font-size: 0.82rem;
+    font-weight: 700;
+    text-decoration: none;
+}
+
+body.professor-dashboard .diary-history-toggle:hover {
+    color: var(--dark-blue);
+    text-decoration: underline;
+}
+
+body.professor-dashboard .diary-history-toggle[hidden] {
+    display: none !important;
+}
+
+body.professor-dashboard .diary-session-picker .form-select,
+body.professor-dashboard .diary-editor .form-control,
+body.professor-dashboard .diary-editor .form-select {
+    min-height: 2.85rem;
+    border-color: rgba(45, 68, 89, 0.14);
+}
+
+body.professor-dashboard .diary-no-session {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.85rem;
+    padding: 1rem;
+    border: 1px solid rgba(126, 200, 217, 0.35);
+    border-radius: 0.9rem;
+    background: #f0f9f9;
+    color: var(--dark-blue);
+    line-height: 1.55;
+}
+
+body.professor-dashboard .diary-no-session > i {
+    margin-top: 0.15rem;
+    color: #468897;
+}
+
+body.professor-dashboard .diary-record-status {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin-bottom: 1.1rem;
+    color: #46816d;
+    font-size: 0.88rem;
+    font-weight: 600;
+}
+
+html[data-theme="dark"] body.professor-dashboard .diary-roster-panel,
+html[data-theme="dark"] body.professor-dashboard .diary-editor {
+    border-color: rgba(229, 237, 240, 0.12);
+    background: #26343c;
+    color: #e5edf0;
+}
+
+html[data-theme="dark"] body.professor-dashboard .diary-class-card {
+    border-color: rgba(229, 237, 240, 0.12);
+    background: #202d34;
+}
+
+html[data-theme="dark"] body.professor-dashboard .diary-class-heading,
+html[data-theme="dark"] body.professor-dashboard .diary-editor-heading {
+    border-color: rgba(229, 237, 240, 0.12);
+}
+
+html[data-theme="dark"] body.professor-dashboard .diary-class-heading h4,
+html[data-theme="dark"] body.professor-dashboard .diary-editor-heading h3,
+html[data-theme="dark"] body.professor-dashboard .diary-roster-heading h3 {
+    color: #e5edf0 !important;
+}
+
+html[data-theme="dark"] body.professor-dashboard .diary-search .form-control,
+html[data-theme="dark"] body.professor-dashboard .diary-session-picker .form-select,
+html[data-theme="dark"] body.professor-dashboard .diary-editor .form-control,
+html[data-theme="dark"] body.professor-dashboard .diary-editor .form-select {
+    border-color: rgba(229, 237, 240, 0.18);
+    background-color: #1c2931;
+    color: #e5edf0;
+    color-scheme: dark;
+}
+
+html[data-theme="dark"] body.professor-dashboard .diary-session-picker {
+    background: #202d34;
+}
+
+html[data-theme="dark"] body.professor-dashboard .diary-session-card {
+    border-color: rgba(229, 237, 240, 0.14);
+    background: #26343c;
+    color: #e5edf0;
+}
+
+html[data-theme="dark"] body.professor-dashboard .diary-session-card.is-today {
+    border-color: rgba(242, 213, 68, 0.48);
+    background: linear-gradient(125deg, #39372c 0%, #26343c 80%);
+}
+
+html[data-theme="dark"] body.professor-dashboard .diary-session-date {
+    background: #2b414d;
+    color: #9bd1db;
+}
+
+html[data-theme="dark"] body.professor-dashboard .diary-session-subtitle,
+html[data-theme="dark"] body.professor-dashboard .diary-session-legend,
+html[data-theme="dark"] body.professor-dashboard .diary-session-empty {
+    color: #b7c5cb;
+}
+
+html[data-theme="dark"] body.professor-dashboard .diary-history-toggle {
+    color: #9bd1db;
+}
+
+html[data-theme="dark"] body.professor-dashboard .diary-session-status.pending {
+    background: #4a4127;
+    color: #f5dc70;
+}
+
+html[data-theme="dark"] body.professor-dashboard .diary-session-status.complete {
+    background: #24463d;
+    color: #8bd1ae;
+}
+
+html[data-theme="dark"] body.professor-dashboard .diary-session-today {
+    background: #f5dc70;
+    color: #34404a;
+}
+
+html[data-theme="dark"] body.professor-dashboard .diary-session-upcoming {
+    background: #2b414d;
+    color: #9bd1db;
+}
+
+html[data-theme="dark"] body.professor-dashboard .diary-student-button {
+    color: #e5edf0;
+}
+
+html[data-theme="dark"] body.professor-dashboard .diary-student-button:hover,
+html[data-theme="dark"] body.professor-dashboard .diary-student-button.active,
+html[data-theme="dark"] body.professor-dashboard .diary-no-session {
+    border-color: rgba(126, 200, 217, 0.3);
+    background: #2b414d;
+    color: #e5edf0;
+}
+
+html[data-theme="dark"] body.professor-dashboard .diary-class-empty,
+html[data-theme="dark"] body.professor-dashboard .diary-roster-heading p,
+html[data-theme="dark"] body.professor-dashboard .diary-editor-heading p,
+html[data-theme="dark"] body.professor-dashboard .diary-session-picker .form-text {
+    color: #b7c5cb !important;
+}
+
+html[data-theme="dark"] body.professor-dashboard .diary-roster-total {
+    background: #f5dc70;
+    color: #34404a;
+}
+
+@media (max-width: 991.98px) {
+    body.professor-dashboard .diary-workspace {
+        grid-template-columns: minmax(0, 1fr);
+    }
+
+    body.professor-dashboard .diary-class-list {
+        max-height: 34rem;
+    }
+}
+
+@media (max-width: 575.98px) {
+    body.professor-dashboard .diary-roster-panel,
+    body.professor-dashboard .diary-editor {
+        padding: 1rem;
+    }
+
+    body.professor-dashboard .diary-roster-heading {
+        flex-wrap: wrap;
+    }
+
+    body.professor-dashboard .diary-editor .btn {
+        width: 100%;
+    }
+}
+
+body.professor-dashboard .professor-insights-heading {
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+    gap: 1rem;
+    margin-bottom: 1rem;
+}
+
+body.professor-dashboard .professor-insights-heading h3 {
+    color: var(--dark-blue);
+}
+
+body.professor-dashboard .professor-insights-period {
+    flex: 0 0 auto;
+    padding: 0.45rem 0.75rem;
+    border: 1px solid var(--line-soft);
+    border-radius: 2rem;
+    background: rgba(255, 255, 255, 0.78);
+    color: var(--ink-soft);
+    font-size: 0.78rem;
+    font-weight: 600;
+}
+
+body.professor-dashboard .professor-insights-grid {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 1rem;
+}
+
+body.professor-dashboard .professor-insight-card {
+    min-width: 0;
+    padding: 1.15rem;
+    border: 1px solid var(--line-soft);
+    border-radius: 1.1rem;
+    background: rgba(255, 255, 255, 0.92);
+    box-shadow: 0 8px 24px rgba(45, 68, 89, 0.055);
+}
+
+body.professor-dashboard .professor-insight-card-heading {
+    display: flex;
+    align-items: center;
+    gap: 0.7rem;
+    min-height: 3rem;
+    margin-bottom: 1rem;
+}
+
+body.professor-dashboard .professor-insight-card-heading > div {
+    min-width: 0;
+}
+
+body.professor-dashboard .professor-insight-card-heading h4 {
+    margin: 0 0 0.15rem;
+    color: var(--dark-blue);
+    font-size: 0.98rem;
+    font-weight: 700;
+}
+
+body.professor-dashboard .professor-insight-card-heading p {
+    margin: 0;
+    color: var(--ink-soft);
+    font-size: 0.74rem;
+    line-height: 1.35;
+}
+
+body.professor-dashboard .professor-insight-icon {
+    display: grid;
+    width: 2.7rem;
+    height: 2.7rem;
+    flex: 0 0 2.7rem;
+    place-items: center;
+    border-radius: 0.85rem;
+    font-size: 1rem;
+}
+
+body.professor-dashboard .professor-insight-icon.attendance {
+    background: #e4f3f5;
+    color: #438491;
+}
+
+body.professor-dashboard .professor-insight-icon.diary {
+    background: #edf5e6;
+    color: #60854a;
+}
+
+body.professor-dashboard .professor-insight-icon.mood {
+    background: #fff3ce;
+    color: #967514;
+}
+
+body.professor-dashboard .professor-chart {
+    min-height: 11.6rem;
+}
+
+body.professor-dashboard .professor-chart-empty {
+    display: grid;
+    min-height: 9.5rem;
+    margin: 0;
+    place-items: center;
+    color: var(--ink-soft);
+    font-size: 0.82rem;
+    line-height: 1.5;
+    text-align: center;
+}
+
+body.professor-dashboard .professor-attendance-chart {
+    display: grid;
+    height: 9.1rem;
+    grid-template-columns: repeat(7, minmax(0, 1fr));
+    align-items: end;
+    gap: 0.4rem;
+    padding: 0 0.1rem;
+}
+
+body.professor-dashboard .professor-attendance-day {
+    display: grid;
+    height: 100%;
+    min-width: 0;
+    grid-template-rows: 1.2rem minmax(0, 1fr) 1.2rem;
+    justify-items: center;
+    gap: 0.25rem;
+}
+
+body.professor-dashboard .professor-attendance-value,
+body.professor-dashboard .professor-attendance-label {
+    color: var(--ink-soft);
+    font-size: 0.67rem;
+    font-weight: 600;
+    white-space: nowrap;
+}
+
+body.professor-dashboard .professor-attendance-track {
+    display: flex;
+    width: min(100%, 1.4rem);
+    height: 100%;
+    align-items: flex-end;
+    overflow: hidden;
+    border-radius: 0.55rem;
+    background: #edf3f3;
+}
+
+body.professor-dashboard .professor-attendance-track > span {
+    width: 100%;
+    min-height: 0.18rem;
+    border-radius: inherit;
+    background: linear-gradient(180deg, #7ec8d9 0%, #438491 100%);
+    transition: height 0.3s ease;
+}
+
+body.professor-dashboard .professor-chart-note {
+    margin-top: 0.8rem;
+    color: var(--ink-soft);
+    font-size: 0.72rem;
+    line-height: 1.45;
+}
+
+body.professor-dashboard .professor-diary-chart {
+    display: flex;
+    min-height: 9.1rem;
+    align-items: center;
+    justify-content: center;
+    gap: clamp(0.8rem, 2vw, 1.5rem);
+}
+
+body.professor-dashboard .professor-diary-donut {
+    display: grid;
+    width: 8rem;
+    height: 8rem;
+    flex: 0 0 8rem;
+    place-items: center;
+    border-radius: 50%;
+    background: conic-gradient(#5aa783 0 var(--diary-progress), #f1e7c7 var(--diary-progress) 100%);
+}
+
+body.professor-dashboard .professor-diary-donut > div {
+    display: flex;
+    width: 5.65rem;
+    height: 5.65rem;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    background: #fff;
+}
+
+body.professor-dashboard .professor-diary-donut strong {
+    color: var(--dark-blue);
+    font-size: 1.45rem;
+    line-height: 1.1;
+}
+
+body.professor-dashboard .professor-diary-donut > div span {
+    color: var(--ink-soft);
+    font-size: 0.63rem;
+}
+
+body.professor-dashboard .professor-diary-legend {
+    display: grid;
+    gap: 0.65rem;
+}
+
+body.professor-dashboard .professor-diary-legend > div {
+    display: grid;
+    grid-template-columns: 0.55rem minmax(0, 1fr) auto;
+    align-items: center;
+    gap: 0.45rem;
+    color: var(--ink-soft);
+    font-size: 0.72rem;
+}
+
+body.professor-dashboard .professor-diary-legend strong {
+    color: var(--dark-blue);
+    font-size: 0.8rem;
+}
+
+body.professor-dashboard .professor-legend-dot {
+    width: 0.55rem;
+    height: 0.55rem;
+    border-radius: 50%;
+}
+
+body.professor-dashboard .professor-legend-dot.completed {
+    background: #5aa783;
+}
+
+body.professor-dashboard .professor-legend-dot.pending {
+    background: #dcbf62;
+}
+
+body.professor-dashboard .professor-mood-chart {
+    display: grid;
+    gap: 0.8rem;
+    padding: 0.5rem 0.1rem;
+}
+
+body.professor-dashboard .professor-mood-row {
+    display: grid;
+    grid-template-columns: minmax(5.2rem, 0.75fr) minmax(2rem, 1.4fr) 1rem;
+    align-items: center;
+    gap: 0.65rem;
+}
+
+body.professor-dashboard .professor-mood-label {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.45rem;
+    color: var(--ink-soft);
+    font-size: 0.75rem;
+    font-weight: 600;
+    white-space: nowrap;
+}
+
+body.professor-dashboard .professor-mood-label i {
+    width: 1rem;
+    color: #438491;
+    text-align: center;
+}
+
+body.professor-dashboard .professor-mood-row.happy .professor-mood-label i { color: #4b9b73; }
+body.professor-dashboard .professor-mood-row.calm .professor-mood-label i { color: #4c91a5; }
+body.professor-dashboard .professor-mood-row.active .professor-mood-label i { color: #c59622; }
+body.professor-dashboard .professor-mood-row.tearful .professor-mood-label i { color: #bd7180; }
+
+body.professor-dashboard .professor-mood-track {
+    height: 0.65rem;
+    overflow: hidden;
+    border-radius: 1rem;
+    background: #edf3f3;
+}
+
+body.professor-dashboard .professor-mood-track > span {
+    display: block;
+    height: 100%;
+    border-radius: inherit;
+    transition: width 0.3s ease;
+}
+
+body.professor-dashboard .professor-mood-row.happy .professor-mood-track > span { background: #5aa783; }
+body.professor-dashboard .professor-mood-row.calm .professor-mood-track > span { background: #65aabc; }
+body.professor-dashboard .professor-mood-row.active .professor-mood-track > span { background: #e3bd4d; }
+body.professor-dashboard .professor-mood-row.tearful .professor-mood-track > span { background: #d78a99; }
+
+body.professor-dashboard .professor-mood-row > strong {
+    color: var(--dark-blue);
+    font-size: 0.76rem;
+    text-align: right;
+}
+
+html[data-theme="dark"] body.professor-dashboard .professor-insights-heading h3,
+html[data-theme="dark"] body.professor-dashboard .professor-insight-card-heading h4,
+html[data-theme="dark"] body.professor-dashboard .professor-diary-donut strong,
+html[data-theme="dark"] body.professor-dashboard .professor-diary-legend strong,
+html[data-theme="dark"] body.professor-dashboard .professor-mood-row > strong {
+    color: #e5edf0;
+}
+
+html[data-theme="dark"] body.professor-dashboard .professor-insights-period,
+html[data-theme="dark"] body.professor-dashboard .professor-insight-card {
+    border-color: rgba(229, 237, 240, 0.12);
+    background: #26343c;
+}
+
+html[data-theme="dark"] body.professor-dashboard .professor-insight-card-heading p,
+html[data-theme="dark"] body.professor-dashboard .professor-chart-note,
+html[data-theme="dark"] body.professor-dashboard .professor-chart-empty,
+html[data-theme="dark"] body.professor-dashboard .professor-insights-period,
+html[data-theme="dark"] body.professor-dashboard .professor-attendance-value,
+html[data-theme="dark"] body.professor-dashboard .professor-attendance-label,
+html[data-theme="dark"] body.professor-dashboard .professor-diary-legend > div,
+html[data-theme="dark"] body.professor-dashboard .professor-mood-label {
+    color: #b7c5cb;
+}
+
+html[data-theme="dark"] body.professor-dashboard .professor-attendance-track,
+html[data-theme="dark"] body.professor-dashboard .professor-mood-track {
+    background: #34444d;
+}
+
+html[data-theme="dark"] body.professor-dashboard .professor-diary-donut {
+    background: conic-gradient(#5aa783 0 var(--diary-progress), #5a523a var(--diary-progress) 100%);
+}
+
+html[data-theme="dark"] body.professor-dashboard .professor-diary-donut > div {
+    background: #26343c;
+}
+
+@media (max-width: 1199.98px) {
+    body.professor-dashboard .professor-insights-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+}
+
+@media (max-width: 767.98px) {
+    body.professor-dashboard .professor-insights-grid {
+        grid-template-columns: minmax(0, 1fr);
+    }
+
+    body.professor-dashboard .professor-insights-heading {
+        align-items: flex-start;
+        flex-direction: column;
+    }
+}
+
+@media (max-width: 420px) {
+    body.professor-dashboard .professor-diary-chart {
+        justify-content: space-around;
+        gap: 0.6rem;
+    }
+
+    body.professor-dashboard .professor-diary-donut {
+        width: 7rem;
+        height: 7rem;
+        flex-basis: 7rem;
+    }
+
+    body.professor-dashboard .professor-diary-donut > div {
+        width: 5rem;
+        height: 5rem;
     }
 }

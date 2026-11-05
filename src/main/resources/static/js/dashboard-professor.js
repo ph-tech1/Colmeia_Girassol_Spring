@@ -9,7 +9,8 @@ document.addEventListener('DOMContentLoaded', () => {
         calendarMonth: new Date(now.getFullYear(), now.getMonth(), 1),
         showHistory: false,
         editingPlanCode: null,
-        draggedPlanCode: null
+        draggedPlanCode: null,
+        diarySelection: null
     };
     const alertBox = document.getElementById('professor-alert');
     const csrfToken = document.querySelector('meta[name="_csrf"]')?.content;
@@ -43,6 +44,10 @@ document.addEventListener('DOMContentLoaded', () => {
         callAlert.className = `alert alert-${type} professor-workspace-alert`;
         callAlert.textContent = message;
         callAlert.classList.remove('d-none');
+    }
+
+    function sanitizeNumericValue(value) {
+        return String(value ?? '').replace(/\D/g, '').slice(0, 3);
     }
 
     async function request(url, options = {}) {
@@ -149,6 +154,15 @@ document.addEventListener('DOMContentLoaded', () => {
             .toLocaleUpperCase('pt-BR');
     }
 
+    function formatPhone(value) {
+        const digits = String(value || '').replace(/\D/g, '').slice(0, 11);
+        if (!digits) return '';
+        if (digits.length <= 10) return digits.replace(/(\d{2})(\d{4})(\d{0,4})/, (_, ddd, prefix, suffix) =>
+            suffix ? `(${ddd}) ${prefix}-${suffix}` : `(${ddd}) ${prefix}`);
+        return digits.replace(/(\d{2})(\d{5})(\d{0,4})/, (_, ddd, prefix, suffix) =>
+            suffix ? `(${ddd}) ${prefix}-${suffix}` : `(${ddd}) ${prefix}`);
+    }
+
     function updateProfile() {
         const professor = state.dashboard;
         const nome = professor.nome || 'Professor(a)';
@@ -171,6 +185,125 @@ document.addEventListener('DOMContentLoaded', () => {
         document.getElementById('stat-prof-diarios').textContent = state.dashboard.diarios.length;
     }
 
+    function renderTeacherInsights() {
+        const today = new Date();
+        today.setHours(0, 0, 0, 0);
+        const todayKey = dateKey(today);
+        const periodStart = new Date(today);
+        periodStart.setDate(periodStart.getDate() - 6);
+        const periodStartKey = dateKey(periodStart);
+        const days = Array.from({ length: 7 }, (_, index) => {
+            const date = new Date(periodStart);
+            date.setDate(periodStart.getDate() + index);
+            return { key: dateKey(date), present: 0, registered: 0 };
+        });
+        const daysByKey = new Map(days.map(day => [day.key, day]));
+        const eligiblePresent = new Set();
+        const completedDiaries = new Set();
+
+        state.dashboard.frequencias.forEach(frequency => {
+            const plan = getPlano(frequency.aulaCodigo);
+            const day = plan && daysByKey.get(plan.dataAula);
+            if (!day || plan.dataAula > todayKey || !['P', 'F', 'J'].includes(frequency.statusPresenca)) return;
+            day.registered++;
+            if (frequency.statusPresenca === 'P') {
+                day.present++;
+                eligiblePresent.add(`${frequency.aulaCodigo}:${frequency.matriculaCodigo}`);
+            }
+        });
+
+        state.dashboard.diarios.forEach(diary => {
+            const key = `${diary.aulaCodigo}:${diary.matriculaCodigo}`;
+            if (eligiblePresent.has(key)) completedDiaries.add(key);
+        });
+
+        const attendanceContainer = document.getElementById('prof-chart-presenca');
+        const activeDays = days.filter(day => day.registered > 0);
+        attendanceContainer.innerHTML = activeDays.length ? `
+            <div class="professor-attendance-chart" role="img"
+                 aria-label="Percentual de presença nas frequências registradas nos últimos sete dias">
+                ${days.map(day => {
+                    const percentage = day.registered
+                        ? Math.round(day.present * 100 / day.registered)
+                        : 0;
+                    const date = new Date(`${day.key}T00:00:00`);
+                    const label = new Intl.DateTimeFormat('pt-BR', { weekday: 'short' }).format(date)
+                        .replace('.', '');
+                    return `
+                        <div class="professor-attendance-day" title="${formatDate(day.key)}: ${day.registered
+                            ? `${day.present} de ${day.registered} presentes (${percentage}%)`
+                            : 'Sem frequência registrada'}">
+                            <span class="professor-attendance-value">${day.registered ? `${percentage}%` : '—'}</span>
+                            <div class="professor-attendance-track">
+                                <span style="height:${percentage}%"></span>
+                            </div>
+                            <span class="professor-attendance-label">${escapeHtml(label)}</span>
+                        </div>`;
+                }).join('')}
+            </div>
+            <p class="professor-chart-note mb-0">${activeDays.reduce((sum, day) => sum + day.present, 0)} presenças em ${activeDays.reduce((sum, day) => sum + day.registered, 0)} registros</p>`
+            : '<p class="professor-chart-empty">As frequências registradas nos últimos 7 dias aparecerão aqui.</p>';
+
+        const diaryContainer = document.getElementById('prof-chart-diarios');
+        const totalEligible = eligiblePresent.size;
+        const totalCompleted = completedDiaries.size;
+        const completionRate = totalEligible ? Math.round(totalCompleted * 100 / totalEligible) : 0;
+        if (totalEligible) {
+            diaryContainer.innerHTML = `
+                <div class="professor-diary-chart">
+                    <div class="professor-diary-donut" role="img"
+                         aria-label="${completionRate}% dos diários esperados foram preenchidos"
+                         style="--diary-progress:${completionRate}%">
+                        <div>
+                            <strong>${completionRate}%</strong>
+                            <span>preenchidos</span>
+                        </div>
+                    </div>
+                    <div class="professor-diary-legend">
+                        <div><span class="professor-legend-dot completed"></span><span>Preenchidos</span><strong>${totalCompleted}</strong></div>
+                        <div><span class="professor-legend-dot pending"></span><span>Pendentes</span><strong>${totalEligible - totalCompleted}</strong></div>
+                    </div>
+                </div>
+                <p class="professor-chart-note mb-0">Considera os alunos presentes de ${formatDate(periodStartKey)} a ${formatDate(todayKey)}.</p>`;
+        } else {
+            diaryContainer.innerHTML = '<p class="professor-chart-empty">Quando houver presenças registradas nesta semana, o andamento dos diários aparecerá aqui.</p>';
+        }
+
+        const moodContainer = document.getElementById('prof-chart-humor');
+        const moods = [
+            { label: 'Feliz', className: 'happy', icon: 'fa-face-smile' },
+            { label: 'Tranquilo', className: 'calm', icon: 'fa-face-meh' },
+            { label: 'Agitado', className: 'active', icon: 'fa-bolt' },
+            { label: 'Choroso', className: 'tearful', icon: 'fa-face-sad-tear' }
+        ];
+        const moodCounts = new Map(moods.map(mood => [mood.label, 0]));
+        state.dashboard.diarios.forEach(diary => {
+            const plan = getPlano(diary.aulaCodigo);
+            if (!plan || plan.dataAula < periodStartKey || plan.dataAula > todayKey) return;
+            if (moodCounts.has(diary.humor)) {
+                moodCounts.set(diary.humor, moodCounts.get(diary.humor) + 1);
+            }
+        });
+        const moodTotal = [...moodCounts.values()].reduce((sum, count) => sum + count, 0);
+        const largestMoodCount = Math.max(...moodCounts.values(), 0);
+        moodContainer.innerHTML = moodTotal ? `
+            <div class="professor-mood-chart" role="img"
+                 aria-label="Distribuição dos registros de humor nos diários dos últimos sete dias">
+                ${moods.map(mood => {
+                    const count = moodCounts.get(mood.label);
+                    const width = largestMoodCount ? Math.round(count * 100 / largestMoodCount) : 0;
+                    return `
+                        <div class="professor-mood-row ${mood.className}">
+                            <span class="professor-mood-label"><i class="fa-solid ${mood.icon}" aria-hidden="true"></i>${mood.label}</span>
+                            <span class="professor-mood-track"><span style="width:${width}%"></span></span>
+                            <strong>${count}</strong>
+                        </div>`;
+                }).join('')}
+            </div>
+            <p class="professor-chart-note mb-0">${moodTotal} registro${moodTotal === 1 ? '' : 's'} de humor de ${formatDate(periodStartKey)} a ${formatDate(todayKey)}.</p>`
+            : '<p class="professor-chart-empty">Os registros de humor dos diários desta semana aparecerão aqui.</p>';
+    }
+
     function updateClassSelects() {
         const turmas = state.dashboard.turmas;
         const options = turmas.map(turma =>
@@ -179,14 +312,6 @@ document.addEventListener('DOMContentLoaded', () => {
             `<option value="">Selecione uma turma</option>${options}`;
         document.getElementById('abrir-atividade').disabled = turmas.length === 0;
 
-        const aulaSelect = document.getElementById('diario-aula');
-        const previousValue = aulaSelect.value;
-        const aulas = state.dashboard.planejamentos;
-        aulaSelect.innerHTML = `<option value="">Selecione uma aula</option>${aulas.map(aula =>
-            `<option value="${aula.codigo}">${escapeHtml(aula.turmaNome)} · ${formatDate(aula.dataAula)} · ${escapeHtml(aula.atividadeDinamica)}</option>`
-        ).join('')}`;
-        if (aulas.some(aula => String(aula.codigo) === previousValue)) aulaSelect.value = previousValue;
-        aulaSelect.dispatchEvent(new Event('change'));
     }
 
     function renderPlans() {
@@ -272,8 +397,14 @@ document.addEventListener('DOMContentLoaded', () => {
 
     function renderClasses() {
         const container = document.getElementById('minhas-turmas-lista');
-        const turmas = state.dashboard.turmas;
-        container.innerHTML = turmas.length ? turmas.map(turma => `
+        const turmas = [...state.dashboard.turmas]
+            .sort((first, second) => first.nomeTurma.localeCompare(second.nomeTurma, 'pt-BR', { sensitivity: 'base' }));
+
+        container.innerHTML = turmas.length ? turmas.map(turma => {
+            const alunosOrdenados = [...turma.alunos].sort((first, second) =>
+                first.nome.localeCompare(second.nome, 'pt-BR', { sensitivity: 'base' }));
+
+            return `
             <article class="professor-class-card form-card">
                 <div class="professor-class-heading">
                     <div class="professor-class-icon"><i class="fa-solid fa-people-group"></i></div>
@@ -281,18 +412,26 @@ document.addEventListener('DOMContentLoaded', () => {
                         <h5 class="fw-bold text-dark-blue mb-1">${escapeHtml(turma.nomeTurma)}</h5>
                         <p class="text-muted mb-0">${escapeHtml(turma.grau)} · ${turma.ano ?? 'Ano letivo'}</p>
                     </div>
-                    <span class="professor-student-count">${turma.alunos.length} aluno${turma.alunos.length === 1 ? '' : 's'}</span>
+                    <span class="professor-student-count">${alunosOrdenados.length} aluno${alunosOrdenados.length === 1 ? '' : 's'}</span>
                 </div>
-                ${turma.alunos.length ? `
+                ${alunosOrdenados.length ? `
                     <ul class="professor-student-list">
-                        ${turma.alunos.map(aluno => `
-                            <li>
-                                <span class="professor-student-initial">${escapeHtml(initials(aluno.nome))}</span>
-                                <span>${escapeHtml(aluno.nome)}</span>
-                            </li>`).join('')}
+                        ${alunosOrdenados.map(aluno => {
+                            const responsavel = aluno.nomeResponsavel ? `${escapeHtml(aluno.nomeResponsavel)}` : 'Responsável não informado';
+                            const telefone = aluno.telefoneResponsavel ? ` · ${escapeHtml(formatPhone(aluno.telefoneResponsavel))}` : '';
+                            return `
+                                <li>
+                                    <span class="professor-student-initial">${escapeHtml(initials(aluno.nome))}</span>
+                                    <div class="d-flex flex-column">
+                                        <span>${escapeHtml(aluno.nome)}</span>
+                                        <small class="text-muted">${responsavel}${telefone}</small>
+                                    </div>
+                                </li>`;
+                        }).join('')}
                     </ul>` : `
                     <div class="professor-class-empty">Ainda não há alunos ativos vinculados a esta turma.</div>`}
-            </article>`).join('') : `
+            </article>`;
+        }).join('') : `
             <div class="professor-empty-state">
                 <i class="fa-solid fa-chalkboard"></i>
                 <h5>Nenhuma turma vinculada</h5>
@@ -300,22 +439,219 @@ document.addEventListener('DOMContentLoaded', () => {
             </div>`;
     }
 
-    function fillDiaryStudents() {
-        const aulaCodigo = Number(document.getElementById('diario-aula').value);
-        const alunoSelect = document.getElementById('select-aluno-diario');
-        const previousValue = alunoSelect.value;
-        const plano = getPlano(aulaCodigo);
-        const turma = plano && getTurma(plano.turmaCodigo);
-        const presentes = turma?.alunos.filter(aluno =>
-            getFrequencia(aulaCodigo, aluno.matriculaCodigo)?.statusPresenca === 'P') || [];
+    function normalizeSearch(value) {
+        return String(value || '').normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLocaleLowerCase('pt-BR');
+    }
 
-        alunoSelect.disabled = !plano || presentes.length === 0;
-        alunoSelect.innerHTML = presentes.length
-            ? `<option value="">Selecione um aluno</option>${presentes.map(aluno =>
-                `<option value="${aluno.matriculaCodigo}">${escapeHtml(aluno.nome)}</option>`).join('')}`
-            : `<option value="">${plano ? 'Registre a presença antes do diário' : 'Selecione primeiro uma aula'}</option>`;
-        if (presentes.some(aluno => String(aluno.matriculaCodigo) === previousValue)) {
-            alunoSelect.value = previousValue;
+    function getDiarySessions(turmaCodigo, matriculaCodigo) {
+        const today = getTodayKey();
+        return state.dashboard.planejamentos
+            .filter(plano => plano.turmaCodigo === turmaCodigo
+                && getFrequencia(plano.codigo, matriculaCodigo)?.statusPresenca === 'P')
+            .sort((first, second) =>
+                (first.dataAula === today ? 0 : first.dataAula < today ? 1 : 2)
+                    - (second.dataAula === today ? 0 : second.dataAula < today ? 1 : 2)
+                || (first.dataAula < today && second.dataAula < today
+                    ? second.dataAula.localeCompare(first.dataAula)
+                    : first.dataAula.localeCompare(second.dataAula))
+                || first.codigo - second.codigo);
+    }
+
+    function renderDiaryBrowser() {
+        const container = document.getElementById('diario-turmas-lista');
+        const search = normalizeSearch(document.getElementById('diario-busca').value.trim());
+        const turmas = [...state.dashboard.turmas].sort((first, second) =>
+            first.nomeTurma.localeCompare(second.nomeTurma, 'pt-BR', { sensitivity: 'base' }));
+        const totalAlunos = turmas.reduce((total, turma) => total + turma.alunos.length, 0);
+        document.getElementById('diario-total-alunos').textContent =
+            `${totalAlunos} aluno${totalAlunos === 1 ? '' : 's'}`;
+
+        if (!turmas.length) {
+            container.innerHTML = `
+                <div class="professor-empty-state">
+                    <i class="fa-solid fa-chalkboard"></i>
+                    <h5>Nenhuma turma vinculada</h5>
+                    <p>Quando uma turma for atribuída à sua conta, ela aparecerá aqui.</p>
+                </div>`;
+            return;
+        }
+
+        const visiveis = turmas.map(turma => {
+            const alunos = [...turma.alunos].sort((first, second) =>
+                first.nome.localeCompare(second.nome, 'pt-BR', { sensitivity: 'base' }));
+            const turmaCombina = normalizeSearch(turma.nomeTurma).includes(search);
+            return {
+                turma,
+                alunos: search && !turmaCombina
+                    ? alunos.filter(aluno => normalizeSearch(aluno.nome).includes(search))
+                    : alunos
+            };
+        }).filter(item => !search
+            || normalizeSearch(item.turma.nomeTurma).includes(search)
+            || item.alunos.length);
+
+        container.innerHTML = visiveis.length ? visiveis.map(({ turma, alunos }) => `
+            <section class="diary-class-card">
+                <div class="diary-class-heading">
+                    <span class="diary-class-icon"><i class="fa-solid fa-people-group" aria-hidden="true"></i></span>
+                    <div class="min-w-0">
+                        <h4 class="h6 fw-bold text-dark-blue mb-1">${escapeHtml(turma.nomeTurma)}</h4>
+                        <p class="text-muted small mb-0">${escapeHtml(turma.grau)} · ${turma.ano ?? 'Ano letivo'}</p>
+                    </div>
+                    <span class="diary-roster-total">${turma.alunos.length}</span>
+                </div>
+                ${alunos.length ? `
+                    <ul class="diary-student-list">
+                        ${alunos.map(aluno => {
+                            const selected = state.diarySelection?.turmaCodigo === turma.codigo
+                                && state.diarySelection?.matriculaCodigo === aluno.matriculaCodigo;
+                            return `
+                                <li>
+                                    <button type="button" class="diary-student-button${selected ? ' active' : ''}"
+                                            data-diary-student data-turma-codigo="${turma.codigo}"
+                                            data-matricula-codigo="${aluno.matriculaCodigo}"
+                                            aria-pressed="${selected}">
+                                        <span class="professor-student-initial">${escapeHtml(initials(aluno.nome))}</span>
+                                        <span class="diary-student-name">${escapeHtml(aluno.nome)}</span>
+                                        <i class="fa-solid fa-chevron-right" aria-hidden="true"></i>
+                                    </button>
+                                </li>`;
+                        }).join('')}
+                    </ul>` : `
+                    <p class="diary-class-empty mb-0">${search
+                        ? 'Nenhum aluno corresponde à busca nesta turma.'
+                        : 'Ainda não há alunos ativos vinculados a esta turma.'}</p>`}
+            </section>`).join('') : `
+            <div class="professor-empty-state">
+                <i class="fa-solid fa-magnifying-glass"></i>
+                <h5>Nenhum resultado</h5>
+                <p>Tente buscar pelo nome da turma ou da criança.</p>
+            </div>`;
+    }
+
+    function clearDiaryFields() {
+        document.getElementById('diario-humor').value = 'Feliz';
+        document.getElementById('diario-alimentacao').value = 'Comeu tudo';
+        document.getElementById('diario-sono').value = '';
+        document.getElementById('diario-fraldas').value = '';
+        document.getElementById('diario-saude').value = '';
+        document.getElementById('diario-obs').value = '';
+    }
+
+    function renderDiarySessions(sessions, selection) {
+        const container = document.getElementById('diario-sessoes-lista');
+        const historyButton = document.getElementById('diario-ver-mais');
+        const cutoff = getHistoryCutoff();
+        const today = getTodayKey();
+        const recentSessions = sessions.filter(plano => plano.dataAula >= cutoff);
+        const olderSessions = sessions.filter(plano => plano.dataAula < cutoff);
+        const visibleSessions = selection.showHistory ? sessions : recentSessions;
+        const aulaInput = document.getElementById('diario-aula');
+
+        historyButton.hidden = olderSessions.length === 0;
+        historyButton.innerHTML = selection.showHistory
+            ? '<i class="fa-solid fa-chevron-up me-1" aria-hidden="true"></i>Mostrar menos'
+            : `<i class="fa-solid fa-clock-rotate-left me-1" aria-hidden="true"></i>Ver mais aulas antigas (${olderSessions.length})`;
+
+        if (!sessions.length) {
+            aulaInput.value = '';
+            container.innerHTML = '<p class="diary-session-empty mb-0">Nenhuma aula com presença registrada para esta criança.</p>';
+            return;
+        }
+
+        if (!visibleSessions.length) {
+            aulaInput.value = '';
+            selection.selectedAulaCodigo = null;
+            container.innerHTML = '<p class="diary-session-empty mb-0">Sem aulas recentes. Use “Ver mais aulas antigas” para consultar o histórico.</p>';
+            return;
+        }
+
+        container.innerHTML = visibleSessions.map(plano => {
+            const diario = getDiario(plano.codigo, selection.matriculaCodigo);
+            const isToday = plano.dataAula === today;
+            const isFuture = plano.dataAula > today;
+            const selected = selection.selectedAulaCodigo === plano.codigo;
+            const status = diario ? 'Registrado' : 'Pendente';
+            const statusClass = diario ? 'complete' : 'pending';
+            const date = new Date(`${plano.dataAula}T00:00:00`);
+            const day = new Intl.DateTimeFormat('pt-BR', { day: '2-digit' }).format(date);
+            const month = new Intl.DateTimeFormat('pt-BR', { month: 'short' }).format(date)
+                .replace('.', '');
+            const year = new Intl.DateTimeFormat('pt-BR', { year: 'numeric' }).format(date);
+
+            return `
+                <button type="button" class="diary-session-card${isToday ? ' is-today' : ''}${selected ? ' is-selected' : ''}"
+                        data-diary-session="${plano.codigo}" aria-pressed="${selected}">
+                    <span class="diary-session-date">
+                        <strong>${day}</strong>
+                        <span>${escapeHtml(month)}</span>
+                        <small>${year}</small>
+                    </span>
+                    <span class="diary-session-copy">
+                        <span class="diary-session-title">${escapeHtml(plano.atividadeDinamica)}</span>
+                        <span class="diary-session-subtitle">${isToday ? 'Aula de hoje' : formatDate(plano.dataAula)}</span>
+                    </span>
+                    <span class="diary-session-badges">
+                        ${isToday ? '<span class="diary-session-today">Hoje</span>' : ''}
+                        ${isFuture ? '<span class="diary-session-upcoming">Próxima</span>' : ''}
+                        <span class="diary-session-status ${statusClass}">
+                            <i class="fa-solid ${diario ? 'fa-circle-check' : 'fa-clock'}" aria-hidden="true"></i>${status}
+                        </span>
+                    </span>
+                </button>`;
+        }).join('');
+
+        const selectedSession = visibleSessions.find(plano => plano.codigo === selection.selectedAulaCodigo)
+            || visibleSessions.find(plano => plano.dataAula === today)
+            || visibleSessions.find(plano => plano.dataAula <= today && !getDiario(plano.codigo, selection.matriculaCodigo))
+            || visibleSessions[0];
+        selection.selectedAulaCodigo = selectedSession?.codigo ?? null;
+        aulaInput.value = selectedSession ? String(selectedSession.codigo) : '';
+        container.querySelectorAll('[data-diary-session]').forEach(button => {
+            const selected = Number(button.dataset.diarySession) === selection.selectedAulaCodigo;
+            button.classList.toggle('is-selected', selected);
+            button.setAttribute('aria-pressed', String(selected));
+        });
+    }
+
+    function renderDiarySelection() {
+        const editor = document.getElementById('diario-editor');
+        const selection = state.diarySelection;
+        const turma = selection && getTurma(selection.turmaCodigo);
+        const aluno = turma?.alunos.find(item => item.matriculaCodigo === selection.matriculaCodigo);
+        if (!turma || !aluno) {
+            state.diarySelection = null;
+            editor.hidden = true;
+            return;
+        }
+
+        editor.hidden = false;
+        document.getElementById('select-aluno-diario').value = String(aluno.matriculaCodigo);
+        document.getElementById('diario-aluno-inicial').textContent = initials(aluno.nome);
+        document.getElementById('diario-aluno-nome').textContent = aluno.nome;
+        document.getElementById('diario-aluno-turma').textContent = `${turma.nomeTurma} · ${turma.grau}`;
+
+        const sessions = getDiarySessions(turma.codigo, aluno.matriculaCodigo);
+        renderDiarySessions(sessions, selection);
+
+        const emptyState = document.getElementById('diario-sem-aula');
+        const fields = document.getElementById('diario-campos');
+        const hasSelectedSession = sessions.length > 0 && selection.selectedAulaCodigo !== null;
+        emptyState.hidden = hasSelectedSession;
+        fields.hidden = !hasSelectedSession;
+        if (!hasSelectedSession) {
+            emptyState.innerHTML = `
+                <i class="fa-solid fa-calendar-check" aria-hidden="true"></i>
+                <div>
+                    <strong>${sessions.length
+                        ? 'Selecione uma aula antiga para abrir este diário.'
+                        : 'Ainda não há um dia disponível para este diário.'}</strong>
+                    <p class="mb-0">${sessions.length
+                        ? 'As aulas com mais de sete dias ficam recolhidas para facilitar a consulta.'
+                        : 'Registre a presença da criança em uma aula da turma. Assim que ela estiver marcada como presente, o acompanhamento poderá ser preenchido.'}</p>
+                </div>`;
+            clearDiaryFields();
+            return;
         }
         fillDiaryFields();
     }
@@ -327,22 +663,35 @@ document.addEventListener('DOMContentLoaded', () => {
         const observacoes = diario?.observacoes || '';
         const saude = observacoes.match(/^Saúde: ([^\n]*)\n?/);
 
+        if (!aulaCodigo || !matriculaCodigo) {
+            clearDiaryFields();
+            return;
+        }
         document.getElementById('diario-humor').value = diario?.humor || 'Feliz';
         document.getElementById('diario-alimentacao').value = diario?.alimentacao || 'Comeu tudo';
         document.getElementById('diario-sono').value = diario?.sono || '';
-        document.getElementById('diario-fraldas').value = diario?.banheiroFralda || '';
+        document.getElementById('diario-fraldas').value = sanitizeNumericValue(diario?.banheiroFralda || '');
         document.getElementById('diario-saude').value = saude?.[1] || '';
         document.getElementById('diario-obs').value = saude
             ? observacoes.slice(saude[0].length)
             : observacoes;
+        document.getElementById('diario-status').innerHTML = diario
+            ? '<i class="fa-solid fa-circle-check" aria-hidden="true"></i> Este dia já tem um diário. Você pode atualizar as informações.'
+            : '<i class="fa-solid fa-sparkles" aria-hidden="true"></i> Um novo registro ficará disponível para os responsáveis.';
+        document.getElementById('salvar-diario').innerHTML = diario
+            ? '<i class="fa-solid fa-floppy-disk me-2"></i>Atualizar diário'
+            : '<i class="fa-solid fa-paper-plane me-2"></i>Enviar para os pais';
     }
 
     function render() {
         updateProfile();
         updateStats();
+        renderTeacherInsights();
         updateClassSelects();
         renderPlans();
         renderClasses();
+        renderDiaryBrowser();
+        renderDiarySelection();
     }
 
     async function loadDashboard() {
@@ -355,6 +704,8 @@ document.addEventListener('DOMContentLoaded', () => {
             document.getElementById('planejamentos-lista-prof').innerHTML = `
                 <div class="col-12"><div class="alert alert-danger mb-0">${escapeHtml(error.message)}</div></div>`;
             document.getElementById('minhas-turmas-lista').innerHTML = `
+                <div class="alert alert-danger mb-0">${escapeHtml(error.message)}</div>`;
+            document.getElementById('diario-turmas-lista').innerHTML = `
                 <div class="alert alert-danger mb-0">${escapeHtml(error.message)}</div>`;
             showAlert(`Não foi possível carregar os dados do painel: ${error.message}`, 'danger');
             return false;
@@ -434,8 +785,36 @@ document.addEventListener('DOMContentLoaded', () => {
         button.addEventListener('click', () => navigateToSection(button.dataset.workspaceBack || state.returnSection));
     });
 
-    document.getElementById('diario-aula').addEventListener('change', fillDiaryStudents);
-    document.getElementById('select-aluno-diario').addEventListener('change', fillDiaryFields);
+    document.getElementById('diario-busca').addEventListener('input', renderDiaryBrowser);
+    document.getElementById('diario-turmas-lista').addEventListener('click', event => {
+        const button = event.target.closest('[data-diary-student]');
+        if (!button) return;
+        state.diarySelection = {
+            turmaCodigo: Number(button.dataset.turmaCodigo),
+            matriculaCodigo: Number(button.dataset.matriculaCodigo),
+            selectedAulaCodigo: null,
+            showHistory: false
+        };
+        renderDiaryBrowser();
+        renderDiarySelection();
+    });
+    document.getElementById('diario-sessoes-lista').addEventListener('click', event => {
+        const button = event.target.closest('[data-diary-session]');
+        if (!button || !state.diarySelection) return;
+        state.diarySelection.selectedAulaCodigo = Number(button.dataset.diarySession);
+        const turma = getTurma(state.diarySelection.turmaCodigo);
+        if (turma) {
+            renderDiarySessions(
+                getDiarySessions(turma.codigo, state.diarySelection.matriculaCodigo),
+                state.diarySelection);
+        }
+        fillDiaryFields();
+    });
+    document.getElementById('diario-ver-mais').addEventListener('click', () => {
+        if (!state.diarySelection) return;
+        state.diarySelection.showHistory = !state.diarySelection.showHistory;
+        renderDiarySelection();
+    });
 
     document.getElementById('planejamentos-lista-prof').addEventListener('click', event => {
         const target = event.target.closest('button');
@@ -609,10 +988,16 @@ document.addEventListener('DOMContentLoaded', () => {
 
         const observacoes = document.getElementById('diario-obs').value.trim();
         const saude = document.getElementById('diario-saude').value.trim();
+        const sono = document.getElementById('diario-sono').value.trim();
+        const banheiroFralda = sanitizeNumericValue(document.getElementById('diario-fraldas').value);
         const observacoesComSaude = [saude ? `Saúde: ${saude}` : '', observacoes]
             .filter(Boolean).join('\n');
         if (observacoesComSaude.length > 500) {
             showAlert('Saúde e observações juntas devem ter no máximo 500 caracteres.', 'warning');
+            return;
+        }
+        if (banheiroFralda && !banheiroFralda.match(/^\d+$/)) {
+            showAlert('O campo de banheiro / fralda deve conter apenas números.', 'warning');
             return;
         }
 
@@ -625,17 +1010,13 @@ document.addEventListener('DOMContentLoaded', () => {
                     aulaPlanejamentosCodigo: aulaCodigo,
                     matriculaCodigo,
                     alimentacao: document.getElementById('diario-alimentacao').value,
-                    sono: document.getElementById('diario-sono').value.trim(),
+                    sono,
                     humor: document.getElementById('diario-humor').value,
-                    banheiroFralda: document.getElementById('diario-fraldas').value.trim(),
+                    banheiroFralda,
                     observacoes: observacoesComSaude
                 })
             });
             if (await loadDashboard()) {
-                document.getElementById('diario-aula').value = String(aulaCodigo);
-                fillDiaryStudents();
-                document.getElementById('select-aluno-diario').value = String(matriculaCodigo);
-                fillDiaryFields();
                 showAlert('Diário de bordo salvo e compartilhado com os responsáveis.');
             }
         } catch (error) {
