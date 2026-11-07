@@ -9,6 +9,7 @@ import br.edu.fatec.projetointerdisciplinar.model.ResponsavelAlunoEntity;
 import br.edu.fatec.projetointerdisciplinar.model.ResponsavelAlunoId;
 import br.edu.fatec.projetointerdisciplinar.model.ResponsavelEntity;
 import br.edu.fatec.projetointerdisciplinar.repository.AutorizadoBuscaRepository;
+import br.edu.fatec.projetointerdisciplinar.repository.DatabaseFunctionRepository;
 import br.edu.fatec.projetointerdisciplinar.repository.DatabaseViewRepository;
 import br.edu.fatec.projetointerdisciplinar.repository.MatriculaRepository;
 import br.edu.fatec.projetointerdisciplinar.repository.ParentescoRepository;
@@ -40,6 +41,7 @@ public class DashboardResponsavelController {
     private final ResponsavelRepository responsavelRepository;
     private final ResponsavelAlunoRepository responsavelAlunoRepository;
     private final MatriculaRepository matriculaRepository;
+    private final DatabaseFunctionRepository databaseFunctionRepository;
     private final DatabaseViewRepository databaseViewRepository;
     private final AutorizadoBuscaRepository autorizadoBuscaRepository;
     private final ParentescoRepository parentescoRepository;
@@ -160,20 +162,26 @@ public class DashboardResponsavelController {
                 .filter(item -> item.getStatus() != null && item.getStatus() == 2)
                 .findFirst()
                 .orElse(null);
-        DatabaseViewRepository.ResumoFrequencia resumoFrequencia = databaseViewRepository
-                .buscarResumoFrequenciaPorAlunoResponsavel(codigo, responsavel.getPessoaCodigo())
-                .orElse(null);
-        List<RegistroDiario> registrosDiario = databaseViewRepository
-                .listarDiarioPorAlunoResponsavel(codigo, responsavel.getPessoaCodigo())
+        MatriculaEntity matriculaParaRelatorio = matriculaAtiva != null
+                ? matriculaAtiva
+                : matriculas.stream().findFirst().orElse(null);
+        DatabaseFunctionRepository.ResumoFrequencia resumoFrequencia = matriculaParaRelatorio == null
+                ? null
+                : databaseFunctionRepository.buscarResumoFrequencia(matriculaParaRelatorio.getNr())
+                .orElseThrow(() -> new IllegalStateException(
+                        "A matrícula selecionada não foi encontrada pela função de resumo de frequência."));
+        List<RegistroDiario> registrosDiario = matriculaParaRelatorio == null
+                ? List.of()
+                : databaseFunctionRepository.listarHistoricoFrequencia(matriculaParaRelatorio.getNr())
                 .stream()
                 .map(this::paraRegistroDiario)
                 .toList();
-        int diasRegistrados = resumoFrequencia == null ? 0 : resumoFrequencia.diasRegistrados();
-        int diasPresentes = resumoFrequencia == null ? 0 : resumoFrequencia.presencas();
+        int diasRegistrados = resumoFrequencia == null ? 0 : Math.toIntExact(resumoFrequencia.diasRegistrados());
+        int diasPresentes = resumoFrequencia == null ? 0 : Math.toIntExact(resumoFrequencia.presencas());
         int diasAusentes = resumoFrequencia == null ? 0
-                : resumoFrequencia.faltas() + resumoFrequencia.faltasJustificadas();
-        int frequencia = resumoFrequencia == null ? 0
-                : resumoFrequencia.percentualPresenca()
+                : Math.toIntExact(resumoFrequencia.faltas() + resumoFrequencia.faltasJustificadas());
+        int frequencia = matriculaParaRelatorio == null ? 0
+                : databaseFunctionRepository.buscarPercentualPresenca(matriculaParaRelatorio.getNr())
                 .setScale(0, java.math.RoundingMode.HALF_UP)
                 .intValue();
         String professorNome = matriculaAtiva == null || matriculaAtiva.getTurma() == null
@@ -220,6 +228,22 @@ public class DashboardResponsavelController {
                 diario.nomeTurma(),
                 diario.atividadeDinamica(),
                 diario.professorNome()
+        );
+    }
+
+    private RegistroDiario paraRegistroDiario(DatabaseFunctionRepository.RegistroFrequencia frequencia) {
+        return new RegistroDiario(
+                frequencia.dataAula(),
+                "P".equals(frequencia.statusPresenca()),
+                frequencia.statusPresenca(),
+                frequencia.humor(),
+                frequencia.alimentacao(),
+                frequencia.sono(),
+                frequencia.banheiroFralda(),
+                frequencia.observacoes(),
+                frequencia.turmaNome(),
+                frequencia.atividadeDinamica(),
+                frequencia.professorNome()
         );
     }
 

@@ -57,6 +57,22 @@ Execute também [`views_relatorios.sql`](src/main/java/br/edu/fatec/projetointer
 
 No portal da família, as consultas Java restringem frequência e diário às crianças vinculadas ao responsável autenticado. No painel do professor, o roster e os indicadores ficam limitados às turmas atribuídas ao professor autenticado.
 
+Execute também [`triggers_auditoria.sql`](src/main/java/br/edu/fatec/projetointerdisciplinar/db/triggers_auditoria.sql). O script cria as tabelas de histórico e as três triggers de auditoria:
+
+- `tr_matriculas_historico_status`: registra inclusão/exclusão da matrícula e mudanças reais de status, com valor anterior e novo.
+- `tr_frequencias_historico`: registra inclusão, alteração de status/turma e exclusão de frequência.
+- `tr_diario_bordo_historico`: registra inclusão, alteração e exclusão do diário, indicando quais campos mudaram sem copiar os dados de rotina para o histórico.
+
+As triggers são disparadas automaticamente pelo SQL Server quando as operações são gravadas pelo Java (incluindo as procedures). Não precisam de chamadas específicas no código Java. O usuário registrado é o login SQL Server usado pela conexão da aplicação, e os registros de auditoria participam da mesma transação: se ela sofrer rollback, a auditoria também é desfeita. Para consultar os históricos, use as tabelas `dbo.historico_status_matricula`, `dbo.historico_frequencias` e `dbo.historico_diario_bordo`.
+
+Por fim, execute [`functions_frequencia.sql`](src/main/java/br/edu/fatec/projetointerdisciplinar/db/functions_frequencia.sql) para criar ou atualizar as três funções de frequência:
+
+- `fn_percentual_presenca_matricula`: função escalar que calcula o percentual de presença de uma matrícula; retorna zero quando não há frequências registradas.
+- `fn_historico_frequencia_matricula`: função tabular inline que retorna as frequências da matrícula com aula, turma, professor e dados do diário, quando existentes.
+- `fn_resumo_frequencia_matricula`: função tabular multi-instrução que usa uma variável de tabela para retornar o total de dias registrados, presenças, faltas e faltas justificadas.
+
+O painel de detalhes da criança chama as três funções pelo Java: usa a função escalar para o indicador percentual, a função de resumo para os contadores e a função de histórico para montar a linha do tempo. As consultas são feitas somente depois que o controller confirma que a criança está vinculada ao responsável autenticado.
+
 #### Como as views são usadas pela aplicação
 
 As views são consultadas pelo Java por meio de [`DatabaseViewRepository.java`](src/main/java/br/edu/fatec/projetointerdisciplinar/repository/DatabaseViewRepository.java), usando consultas parametrizadas. Os controllers carregam esses resultados para as telas:
