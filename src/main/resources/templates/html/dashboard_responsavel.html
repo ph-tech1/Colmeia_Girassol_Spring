@@ -183,6 +183,11 @@
                                 <p class="mb-2"><i class="fa-solid fa-shield-virus text-warning me-2"></i><strong>Alergias:</strong> <span th:text="${item.aluno.alergias ?: 'Nenhuma informada'}">—</span></p>
                                 <p class="mb-2"><i class="fa-solid fa-utensils text-primary me-2"></i><strong>Restrições:</strong> <span th:text="${item.aluno.restricoesAlimentares ?: 'Nenhuma informada'}">—</span></p>
                                 <p class="mb-0"><i class="fa-solid fa-heart-pulse text-danger me-2"></i><strong>Necessidades:</strong> <span th:text="${item.aluno.necessidadesEspeciais ?: 'Nenhuma'}">—</span></p>
+                                <p th:if="${item.frequencia != null}" class="small text-muted mt-3 mb-0">
+                                    Frequência registrada: <strong th:text="${item.frequencia.percentualPresenca + '%'}">0%</strong>
+                                    (<span th:text="${item.frequencia.presencas}">0</span> presenças,
+                                    <span th:text="${item.frequencia.faltas + item.frequencia.faltasJustificadas}">0</span> ausências)
+                                </p>
                             </div>
                         </div>
 
@@ -195,6 +200,13 @@
                                     </span>
                                 </div>
                                 <div th:if="${item.diario != null}">
+                                    <p class="small text-muted mb-2">
+                                        <span th:text="${item.diario.atividadeDinamica}">Atividade</span>
+                                        <span> · </span><span th:text="${item.diario.turmaNome}">Turma</span>
+                                        <span th:if="${item.diario.professorNome != null}">
+                                            · Prof. <span th:text="${item.diario.professorNome}">Professor</span>
+                                        </span>
+                                    </p>
                                     <span class="badge rounded-pill mb-3"
                                           th:classappend="${item.diario.statusPresenca == 'P'} ? 'text-bg-success' : (${item.diario.statusPresenca == 'J'} ? 'text-bg-warning' : 'text-bg-secondary')"
                                           th:text="${item.diario.statusPresenca == 'P'} ? 'Presente' : (${item.diario.statusPresenca == 'J'} ? 'Falta justificada' : 'Falta')">Frequência</span>
@@ -205,9 +217,6 @@
                                                 <span class="fw-semibold" th:text="${item.diario.humor ?: 'Sem registro'}">—</span>
                                             </div>
                                         </div>
-                                        <p th:if="${item.diario.statusPresenca != 'P'}" class="text-muted mb-0">
-                                            Não há diário de bordo para esta data, pois a criança não estava presente.
-                                        </p>
                                         <div class="col-sm-4">
                                             <div class="diary-detail">
                                                 <span class="small text-muted d-block">Alimentação</span>
@@ -226,6 +235,9 @@
                                                 <p class="mb-0" th:text="${item.diario.observacoes}">Observações</p>
                                             </div>
                                         </div>
+                                        <p th:if="${item.diario.statusPresenca != 'P'}" class="text-muted mb-0">
+                                            Não há diário de bordo para esta data, pois a criança não estava presente.
+                                        </p>
                                     </div>
                                 </div>
                                 <p th:if="${item.diario == null}" class="text-muted mb-0 py-3">

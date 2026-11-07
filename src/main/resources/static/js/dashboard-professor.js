@@ -144,6 +144,11 @@ document.addEventListener('DOMContentLoaded', () => {
             item.aulaCodigo === aulaCodigo && item.matriculaCodigo === matriculaCodigo);
     }
 
+    function getResumoFrequencia(matriculaCodigo) {
+        return (state.dashboard.resumoFrequencias || []).find(item =>
+            item.matriculaCodigo === matriculaCodigo);
+    }
+
     function initials(name) {
         return String(name || 'Professor')
             .trim()
@@ -419,12 +424,14 @@ document.addEventListener('DOMContentLoaded', () => {
                         ${alunosOrdenados.map(aluno => {
                             const responsavel = aluno.nomeResponsavel ? `${escapeHtml(aluno.nomeResponsavel)}` : 'Responsável não informado';
                             const telefone = aluno.telefoneResponsavel ? ` · ${escapeHtml(formatPhone(aluno.telefoneResponsavel))}` : '';
+                            const frequencia = getResumoFrequencia(aluno.matriculaCodigo);
                             return `
                                 <li>
                                     <span class="professor-student-initial">${escapeHtml(initials(aluno.nome))}</span>
                                     <div class="d-flex flex-column">
                                         <span>${escapeHtml(aluno.nome)}</span>
                                         <small class="text-muted">${responsavel}${telefone}</small>
+                                        ${frequencia ? `<small class="text-muted">Frequência: ${escapeHtml(frequencia.percentualPresenca)}% · ${frequencia.presencas} presenças · ${frequencia.faltas} faltas · ${frequencia.faltasJustificadas} justificadas</small>` : ''}
                                     </div>
                                 </li>`;
                         }).join('')}

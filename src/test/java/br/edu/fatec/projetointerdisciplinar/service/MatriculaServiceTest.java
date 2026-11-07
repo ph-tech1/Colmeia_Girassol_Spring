@@ -2,8 +2,10 @@ package br.edu.fatec.projetointerdisciplinar.service;
 
 import br.edu.fatec.projetointerdisciplinar.model.MatriculaEntity;
 import br.edu.fatec.projetointerdisciplinar.model.TurmaEntity;
+import br.edu.fatec.projetointerdisciplinar.repository.DatabaseProcedureRepository;
 import br.edu.fatec.projetointerdisciplinar.repository.MatriculaRepository;
 import br.edu.fatec.projetointerdisciplinar.repository.TurmaRepository;
+import jakarta.persistence.EntityManager;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -14,6 +16,7 @@ import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -26,6 +29,12 @@ class MatriculaServiceTest {
     @Mock
     private TurmaRepository turmaRepository;
 
+    @Mock
+    private DatabaseProcedureRepository databaseProcedureRepository;
+
+    @Mock
+    private EntityManager entityManager;
+
     @InjectMocks
     private MatriculaService matriculaService;
 
@@ -33,24 +42,32 @@ class MatriculaServiceTest {
     void iniciaAnaliseDeMatriculaAguardando() {
         MatriculaEntity matricula = matriculaComStatus(0);
         when(matriculaRepository.findById(12)).thenReturn(Optional.of(matricula));
-        when(matriculaRepository.save(matricula)).thenReturn(matricula);
+        doAnswer(invocation -> {
+            matricula.setStatus(1);
+            return null;
+        }).when(entityManager).refresh(matricula);
 
         MatriculaEntity atualizada = matriculaService.atualizarStatus(12, 1, null);
 
         assertEquals(1, atualizada.getStatus());
-        verify(matriculaRepository).save(matricula);
+        verify(databaseProcedureRepository).decidirMatricula(12, 1, null);
     }
 
     @Test
     void rejeitaMatriculaComMotivoInformado() {
         MatriculaEntity matricula = matriculaComStatus(1);
         when(matriculaRepository.findById(12)).thenReturn(Optional.of(matricula));
-        when(matriculaRepository.save(matricula)).thenReturn(matricula);
+        doAnswer(invocation -> {
+            matricula.setStatus(3);
+            matricula.setMotivoRejeicao("Documentação incompleta");
+            return null;
+        }).when(entityManager).refresh(matricula);
 
         MatriculaEntity atualizada = matriculaService.atualizarStatus(12, 3, "  Documentação incompleta  ");
 
         assertEquals(3, atualizada.getStatus());
         assertEquals("Documentação incompleta", atualizada.getMotivoRejeicao());
+        verify(databaseProcedureRepository).decidirMatricula(12, 3, "Documentação incompleta");
     }
 
     @Test
@@ -75,12 +92,15 @@ class MatriculaServiceTest {
         turma.setCodigo(5);
         when(matriculaRepository.findById(12)).thenReturn(Optional.of(matricula));
         when(turmaRepository.findById(5)).thenReturn(Optional.of(turma));
-        when(matriculaRepository.save(matricula)).thenReturn(matricula);
+        doAnswer(invocation -> {
+            matricula.setTurma(turma);
+            return null;
+        }).when(entityManager).refresh(matricula);
 
         MatriculaEntity atualizada = matriculaService.atribuirTurma(12, 5);
 
         assertEquals(turma, atualizada.getTurma());
-        verify(matriculaRepository).save(matricula);
+        verify(databaseProcedureRepository).atribuirTurma(12, 5);
     }
 
     @Test

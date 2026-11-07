@@ -2,15 +2,17 @@ package br.edu.fatec.projetointerdisciplinar.service;
 
 import br.edu.fatec.projetointerdisciplinar.model.MatriculaEntity;
 import br.edu.fatec.projetointerdisciplinar.model.TurmaEntity;
+import br.edu.fatec.projetointerdisciplinar.repository.DatabaseProcedureRepository;
 import br.edu.fatec.projetointerdisciplinar.repository.MatriculaRepository;
 import br.edu.fatec.projetointerdisciplinar.repository.TurmaRepository;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.PersistenceContext;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
 
-import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
@@ -20,6 +22,10 @@ public class MatriculaService {
 
     private final MatriculaRepository matriculaRepository;
     private final TurmaRepository turmaRepository;
+    private final DatabaseProcedureRepository databaseProcedureRepository;
+
+    @PersistenceContext
+    private EntityManager entityManager;
 
     public List<MatriculaEntity> listarTodos() {
         return matriculaRepository.findAll();
@@ -56,10 +62,9 @@ public class MatriculaService {
             throw new IllegalArgumentException("Esta matrícula não pode ser alterada para o status informado.");
         }
 
-        matricula.setStatus(novoStatus);
-        matricula.setDataDecisao(LocalDateTime.now());
-        matricula.setMotivoRejeicao(novoStatus == 3 ? motivo : null);
-        return matriculaRepository.save(matricula);
+        databaseProcedureRepository.decidirMatricula(nr, novoStatus, novoStatus == 3 ? motivo : null);
+        entityManager.refresh(matricula);
+        return matricula;
     }
 
     @Transactional
@@ -74,10 +79,11 @@ public class MatriculaService {
             throw new IllegalArgumentException("Só é possível atribuir turma a uma matrícula aprovada.");
         }
 
-        TurmaEntity turma = turmaRepository.findById(turmaCodigo)
+        turmaRepository.findById(turmaCodigo)
                 .orElseThrow(() -> new IllegalArgumentException("A turma selecionada não foi encontrada."));
-        matricula.setTurma(turma);
-        return matriculaRepository.save(matricula);
+        databaseProcedureRepository.atribuirTurma(nr, turmaCodigo);
+        entityManager.refresh(matricula);
+        return matricula;
     }
 
     public MatriculaEntity atualizar(Integer nr, MatriculaEntity matriculaAtualizada) {

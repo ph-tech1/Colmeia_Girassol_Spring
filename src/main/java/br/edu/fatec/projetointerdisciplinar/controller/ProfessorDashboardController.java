@@ -9,11 +9,10 @@ import br.edu.fatec.projetointerdisciplinar.model.ProfessorEntity;
 import br.edu.fatec.projetointerdisciplinar.model.TurmaEntity;
 import br.edu.fatec.projetointerdisciplinar.repository.AulaPlanejamentoRepository;
 import br.edu.fatec.projetointerdisciplinar.repository.DiarioBordoRepository;
+import br.edu.fatec.projetointerdisciplinar.repository.DatabaseViewRepository;
 import br.edu.fatec.projetointerdisciplinar.repository.FrequenciaRepository;
-import br.edu.fatec.projetointerdisciplinar.repository.MatriculaRepository;
 import br.edu.fatec.projetointerdisciplinar.repository.PessoaRepository;
 import br.edu.fatec.projetointerdisciplinar.repository.ProfessorRepository;
-import br.edu.fatec.projetointerdisciplinar.repository.ResponsavelAlunoRepository;
 import br.edu.fatec.projetointerdisciplinar.repository.TurmaRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -31,7 +30,9 @@ import org.springframework.web.server.ResponseStatusException;
 
 import java.util.ArrayList;
 import java.util.Comparator;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/api/professor/dashboard")
@@ -41,52 +42,40 @@ public class ProfessorDashboardController {
     private final PessoaRepository pessoaRepository;
     private final ProfessorRepository professorRepository;
     private final TurmaRepository turmaRepository;
-    private final MatriculaRepository matriculaRepository;
     private final AulaPlanejamentoRepository aulaPlanejamentoRepository;
     private final FrequenciaRepository frequenciaRepository;
     private final DiarioBordoRepository diarioBordoRepository;
-    private final ResponsavelAlunoRepository responsavelAlunoRepository;
+    private final DatabaseViewRepository databaseViewRepository;
 
     @GetMapping
     @Transactional(readOnly = true)
     public DashboardResponse carregar(Authentication authentication) {
         ProfessorEntity professor = buscarProfessor(authentication);
         List<TurmaEntity> turmas = turmaRepository.findByProfessorPessoaCodigo(professor.getPessoaCodigo());
-        List<TurmaResumo> turmasResumo = new ArrayList<>();
+        Map<Integer, List<AlunoResumo>> alunosPorTurma = new HashMap<>();
+        for (DatabaseViewRepository.AlunoTurma aluno : databaseViewRepository
+                .listarAlunosPorProfessor(professor.getPessoaCodigo())) {
+            alunosPorTurma.computeIfAbsent(aluno.turmaCodigo(), ignored -> new ArrayList<>())
+                    .add(new AlunoResumo(
+                            aluno.matriculaCodigo(),
+                            aluno.alunoCodigo(),
+                            aluno.alunoNome(),
+                            aluno.responsavelNome(),
+                            aluno.responsavelTelefone()));
+        }
+        List<TurmaResumo> turmasResumo = turmas.stream()
+                .map(turma -> new TurmaResumo(
+                        turma.getCodigo(),
+                        turma.getNomeTurma(),
+                        turma.getAno(),
+                        turma.getGrau(),
+                        alunosPorTurma.getOrDefault(turma.getCodigo(), List.of())))
+                .toList();
         List<PlanejamentoResumo> planejamentos = new ArrayList<>();
         List<FrequenciaResumo> frequencias = new ArrayList<>();
         List<FrequenciaId> frequenciaIds = new ArrayList<>();
 
         for (TurmaEntity turma : turmas) {
-            List<AlunoResumo> alunos = matriculaRepository.findByTurmaCodigo(turma.getCodigo()).stream()
-                    .filter(matricula -> Integer.valueOf(2).equals(matricula.getStatus()))
-                    .filter(matricula -> matricula.getAluno() != null)
-                    .map(matricula -> {
-                        var responsavel = responsavelAlunoRepository.findByIdAlunoCodigo(matricula.getAluno().getCodigo())
-                                .stream()
-                                .sorted(Comparator.comparingInt(item -> item.getOrdemContato() == null ? 999 : item.getOrdemContato()))
-                                .findFirst()
-                                .orElse(null);
-
-                        String nomeResponsavel = responsavel != null && responsavel.getResponsavel() != null
-                                && responsavel.getResponsavel().getPessoa() != null
-                                ? responsavel.getResponsavel().getPessoa().getNome() : null;
-                        String telefoneResponsavel = responsavel != null && responsavel.getResponsavel() != null
-                                && responsavel.getResponsavel().getPessoa() != null
-                                ? responsavel.getResponsavel().getPessoa().getTelefone() : null;
-
-                        return new AlunoResumo(
-                                matricula.getNr(),
-                                matricula.getAluno().getCodigo(),
-                                matricula.getAluno().getNome(),
-                                nomeResponsavel,
-                                telefoneResponsavel);
-                    })
-                    .sorted(Comparator.comparing(AlunoResumo::nome, Comparator.nullsLast(String::compareToIgnoreCase)))
-                    .toList();
-            turmasResumo.add(new TurmaResumo(
-                    turma.getCodigo(), turma.getNomeTurma(), turma.getAno(), turma.getGrau(), alunos));
-
             for (AulaPlanejamentoEntity aula : aulaPlanejamentoRepository.findByTurmaCodigo(turma.getCodigo())) {
                 if (!professor.getPessoaCodigo().equals(aula.getProfessor().getPessoaCodigo())) {
                     continue;
@@ -109,13 +98,16 @@ public class ProfessorDashboardController {
                 .map(this::paraDiarioResumo)
                 .toList();
         planejamentos.sort(Comparator.comparing(PlanejamentoResumo::dataAula).reversed());
+        List<DatabaseViewRepository.ResumoFrequencia> resumoFrequencias =
+                databaseViewRepository.listarResumoFrequenciaPorProfessor(professor.getPessoaCodigo());
         return new DashboardResponse(
                 professor.getPessoa().getNome(),
                 professor.getFormacao(),
                 turmasResumo,
                 planejamentos,
                 frequencias,
-                diarios);
+                diarios,
+                resumoFrequencias);
     }
 
     @PostMapping("/planejamentos")
@@ -235,7 +227,8 @@ public class ProfessorDashboardController {
             List<TurmaResumo> turmas,
             List<PlanejamentoResumo> planejamentos,
             List<FrequenciaResumo> frequencias,
-            List<DiarioResumo> diarios
+            List<DiarioResumo> diarios,
+            List<DatabaseViewRepository.ResumoFrequencia> resumoFrequencias
     ) {
     }
 

@@ -1,6 +1,7 @@
 -- Script de criacao do banco vazio com o esquema atual da aplicacao.
 CREATE DATABASE banco_girassol;
-GO USE banco_girassol;
+GO
+USE banco_girassol;
 GO --------------------------------------------------------------------------------
     -- 1. TABELA DE PESSOAS
     --------------------------------------------------------------------------------

@@ -47,6 +47,57 @@ Se já houver um contêiner chamado `sqlserver`, inicie-o com `docker start sqls
 
 Execute o script [`banco_girassol _novo_16_05 (1).sql`](src/main/java/br/edu/fatec/projetointerdisciplinar/db/banco_girassol%20_novo_16_05%20(1).sql) em uma ferramenta compatível com scripts do SQL Server, como SQL Server Management Studio ou `sqlcmd`. O script cria o banco `banco_girassol` e seu esquema.
 
+Depois, execute [`procedures_operacionais.sql`](src/main/java/br/edu/fatec/projetointerdisciplinar/db/procedures_operacionais.sql) no mesmo SQL Server. Esse script cria ou atualiza as três procedures chamadas pela aplicação: decisão de matrícula, atribuição de turma e registro/atualização de frequência. Se o banco já existe, basta executar esse segundo script para instalar as procedures.
+
+Execute também [`views_relatorios.sql`](src/main/java/br/edu/fatec/projetointerdisciplinar/db/views_relatorios.sql) no mesmo banco. Ele cria ou atualiza as três views consultadas pelo Java:
+
+- `vw_resumo_frequencia_aluno`: consolida, por criança, dias com frequência registrada, presenças, faltas, faltas justificadas e percentual de presença. O percentual considera todas as frequências já registradas para a criança.
+- `vw_alunos_por_turma`: lista matrículas aprovadas e atribuídas a uma turma, com turma, professor, criança e contato principal do responsável. Alimenta os quadros “Minha Turma” e “Diário de bordo” do professor.
+- `vw_diario_bordo_aluno`: combina dados da criança, matrícula, turma, aula, professor, presença e informações de rotina (humor, alimentação, sono, banheiro/fralda e observações). Alimenta o portal da família e o painel de detalhes da criança.
+
+No portal da família, as consultas Java restringem frequência e diário às crianças vinculadas ao responsável autenticado. No painel do professor, o roster e os indicadores ficam limitados às turmas atribuídas ao professor autenticado.
+
+#### Como as views são usadas pela aplicação
+
+As views são consultadas pelo Java por meio de [`DatabaseViewRepository.java`](src/main/java/br/edu/fatec/projetointerdisciplinar/repository/DatabaseViewRepository.java), usando consultas parametrizadas. Os controllers carregam esses resultados para as telas:
+
+| View | Consulta Java | Tela / informação apresentada |
+|---|---|---|
+| `vw_resumo_frequencia_aluno` | Filtrada pelo professor ou pelo vínculo do responsável; também pode ser filtrada por criança vinculada | Painel do professor: resumo por aluno. Portal do responsável e painel da criança: percentual, presenças, faltas e faltas justificadas |
+| `vw_alunos_por_turma` | Filtrada pelo código do professor autenticado | Painel do professor: lista de turmas e alunos ativos, com contato principal do responsável |
+| `vw_diario_bordo_aluno` | Filtrada pelos vínculos do responsável autenticado e, no painel individual, pelo código da criança | Portal do responsável e painel da criança: data, atividade, turma, professor, presença e registros do dia |
+
+O acesso às views não substitui a autenticação: o Java aplica os filtros com os identificadores obtidos da sessão autenticada, para que o responsável consulte apenas crianças vinculadas à sua conta e o professor apenas suas turmas. Para instalar ou atualizar as views em um banco já criado, execute novamente `views_relatorios.sql` no banco `banco_girassol`.
+
+#### Fluxo de aprovação e atribuição de turma
+
+O fluxo administrativo foi separado em duas operações:
+
+1. A matrícula pendente (`status = 0`) é encaminhada para análise (`status = 1`).
+2. Após a análise, ela pode ser aprovada (`status = 2`) ou rejeitada (`status = 3`). A rejeição exige um motivo.
+3. Depois de aprovada, a turma é atribuída em uma operação própria. Portanto, **a aprovação não exige que a matrícula já tenha uma turma**.
+
+Essa sequência é implementada por `dbo.sp_decidir_matricula` e `dbo.sp_atribuir_turma_matricula`, chamadas pelo Java. A procedure de decisão do script do projeto não contém a regra de exigir turma para aprovar.
+
+Se, ao aprovar, o sistema apresentar `Não é possível aprovar uma matrícula sem turma` (no log observado, erro SQL Server `50016`), a instância do banco está executando outra definição — por exemplo, uma procedure desatualizada ou um trigger com essa validação. No SSMS, confirme que a janela está conectada ao banco `banco_girassol` e execute novamente `procedures_operacionais.sql`. Para localizar a definição que contém a mensagem:
+
+```sql
+USE banco_girassol;
+GO
+
+SELECT
+    o.type_desc AS tipo_objeto,
+    SCHEMA_NAME(o.schema_id) AS esquema,
+    o.name AS objeto,
+    m.definition AS definicao
+FROM sys.sql_modules AS m
+JOIN sys.objects AS o ON o.object_id = m.object_id
+WHERE m.definition LIKE N'%50016%'
+   OR m.definition LIKE N'%Não é possível aprovar uma matrícula sem turma%';
+```
+
+Se a consulta retornar uma procedure, atualize-a executando o script do projeto. Se retornar um trigger, revise a regra desse trigger: ele não deve impedir a aprovação sem turma, pois a turma é atribuída na etapa seguinte. Depois, repita o fluxo pela aplicação.
+
 ### 3. Configure a conexão
 
 A configuração local padrão aponta para `localhost:1433`, banco `banco_girassol` e usuário `sa`. Informe a senha sem gravá-la no repositório. No PowerShell, por exemplo:

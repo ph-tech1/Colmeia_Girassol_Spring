@@ -3,16 +3,13 @@ package br.edu.fatec.projetointerdisciplinar.controller;
 import br.edu.fatec.projetointerdisciplinar.model.AlunoEntity;
 import br.edu.fatec.projetointerdisciplinar.enums.UnidadeFederativa;
 import br.edu.fatec.projetointerdisciplinar.model.AutorizadoBuscaEntity;
-import br.edu.fatec.projetointerdisciplinar.model.DiarioBordoEntity;
-import br.edu.fatec.projetointerdisciplinar.model.FrequenciaEntity;
 import br.edu.fatec.projetointerdisciplinar.model.MatriculaEntity;
 import br.edu.fatec.projetointerdisciplinar.model.PessoaEntity;
 import br.edu.fatec.projetointerdisciplinar.model.ResponsavelAlunoEntity;
 import br.edu.fatec.projetointerdisciplinar.model.ResponsavelAlunoId;
 import br.edu.fatec.projetointerdisciplinar.model.ResponsavelEntity;
 import br.edu.fatec.projetointerdisciplinar.repository.AutorizadoBuscaRepository;
-import br.edu.fatec.projetointerdisciplinar.repository.DiarioBordoRepository;
-import br.edu.fatec.projetointerdisciplinar.repository.FrequenciaRepository;
+import br.edu.fatec.projetointerdisciplinar.repository.DatabaseViewRepository;
 import br.edu.fatec.projetointerdisciplinar.repository.MatriculaRepository;
 import br.edu.fatec.projetointerdisciplinar.repository.ParentescoRepository;
 import br.edu.fatec.projetointerdisciplinar.repository.PessoaRepository;
@@ -31,8 +28,9 @@ import org.springframework.transaction.annotation.Transactional;
 import java.time.LocalDate;
 import java.time.Period;
 import java.util.ArrayList;
-import java.util.Comparator;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @Controller
 @RequiredArgsConstructor
@@ -42,8 +40,7 @@ public class DashboardResponsavelController {
     private final ResponsavelRepository responsavelRepository;
     private final ResponsavelAlunoRepository responsavelAlunoRepository;
     private final MatriculaRepository matriculaRepository;
-    private final DiarioBordoRepository diarioBordoRepository;
-    private final FrequenciaRepository frequenciaRepository;
+    private final DatabaseViewRepository databaseViewRepository;
     private final AutorizadoBuscaRepository autorizadoBuscaRepository;
     private final ParentescoRepository parentescoRepository;
 
@@ -55,6 +52,18 @@ public class DashboardResponsavelController {
 
         List<AlunoDashboard> alunos = new ArrayList<>();
         List<ContatoAutorizado> autorizados = new ArrayList<>();
+        Map<Integer, DatabaseViewRepository.ResumoFrequencia> frequenciasPorAluno =
+                databaseViewRepository.listarResumoFrequenciaPorResponsavel(responsavel.getPessoaCodigo())
+                        .stream()
+                        .collect(java.util.stream.Collectors.toMap(
+                                DatabaseViewRepository.ResumoFrequencia::alunoCodigo,
+                                resumo -> resumo,
+                                (first, ignored) -> first));
+        Map<Integer, DatabaseViewRepository.DiarioAluno> diarioMaisRecentePorMatricula = new HashMap<>();
+        for (DatabaseViewRepository.DiarioAluno diario : databaseViewRepository
+                .listarDiarioPorResponsavel(responsavel.getPessoaCodigo())) {
+            diarioMaisRecentePorMatricula.putIfAbsent(diario.matriculaCodigo(), diario);
+        }
 
         for (ResponsavelAlunoEntity vinculo : responsavelAlunoRepository
                 .findByIdResponsavelCodigo(responsavel.getPessoaCodigo())) {
@@ -67,18 +76,20 @@ public class DashboardResponsavelController {
             boolean matriculaAtiva = matricula != null
                     && matricula.getStatus() == 2
                     && matricula.getTurma() != null;
-            RegistroDiario diario = !matriculaAtiva ? null
-                    : frequenciaRepository.findByMatricula_NrOrderByAulaPlanejamento_DataAulaDesc(matricula.getNr())
-                    .stream()
-                    .findFirst()
-                    .map(this::paraRegistroDiario)
-                    .orElse(null);
+            DatabaseViewRepository.DiarioAluno diarioAtual = matriculaAtiva
+                    ? diarioMaisRecentePorMatricula.get(matricula.getNr()) : null;
+            RegistroDiario diario = diarioAtual == null ? null : paraRegistroDiario(diarioAtual);
 
             String professorNome = matriculaAtiva
                     ? matricula.getTurma().getProfessor().getPessoa().getNome()
                     : null;
             alunos.add(new AlunoDashboard(
-                    aluno, vinculo.getParentesco().getDescricao(), matricula, professorNome, diario));
+                    aluno,
+                    vinculo.getParentesco().getDescricao(),
+                    matricula,
+                    professorNome,
+                    frequenciasPorAluno.get(aluno.getCodigo()),
+                    diario));
 
             for (AutorizadoBuscaEntity autorizado : autorizadoBuscaRepository
                     .findByVinculo_Aluno_CodigoAndAtivoTrue(aluno.getCodigo())) {
@@ -149,18 +160,22 @@ public class DashboardResponsavelController {
                 .filter(item -> item.getStatus() != null && item.getStatus() == 2)
                 .findFirst()
                 .orElse(null);
-        List<FrequenciaEntity> registrosFrequencia = new ArrayList<>();
-        for (MatriculaEntity matricula : matriculas) {
-            registrosFrequencia.addAll(frequenciaRepository.findByMatricula_Nr(matricula.getNr()));
-        }
-        registrosFrequencia.sort(Comparator.comparing(
-                (FrequenciaEntity registro) -> registro.getAulaPlanejamento().getDataAula()).reversed());
-
-        long diasPresentes = registrosFrequencia.stream()
-                .filter(registro -> "P".equals(registro.getStatusPresenca())).count();
-        long diasAusentes = registrosFrequencia.size() - diasPresentes;
-        int frequencia = registrosFrequencia.isEmpty() ? 0
-                : (int) Math.round(diasPresentes * 100.0 / registrosFrequencia.size());
+        DatabaseViewRepository.ResumoFrequencia resumoFrequencia = databaseViewRepository
+                .buscarResumoFrequenciaPorAlunoResponsavel(codigo, responsavel.getPessoaCodigo())
+                .orElse(null);
+        List<RegistroDiario> registrosDiario = databaseViewRepository
+                .listarDiarioPorAlunoResponsavel(codigo, responsavel.getPessoaCodigo())
+                .stream()
+                .map(this::paraRegistroDiario)
+                .toList();
+        int diasRegistrados = resumoFrequencia == null ? 0 : resumoFrequencia.diasRegistrados();
+        int diasPresentes = resumoFrequencia == null ? 0 : resumoFrequencia.presencas();
+        int diasAusentes = resumoFrequencia == null ? 0
+                : resumoFrequencia.faltas() + resumoFrequencia.faltasJustificadas();
+        int frequencia = resumoFrequencia == null ? 0
+                : resumoFrequencia.percentualPresenca()
+                .setScale(0, java.math.RoundingMode.HALF_UP)
+                .intValue();
         String professorNome = matriculaAtiva == null || matriculaAtiva.getTurma() == null
                 ? null
                 : matriculaAtiva.getTurma().getProfessor().getPessoa().getNome();
@@ -170,9 +185,8 @@ public class DashboardResponsavelController {
         model.addAttribute("parentesco", vinculo.getParentesco().getDescricao());
         model.addAttribute("matricula", matriculaAtiva);
         model.addAttribute("professorNome", professorNome);
-        model.addAttribute("diarios", registrosFrequencia.stream().limit(10)
-                .map(this::paraRegistroDiario).toList());
-        model.addAttribute("diasRegistrados", registrosFrequencia.size());
+        model.addAttribute("diarios", registrosDiario.stream().limit(10).toList());
+        model.addAttribute("diasRegistrados", diasRegistrados);
         model.addAttribute("diasPresentes", diasPresentes);
         model.addAttribute("diasAusentes", diasAusentes);
         model.addAttribute("frequencia", frequencia);
@@ -193,19 +207,19 @@ public class DashboardResponsavelController {
                         "Não foi possível localizar o cadastro de responsável."));
     }
 
-    private RegistroDiario paraRegistroDiario(FrequenciaEntity frequencia) {
-        DiarioBordoEntity diario = "P".equals(frequencia.getStatusPresenca())
-                ? diarioBordoRepository.findById(frequencia.getId()).orElse(null)
-                : null;
+    private RegistroDiario paraRegistroDiario(DatabaseViewRepository.DiarioAluno diario) {
         return new RegistroDiario(
-                frequencia.getAulaPlanejamento().getDataAula(),
-                "P".equals(frequencia.getStatusPresenca()),
-                frequencia.getStatusPresenca(),
-                diario == null ? null : diario.getHumor(),
-                diario == null ? null : diario.getAlimentacao(),
-                diario == null ? null : diario.getSono(),
-                diario == null ? null : diario.getBanheiroFralda(),
-                diario == null ? null : diario.getObservacoes()
+                diario.dataAula(),
+                "P".equals(diario.statusPresenca()),
+                diario.statusPresenca(),
+                diario.humor(),
+                diario.alimentacao(),
+                diario.sono(),
+                diario.banheiroFralda(),
+                diario.observacoes(),
+                diario.nomeTurma(),
+                diario.atividadeDinamica(),
+                diario.professorNome()
         );
     }
 
@@ -217,7 +231,10 @@ public class DashboardResponsavelController {
             String alimentacao,
             String sono,
             String banheiroFralda,
-            String observacoes
+            String observacoes,
+            String turmaNome,
+            String atividadeDinamica,
+            String professorNome
     ) {
     }
 
@@ -226,6 +243,7 @@ public class DashboardResponsavelController {
             String grauParentesco,
             MatriculaEntity matricula,
             String professorNome,
+            DatabaseViewRepository.ResumoFrequencia frequencia,
             RegistroDiario diario
     ) {
     }

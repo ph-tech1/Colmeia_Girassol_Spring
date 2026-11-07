@@ -263,6 +263,13 @@
                                       th:classappend="${diario.statusPresenca == 'P'} ? 'text-bg-success' : (${diario.statusPresenca == 'J'} ? 'text-bg-warning' : 'text-bg-secondary')"
                                       th:text="${diario.statusPresenca == 'P'} ? 'Presente' : (${diario.statusPresenca == 'J'} ? 'Falta justificada' : 'Falta')">Frequência</span>
                             </div>
+                            <p class="small text-muted mb-2">
+                                <span th:text="${diario.atividadeDinamica}">Atividade</span>
+                                <span> · </span><span th:text="${diario.turmaNome}">Turma</span>
+                                <span th:if="${diario.professorNome != null}">
+                                    · Prof. <span th:text="${diario.professorNome}">Professor</span>
+                                </span>
+                            </p>
                             <div class="row g-2" th:if="${diario.statusPresenca == 'P'}">
                                 <div class="col-sm-4"><span class="small text-muted d-block">Humor</span><span th:text="${diario.humor ?: 'Sem registro'}">—</span></div>
                                 <div class="col-sm-4"><span class="small text-muted d-block">Alimentação</span><span th:text="${diario.alimentacao ?: 'Sem registro'}">—</span></div>

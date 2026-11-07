@@ -15,6 +15,7 @@ import java.util.Optional;
 public class FrequenciaService {
 
     private final FrequenciaRepository frequenciaRepository;
+    private final DatabaseProcedureRepository databaseProcedureRepository;
     private final DiarioBordoRepository diarioBordoRepository;
     private final AulaPlanejamentoRepository aulaPlanejamentoRepository;
     private final MatriculaRepository matriculaRepository;
@@ -53,13 +54,14 @@ public class FrequenciaService {
             throw new IllegalArgumentException("Apague o diário de bordo antes de alterar a presença para falta.");
         }
 
-        FrequenciaEntity frequencia = frequenciaRepository.findById(id).orElseGet(FrequenciaEntity::new);
-        frequencia.setId(id);
-        frequencia.setAulaPlanejamento(aula);
-        frequencia.setMatricula(matricula);
-        frequencia.setTurmaCodigo(aula.getTurma().getCodigo());
-        frequencia.setStatusPresenca(request.statusPresenca());
-        return frequenciaRepository.save(frequencia);
+        databaseProcedureRepository.registrarFrequencia(
+                aula.getCodigo(),
+                matricula.getNr(),
+                aula.getTurma().getCodigo(),
+                request.statusPresenca()
+        );
+        return frequenciaRepository.findById(id)
+                .orElseThrow(() -> new IllegalStateException("A frequência não foi encontrada após o registro."));
     }
 
     @Transactional
