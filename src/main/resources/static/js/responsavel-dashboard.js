@@ -85,6 +85,17 @@
         enviarFormulario(criancaForm, '/api/portal-responsavel/criancas', 'POST', 'Criança vinculada com sucesso.');
     }
 
+    const autorizadoEdicaoForm = document.getElementById('autorizadoEdicaoForm');
+    if (autorizadoEdicaoForm) {
+        const codigo = autorizadoEdicaoForm.dataset.autorizadoCodigo;
+        enviarFormulario(
+            autorizadoEdicaoForm,
+            `/api/portal-responsavel/autorizados/${codigo}`,
+            'PUT',
+            'Dados da pessoa autorizada atualizados.'
+        );
+    }
+
     document.querySelectorAll('[data-matricula-action]').forEach((button) => {
         button.addEventListener('click', async () => {
             const cancelar = button.dataset.matriculaAction === 'cancelar';

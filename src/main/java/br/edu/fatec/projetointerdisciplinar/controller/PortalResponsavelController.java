@@ -2,6 +2,7 @@ package br.edu.fatec.projetointerdisciplinar.controller;
 
 import br.edu.fatec.projetointerdisciplinar.dto.AdicionarAutorizadoBuscaRequest;
 import br.edu.fatec.projetointerdisciplinar.dto.AdicionarCriancaRequest;
+import br.edu.fatec.projetointerdisciplinar.dto.AtualizarAutorizadoResponsavelRequest;
 import br.edu.fatec.projetointerdisciplinar.dto.AtualizarCriancaRequest;
 import br.edu.fatec.projetointerdisciplinar.dto.AtualizarPerfilResponsavelRequest;
 import br.edu.fatec.projetointerdisciplinar.dto.ConsultarAutorizadoRequest;
@@ -83,6 +84,20 @@ public class PortalResponsavelController {
         try {
             portalResponsavelService.desativarAutorizado(authentication.getName(), codigo);
             return ResponseEntity.ok(new SucessoResponse("Autorização desativada com sucesso."));
+        } catch (IllegalArgumentException exception) {
+            return ResponseEntity.badRequest().body(new ErroResponse(exception.getMessage()));
+        }
+    }
+
+    @PutMapping("/autorizados/{codigo}")
+    public ResponseEntity<?> atualizarAutorizado(
+            @PathVariable Integer codigo,
+            @RequestBody AtualizarAutorizadoResponsavelRequest request,
+            Authentication authentication
+    ) {
+        try {
+            portalResponsavelService.atualizarAutorizado(authentication.getName(), codigo, request);
+            return ResponseEntity.ok(new SucessoResponse("Dados da pessoa autorizada atualizados."));
         } catch (IllegalArgumentException exception) {
             return ResponseEntity.badRequest().body(new ErroResponse(exception.getMessage()));
         }

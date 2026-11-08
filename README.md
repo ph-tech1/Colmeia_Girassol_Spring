@@ -47,43 +47,55 @@ Se já houver um contêiner chamado `sqlserver`, inicie-o com `docker start sqls
 
 Execute o script [`banco_girassol _novo_16_05 (1).sql`](src/main/java/br/edu/fatec/projetointerdisciplinar/db/banco_girassol%20_novo_16_05%20(1).sql) em uma ferramenta compatível com scripts do SQL Server, como SQL Server Management Studio ou `sqlcmd`. O script cria o banco `banco_girassol` e seu esquema.
 
-Depois, execute [`procedures_operacionais.sql`](src/main/java/br/edu/fatec/projetointerdisciplinar/db/procedures_operacionais.sql) no mesmo SQL Server. Esse script cria ou atualiza as três procedures chamadas pela aplicação: decisão de matrícula, atribuição de turma e registro/atualização de frequência. Se o banco já existe, basta executar esse segundo script para instalar as procedures.
+#### Procedures, views, triggers e functions na aplicação
 
-Execute também [`views_relatorios.sql`](src/main/java/br/edu/fatec/projetointerdisciplinar/db/views_relatorios.sql) no mesmo banco. Ele cria ou atualiza as três views consultadas pelo Java:
+Depois de criar as tabelas, execute no banco `banco_girassol` os scripts [`procedures_operacionais.sql`](src/main/java/br/edu/fatec/projetointerdisciplinar/db/procedures_operacionais.sql), [`views_relatorios.sql`](src/main/java/br/edu/fatec/projetointerdisciplinar/db/views_relatorios.sql), [`triggers_auditoria.sql`](src/main/java/br/edu/fatec/projetointerdisciplinar/db/triggers_auditoria.sql) e [`functions_frequencia.sql`](src/main/java/br/edu/fatec/projetointerdisciplinar/db/functions_frequencia.sql). Eles criam ou atualizam os objetos SQL Server descritos abaixo.
 
-- `vw_resumo_frequencia_aluno`: consolida, por criança, dias com frequência registrada, presenças, faltas, faltas justificadas e percentual de presença. O percentual considera todas as frequências já registradas para a criança.
-- `vw_alunos_por_turma`: lista matrículas aprovadas e atribuídas a uma turma, com turma, professor, criança e contato principal do responsável. Alimenta os quadros “Minha Turma” e “Diário de bordo” do professor.
-- `vw_diario_bordo_aluno`: combina dados da criança, matrícula, turma, aula, professor, presença e informações de rotina (humor, alimentação, sono, banheiro/fralda e observações). Alimenta o portal da família e o painel de detalhes da criança.
+##### Procedures
 
-No portal da família, as consultas Java restringem frequência e diário às crianças vinculadas ao responsável autenticado. No painel do professor, o roster e os indicadores ficam limitados às turmas atribuídas ao professor autenticado.
+As chamadas JDBC são centralizadas em [`DatabaseProcedureRepository.java`](src/main/java/br/edu/fatec/projetointerdisciplinar/repository/DatabaseProcedureRepository.java); os services aplicam as validações de negócio e chamam as procedures:
 
-Execute também [`triggers_auditoria.sql`](src/main/java/br/edu/fatec/projetointerdisciplinar/db/triggers_auditoria.sql). O script cria as tabelas de histórico e as três triggers de auditoria:
-
-- `tr_matriculas_historico_status`: registra inclusão/exclusão da matrícula e mudanças reais de status, com valor anterior e novo.
-- `tr_frequencias_historico`: registra inclusão, alteração de status/turma e exclusão de frequência.
-- `tr_diario_bordo_historico`: registra inclusão, alteração e exclusão do diário, indicando quais campos mudaram sem copiar os dados de rotina para o histórico.
-
-As triggers são disparadas automaticamente pelo SQL Server quando as operações são gravadas pelo Java (incluindo as procedures). Não precisam de chamadas específicas no código Java. O usuário registrado é o login SQL Server usado pela conexão da aplicação, e os registros de auditoria participam da mesma transação: se ela sofrer rollback, a auditoria também é desfeita. Para consultar os históricos, use as tabelas `dbo.historico_status_matricula`, `dbo.historico_frequencias` e `dbo.historico_diario_bordo`.
-
-Por fim, execute [`functions_frequencia.sql`](src/main/java/br/edu/fatec/projetointerdisciplinar/db/functions_frequencia.sql) para criar ou atualizar as três funções de frequência:
-
-- `fn_percentual_presenca_matricula`: função escalar que calcula o percentual de presença de uma matrícula; retorna zero quando não há frequências registradas.
-- `fn_historico_frequencia_matricula`: função tabular inline que retorna as frequências da matrícula com aula, turma, professor e dados do diário, quando existentes.
-- `fn_resumo_frequencia_matricula`: função tabular multi-instrução que usa uma variável de tabela para retornar o total de dias registrados, presenças, faltas e faltas justificadas.
-
-O painel de detalhes da criança chama as três funções pelo Java: usa a função escalar para o indicador percentual, a função de resumo para os contadores e a função de histórico para montar a linha do tempo. As consultas são feitas somente depois que o controller confirma que a criança está vinculada ao responsável autenticado.
-
-#### Como as views são usadas pela aplicação
-
-As views são consultadas pelo Java por meio de [`DatabaseViewRepository.java`](src/main/java/br/edu/fatec/projetointerdisciplinar/repository/DatabaseViewRepository.java), usando consultas parametrizadas. Os controllers carregam esses resultados para as telas:
-
-| View | Consulta Java | Tela / informação apresentada |
+| Procedure | Integração Java | Fluxo no sistema |
 |---|---|---|
-| `vw_resumo_frequencia_aluno` | Filtrada pelo professor ou pelo vínculo do responsável; também pode ser filtrada por criança vinculada | Painel do professor: resumo por aluno. Portal do responsável e painel da criança: percentual, presenças, faltas e faltas justificadas |
-| `vw_alunos_por_turma` | Filtrada pelo código do professor autenticado | Painel do professor: lista de turmas e alunos ativos, com contato principal do responsável |
-| `vw_diario_bordo_aluno` | Filtrada pelos vínculos do responsável autenticado e, no painel individual, pelo código da criança | Portal do responsável e painel da criança: data, atividade, turma, professor, presença e registros do dia |
+| `dbo.sp_decidir_matricula` | `MatriculaService.atualizarStatus` | Endpoint `PATCH /api/matriculas/{nr}/status`: encaminha para análise, aprova ou rejeita (com motivo obrigatório). |
+| `dbo.sp_atribuir_turma_matricula` | `MatriculaService.atribuirTurma` | Endpoint `PATCH /api/matriculas/{nr}/turma`: atribui turma somente depois da aprovação. |
+| `dbo.sp_registrar_frequencia` | `FrequenciaService.salvar` | Endpoint `POST /api/frequencias/salvar`, usado pelo professor ao registrar ou atualizar a chamada. |
 
-O acesso às views não substitui a autenticação: o Java aplica os filtros com os identificadores obtidos da sessão autenticada, para que o responsável consulte apenas crianças vinculadas à sua conta e o professor apenas suas turmas. Para instalar ou atualizar as views em um banco já criado, execute novamente `views_relatorios.sql` no banco `banco_girassol`.
+##### Views
+
+As consultas às views ficam em [`DatabaseViewRepository.java`](src/main/java/br/edu/fatec/projetointerdisciplinar/repository/DatabaseViewRepository.java):
+
+| View | Controller e uso no sistema |
+|---|---|
+| `dbo.vw_resumo_frequencia_aluno` | [`ProfessorDashboardController.java`](src/main/java/br/edu/fatec/projetointerdisciplinar/controller/ProfessorDashboardController.java) exibe frequência por aluno no painel do professor. [`DashboardResponsavelController.java`](src/main/java/br/edu/fatec/projetointerdisciplinar/controller/DashboardResponsavelController.java) usa o resumo no portal do responsável. |
+| `dbo.vw_alunos_por_turma` | `ProfessorDashboardController` monta as listas de alunos e contatos nos quadros “Minha Turma” e “Diário de bordo”, filtrando pelo professor autenticado. |
+| `dbo.vw_diario_bordo_aluno` | `DashboardResponsavelController` carrega o registro mais recente de presença/diário no painel inicial da família, filtrando pelas crianças vinculadas ao responsável autenticado. |
+
+O painel individual de detalhes da criança também apresenta frequência e histórico, mas usa as functions abaixo para obter esses dados.
+
+##### Triggers e tabelas de auditoria
+
+As triggers estão definidas em [`triggers_auditoria.sql`](src/main/java/br/edu/fatec/projetointerdisciplinar/db/triggers_auditoria.sql). Não há chamada explícita a elas no Java: o SQL Server as dispara automaticamente após as operações nas tabelas feitas pelos services, endpoints ou procedures.
+
+| Trigger | Operações auditadas | Tabela onde o histórico fica disponível |
+|---|---|---|
+| `dbo.tr_matriculas_historico_status` | Inclusão/exclusão de matrícula e alteração real do status, guardando status anterior e novo | `dbo.historico_status_matricula` |
+| `dbo.tr_frequencias_historico` | Inclusão, alteração de turma/status e exclusão de frequência | `dbo.historico_frequencias` |
+| `dbo.tr_diario_bordo_historico` | Inclusão, alteração dos campos e exclusão do diário; registra os nomes dos campos alterados | `dbo.historico_diario_bordo` |
+
+O identificador do usuário gravado no histórico é o login SQL Server usado pela conexão da aplicação. Os registros de auditoria fazem parte da mesma transação da operação: se a transação sofrer rollback, o respectivo registro de auditoria também será revertido. Os históricos podem ser consultados diretamente nas tabelas indicadas no SQL Server.
+
+##### Functions
+
+As consultas são centralizadas em [`DatabaseFunctionRepository.java`](src/main/java/br/edu/fatec/projetointerdisciplinar/repository/DatabaseFunctionRepository.java) e usadas em [`DashboardResponsavelController.java`](src/main/java/br/edu/fatec/projetointerdisciplinar/controller/DashboardResponsavelController.java), na página de detalhes da criança (`/html/aluno/{codigo}`):
+
+| Function | Tipo SQL Server | Uso no painel |
+|---|---|---|
+| `dbo.fn_percentual_presenca_matricula` | Escalar | Retorna o percentual exibido no indicador de frequência. |
+| `dbo.fn_historico_frequencia_matricula` | Table-valued inline | Fornece as aulas, presenças e informações do diário para a linha do tempo. |
+| `dbo.fn_resumo_frequencia_matricula` | Table-valued multi-statement, com variável de tabela | Fornece os totais de dias registrados, presenças, faltas e faltas justificadas para os indicadores. |
+
+O controller valida primeiro o vínculo da criança com o responsável autenticado e usa a matrícula selecionada para consultar as functions. Assim, os resultados não são carregados apenas com base em um código recebido pela URL.
 
 #### Fluxo de aprovação e atribuição de turma
 

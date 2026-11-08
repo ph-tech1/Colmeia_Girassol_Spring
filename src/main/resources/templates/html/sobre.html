@@ -3,131 +3,156 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sobre Nós - Escola Infantil Colmeia Girassol</title>
-    <!--Icone do site-->
+    <script>try { document.documentElement.dataset.theme = localStorage.getItem('colmeia-theme') === 'dark' ? 'dark' : 'light'; } catch (error) { document.documentElement.dataset.theme = 'light'; }</script>
+    <title>Nossa essência | Colmeia Girassol</title>
     <link rel="icon" th:href="@{/images/abelha.png}">
-    <!-- Fontes do Google -->
-    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700&display=swap" rel="stylesheet">
-    <!-- CSS do Bootstrap -->
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&family=Playfair+Display:wght@600;700&display=swap" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
-    <!-- Ícones do FontAwesome -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
-    <!-- CSS da Biblioteca de Animação AOS -->
     <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
-    <!-- CSS Customizado -->
-    <link rel="stylesheet" th:href="@{/css/style.css(v='1.9.0')}">
+    <link rel="stylesheet" th:href="@{/css/style.css(v='1.14.0')}">
 </head>
-<body>
+<body class="hive-home">
+<div class="hive-atmosphere" aria-hidden="true">
+    <span class="hex hex-one"></span><span class="hex hex-two"></span><span class="hex hex-three"></span>
+    <span class="bee-trail trail-one"><i class="fa-solid fa-bug"></i><i class="fa-solid fa-bug"></i><i class="fa-solid fa-bug"></i></span>
+</div>
 
-    <!-- Cabeçalho Interno -->
-    <header class="bg-yellow-main py-4 text-center position-relative shadow-sm" data-aos="fade-down">
-        <div class="container d-flex justify-content-between align-items-center">
-            <a th:href="@{/}" class="text-dark-blue fs-3" style="transition: transform 0.3s;" onmouseover="this.style.transform='scale(1.2)'" onmouseout="this.style.transform='scale(1)'"><i class="fa-solid fa-arrow-left"></i></a>
-            <h2 class="fw-bold text-dark-blue m-0">Nossa Essência</h2>
-            <div style="width: 30px;"></div> <!-- Spacer para centralizar o título -->
+<nav class="hive-nav navbar navbar-expand-lg" aria-label="Navegação principal">
+    <div class="container">
+        <a class="navbar-brand hive-brand d-flex align-items-center gap-2" th:href="@{/}">
+            <img th:src="@{/images/logo.png}" alt="Colmeia Girassol" class="hive-brand-mark">
+            <span>Colmeia <strong>Girassol</strong></span>
+        </a>
+        <button class="navbar-toggler border-0 shadow-none" type="button" data-bs-toggle="collapse" data-bs-target="#aboutNav" aria-label="Abrir menu">
+            <i class="fa-solid fa-bars text-dark-blue"></i>
+        </button>
+        <div class="collapse navbar-collapse" id="aboutNav">
+            <ul class="navbar-nav ms-auto align-items-lg-center gap-lg-4">
+                <li class="nav-item"><a class="nav-link" th:href="@{/}">Início</a></li>
+                <li class="nav-item"><a class="nav-link" href="#essencia">Quem somos</a></li>
+                <li class="nav-item"><a class="nav-link" href="#pilares">Nossos pilares</a></li>
+                <li class="nav-item"><a class="nav-link" href="#estrutura">Nossa estrutura</a></li>
+                <li class="nav-item ms-lg-2">
+                    <button class="btn btn-outline-dark-blue theme-toggle" type="button" data-theme-toggle aria-label="Ativar modo escuro" aria-pressed="false" title="Ativar modo escuro">
+                        <i class="fa-solid fa-moon" aria-hidden="true"></i>
+                    </button>
+                </li>
+                <li class="nav-item ms-lg-2"><a class="btn btn-dark-blue rounded-pill px-4" th:href="@{/Login}"><i class="fa-solid fa-key me-2"></i>Portal da família</a></li>
+            </ul>
         </div>
-    </header>
+    </div>
+</nav>
 
-    <!-- Quem Somos -->
-    <section class="py-5">
-        <div class="container py-4">
+<header class="hive-hero">
+    <div class="container position-relative">
+        <div class="row align-items-center g-5">
+            <div class="col-lg-6" data-aos="fade-right">
+                <div class="hive-eyebrow"><span></span> Nossa essência</div>
+                <h1>Cultivando o futuro com <em>amor e dedicação.</em></h1>
+                <p class="hive-lead">A Colmeia Girassol nasceu do sonho de criar um espaço onde a infância é celebrada, respeitada e estimulada em todo o seu potencial.</p>
+                <div class="d-flex flex-wrap gap-3 mt-4">
+                    <a class="btn btn-yellow-main btn-lg rounded-pill px-4 hive-cta" href="#pilares"><i class="fa-solid fa-seedling me-2"></i>Conheça nossos pilares</a>
+                    <a class="btn btn-outline-dark-blue btn-lg rounded-pill px-4" th:href="@{/}"><i class="fa-solid fa-arrow-left me-2"></i>Voltar ao início</a>
+                </div>
+                <div class="hive-proof d-flex align-items-center gap-3 mt-5">
+                    <div class="proof-avatars"><i class="fa-solid fa-heart"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-sun"></i></div>
+                    <span>Educação com afeto desde 2023</span>
+                </div>
+            </div>
+            <div class="col-lg-6 text-center position-relative" data-aos="zoom-in" data-aos-delay="150">
+                <div class="hero-honeycomb" aria-hidden="true"></div>
+                <div class="hero-illustration">
+                    <img th:src="@{/images/sobre_principal.png}" alt="Crianças brincando e aprendendo na Colmeia Girassol" class="img-fluid rounded-4">
+                    <span class="floating-note note-one"><i class="fa-solid fa-heart"></i> carinho</span>
+                    <span class="floating-note note-two"><i class="fa-solid fa-wand-magic-sparkles"></i> brincar</span>
+                    <span class="floating-note note-three"><i class="fa-solid fa-sun"></i> aprender</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</header>
+
+<main>
+    <section class="hive-intro" id="essencia">
+        <div class="container">
             <div class="row align-items-center g-5">
                 <div class="col-lg-6" data-aos="fade-right">
-                    <h6 class="text-uppercase text-muted fw-bold mb-2">Quem Somos</h6>
-                    <h2 class="display-5 fw-bold text-dark-blue mb-4">Cultivando o futuro com amor e dedicação</h2>
-                    <p class="lead text-secondary mb-4">A Escola Infantil Colmeia Girassol nasceu do sonho de criar um espaço onde a infância é celebrada, respeitada e estimulada em toda a sua potencialidade.</p>
-                    <p class="text-muted">Acreditamos que os primeiros anos de vida são a base de todo o desenvolvimento humano. Por isso, nossa pedagogia é focada no afeto, no brincar livre e na construção de vínculos sólidos. Aqui, cada criança é tratada como um girassol único: regada com atenção, iluminada com conhecimento e orientada a crescer sempre em direção à luz.</p>
+                    <div class="hive-eyebrow"><span></span> Quem somos</div>
+                    <h2 class="mt-3 mb-4">Cada criança é um girassol <em>único.</em></h2>
+                    <p class="hive-lead">Acreditamos que os primeiros anos de vida são a base do desenvolvimento humano. Por isso, nossa pedagogia é focada no afeto, no brincar livre e na construção de vínculos sólidos.</p>
+                    <p class="text-secondary">Aqui, cada criança é acolhida com atenção, iluminada pelo conhecimento e incentivada a crescer no próprio ritmo.</p>
                 </div>
                 <div class="col-lg-6 text-center" data-aos="fade-left">
-                    <img th:src="@{/images/sobre_principal.png}" alt="Crianças brincando na escola" class="img-fluid rounded-4 shadow-lg floating-slow" style="max-height: 450px; object-fit: cover; border: 8px solid #fff;">
+                    <div class="story-image">
+                        <img th:src="@{/images/sobre_escola.png}" alt="Espaço escolar da Colmeia Girassol" class="img-fluid rounded-4">
+                    </div>
                 </div>
             </div>
         </div>
     </section>
 
-    <!-- Pilares (Missão, Visão, Valores) -->
-    <section class="py-5 bg-light-blue-pale position-relative">
-        <div class="container py-4 z-index-1 position-relative">
+    <section class="hive-classes" id="pilares">
+        <div class="container">
             <div class="text-center mb-5" data-aos="fade-up">
-                <h6 class="text-uppercase fw-bold text-muted mb-2">Nossos Pilares</h6>
-                <h2 class="fw-bold text-dark-blue">O que nos guia todos os dias</h2>
+                <div class="hive-eyebrow justify-content-center"><span></span> Nossos pilares <span></span></div>
+                <h2 class="mt-3">O que nos guia todos os <em>dias.</em></h2>
             </div>
-            
-            <div class="row g-4 justify-content-center">
-                <!-- Missão -->
+            <div class="row g-4">
                 <div class="col-md-4" data-aos="fade-up" data-aos-delay="100">
-                    <div class="card pillar-card h-100 border-0 shadow-sm rounded-4 text-center p-4">
-                        <div class="icon-wrapper bg-yellow-main rounded-circle d-flex align-items-center justify-content-center mx-auto mb-4 shadow-sm" style="width: 80px; height: 80px;">
-                            <i class="fa-solid fa-heart text-dark-blue fs-1"></i>
-                        </div>
-                        <h4 class="fw-bold text-dark-blue mb-3">Missão</h4>
-                        <p class="text-muted">Proporcionar um ambiente seguro, lúdico e afetuoso, onde cada criança é encorajada a descobrir seu potencial através de experiências significativas e aprendizado contínuo.</p>
-                    </div>
+                    <article class="hive-value value-yellow">
+                        <span class="value-icon"><i class="fa-solid fa-heart"></i></span>
+                        <h3>Missão</h3>
+                        <p>Proporcionar um ambiente seguro, lúdico e afetuoso, onde cada criança descobre seu potencial por meio de experiências significativas e aprendizado contínuo.</p>
+                    </article>
                 </div>
-                
-                <!-- Visão -->
-                <div class="col-md-4" data-aos="fade-up" data-aos-delay="200">
-                    <div class="card pillar-card h-100 border-0 shadow-sm rounded-4 text-center p-4">
-                        <div class="icon-wrapper bg-light-blue rounded-circle d-flex align-items-center justify-content-center mx-auto mb-4 shadow-sm" style="width: 80px; height: 80px;">
-                            <i class="fa-solid fa-eye text-white fs-1"></i>
-                        </div>
-                        <h4 class="fw-bold text-dark-blue mb-3">Visão</h4>
-                        <p class="text-muted">Ser referência em educação infantil, reconhecida pela excelência pedagógica, inovação e pelo cuidado humanizado com o desenvolvimento integral da criança.</p>
-                    </div>
+                <div class="col-md-4" data-aos="fade-up" data-aos-delay="180">
+                    <article class="hive-value value-blue">
+                        <span class="value-icon"><i class="fa-solid fa-eye"></i></span>
+                        <h3>Visão</h3>
+                        <p>Ser referência em educação infantil, reconhecida pela excelência pedagógica, inovação e cuidado humanizado com o desenvolvimento integral da criança.</p>
+                    </article>
                 </div>
-
-                <!-- Valores -->
-                <div class="col-md-4" data-aos="fade-up" data-aos-delay="300">
-                    <div class="card pillar-card h-100 border-0 shadow-sm rounded-4 text-center p-4">
-                        <div class="icon-wrapper bg-dark-blue rounded-circle d-flex align-items-center justify-content-center mx-auto mb-4 shadow-sm" style="width: 80px; height: 80px;">
-                            <i class="fa-solid fa-star text-yellow-main fs-1"></i>
-                        </div>
-                        <h4 class="fw-bold text-dark-blue mb-3">Valores</h4>
-                        <p class="text-muted">Afeto, Respeito à individualidade, Criatividade, Colaboração entre família e escola, e Sustentabilidade em todas as nossas ações.</p>
-                    </div>
+                <div class="col-md-4" data-aos="fade-up" data-aos-delay="260">
+                    <article class="hive-value value-dark">
+                        <span class="value-icon"><i class="fa-solid fa-star"></i></span>
+                        <h3>Valores</h3>
+                        <p>Afeto, respeito à individualidade, criatividade, colaboração entre família e escola e sustentabilidade em todas as nossas ações.</p>
+                    </article>
                 </div>
             </div>
         </div>
     </section>
 
-    <!-- Nossa Estrutura / Imagem Secundária -->
-    <section class="py-5 mb-4">
-        <div class="container py-4">
-            <div class="row align-items-center flex-row-reverse g-5">
-                <div class="col-lg-6" data-aos="fade-left">
-                    <h2 class="display-6 fw-bold text-dark-blue mb-4">Um espaço pensado para o brincar</h2>
-                    <p class="lead text-secondary mb-4">Nossa estrutura física foi cuidadosamente desenhada para estimular a curiosidade e garantir a segurança dos pequenos.</p>
-                    <ul class="list-unstyled">
-                        <li class="mb-3 d-flex align-items-start"><i class="fa-solid fa-circle-check text-success fs-5 me-3 mt-1"></i> <span class="text-muted fs-5">Salas de aula amplas e ventiladas</span></li>
-                        <li class="mb-3 d-flex align-items-start"><i class="fa-solid fa-circle-check text-success fs-5 me-3 mt-1"></i> <span class="text-muted fs-5">Playgroud e piscina para diversão</span></li>
-                        <li class="mb-3 d-flex align-items-start"><i class="fa-solid fa-circle-check text-success fs-5 me-3 mt-1"></i> <span class="text-muted fs-5">Refeitório adaptado para a hora do lanche</span></li>
-                        <li class="mb-3 d-flex align-items-start"><i class="fa-solid fa-circle-check text-success fs-5 me-3 mt-1"></i> <span class="text-muted fs-5">Monitoramento e segurança dos pequenos</span></li>
-                    </ul>
+    <section class="hive-intro" id="estrutura">
+        <div class="container">
+            <div class="row align-items-center g-5">
+                <div class="col-lg-6" data-aos="fade-right">
+                    <div class="hive-eyebrow"><span></span> Nossa estrutura</div>
+                    <h2 class="mt-3 mb-4">Um espaço pensado para o <em>brincar.</em></h2>
+                    <p class="hive-lead">Nossa estrutura foi cuidadosamente planejada para estimular a curiosidade e garantir a segurança dos pequenos.</p>
+                    <div class="d-grid gap-3 mt-4">
+                        <div class="hive-proof"><i class="fa-solid fa-circle-check text-success me-2" aria-hidden="true"></i> Salas de aula amplas e ventiladas</div>
+                        <div class="hive-proof"><i class="fa-solid fa-circle-check text-success me-2" aria-hidden="true"></i> Playground e piscina para diversão</div>
+                        <div class="hive-proof"><i class="fa-solid fa-circle-check text-success me-2" aria-hidden="true"></i> Refeitório adaptado para a hora do lanche</div>
+                        <div class="hive-proof"><i class="fa-solid fa-circle-check text-success me-2" aria-hidden="true"></i> Monitoramento e segurança dos pequenos</div>
+                    </div>
                 </div>
-                <div class="col-lg-6 text-center" data-aos="fade-right">
-                    <img th:src="@{/images/sobre_escola.png}" alt="Estrutura da Escola" class="img-fluid rounded-4 shadow-lg floating" style="max-height: 450px; object-fit: cover; border: 8px solid #fff;">
+                <div class="col-lg-6 text-center" data-aos="fade-left">
+                    <div class="story-image">
+                        <img th:src="@{/images/trajetoria_escola.png}" alt="Sala de aula preparada para brincar e aprender" class="img-fluid rounded-4">
+                    </div>
                 </div>
             </div>
         </div>
     </section>
+</main>
 
-    <!-- Espaço reservado para o Rodapé (Carregado via JS) -->
-    <div id="footer-placeholder"></div>
-
-    <!-- Carregador de Componentes (Rodapé) -->
-    <script th:src="@{/js/components.js(v='1.0.3')}"></script>
-    <script th:src="@{/js/theme.js(v='1.4.0')}"></script>
-
-    <!-- JS do Bootstrap -->
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
-    <!-- JS da Biblioteca de Animação AOS -->
-    <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
-    <script>
-        // Inicializar o AOS
-        AOS.init({
-            once: true,
-            offset: 100
-        });
-    </script>
+<div id="footer-placeholder"></div>
+<script th:src="@{/js/theme.js(v='1.4.0')}"></script>
+<script th:src="@{/js/components.js(v='1.1.0')}"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+<script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+<script>AOS.init({once: true, offset: 80});</script>
 </body>
 </html>

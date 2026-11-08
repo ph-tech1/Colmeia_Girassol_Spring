@@ -262,47 +262,4 @@ GO -----------------------------------------------------------------------------
         ),
         CONSTRAINT FK_diario_professor FOREIGN KEY (registrado_por) REFERENCES dbo.professores (pessoa_codigo)
     );
-GO --------------------------------------------------------------------------------
-    -- 13. TABELA DO SITE: COMUNICADOS E AVISOS
-    --------------------------------------------------------------------------------
-    CREATE TABLE dbo.comunicados_avisos (
-        codigo INT IDENTITY(1, 1) NOT NULL,
-        titulo VARCHAR(150) NOT NULL,
-        conteudo VARCHAR(MAX) NOT NULL,
-        categoria VARCHAR(50) NOT NULL,
-        data_publicacao DATETIME NOT NULL CONSTRAINT DF_comunicados_data DEFAULT GETDATE(),
-        autor_codigo INT NOT NULL,
-        status INT NOT NULL CONSTRAINT DF_comunicados_status DEFAULT 1,
-        CONSTRAINT PK_comunicados_avisos PRIMARY KEY (codigo),
-        CONSTRAINT FK_comunicados_pessoas FOREIGN KEY (autor_codigo) REFERENCES dbo.pessoas (codigo)
-    );
-GO --------------------------------------------------------------------------------
-    -- 14. TABELA DO SITE: GALERIA MULTIMÍDIA
-    --------------------------------------------------------------------------------
-    CREATE TABLE dbo.galeria_fotos (
-        codigo INT IDENTITY(1, 1) NOT NULL,
-        titulo VARCHAR(100) NOT NULL,
-        descricao VARCHAR(250) NULL,
-        caminho_imagem VARCHAR(300) NOT NULL,
-        turma_codigo INT NULL,
-        data_postagem DATETIME NOT NULL CONSTRAINT DF_galeria_data DEFAULT GETDATE(),
-        autor_codigo INT NOT NULL,
-        CONSTRAINT PK_galeria_fotos PRIMARY KEY (codigo),
-        CONSTRAINT FK_galeria_turmas FOREIGN KEY (turma_codigo) REFERENCES dbo.turmas (codigo),
-        CONSTRAINT FK_galeria_pessoas FOREIGN KEY (autor_codigo) REFERENCES dbo.pessoas (codigo)
-    );
-GO --------------------------------------------------------------------------------
-    -- 15. TABELA DO SITE: CANAL DE ATENDIMENTO
-    --------------------------------------------------------------------------------
-    CREATE TABLE dbo.mensagens_contato (
-        codigo INT IDENTITY(1, 1) NOT NULL,
-        nome_remetente VARCHAR(100) NOT NULL,
-        email_remetente VARCHAR(100) NOT NULL,
-        telefone_remetente VARCHAR(15) NOT NULL,
-        assunto VARCHAR(100) NOT NULL,
-        mensagem VARCHAR(MAX) NOT NULL,
-        data_envio DATETIME NOT NULL CONSTRAINT DF_contato_data DEFAULT GETDATE(),
-        status_atendimento VARCHAR(20) NOT NULL CONSTRAINT DF_contato_status DEFAULT 'PENDENTE',
-        CONSTRAINT PK_mensagens_contato PRIMARY KEY (codigo)
-    );
 GO

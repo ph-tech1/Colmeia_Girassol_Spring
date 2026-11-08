@@ -283,10 +283,16 @@
                         <td data-label="Parentesco" th:text="${contato.grauParentesco}">Parentesco</td>
                         <td class="telefone" data-label="Telefone" th:text="${contato.telefone}">Telefone</td>
                         <td data-label="Ação">
-                            <button type="button" class="btn btn-sm btn-outline-danger"
-                                    th:attr="data-autorizado-desativar=${contato.codigo}">
-                                Desativar
-                            </button>
+                            <div class="d-flex flex-wrap gap-2">
+                                <a class="btn btn-sm btn-outline-dark-blue rounded-pill"
+                                   th:href="@{/html/editar-autorizado/{codigo}(codigo=${contato.codigo})}">
+                                    <i class="fa-solid fa-pen-to-square me-1" aria-hidden="true"></i>Editar
+                                </a>
+                                <button type="button" class="btn btn-sm btn-outline-danger rounded-pill"
+                                        th:attr="data-autorizado-desativar=${contato.codigo}">
+                                    Desativar
+                                </button>
+                            </div>
                             <span class="small text-danger d-block" data-autorizado-feedback hidden></span>
                         </td>
                     </tr>

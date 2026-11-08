@@ -16,6 +16,7 @@ import br.edu.fatec.projetointerdisciplinar.repository.ParentescoRepository;
 import br.edu.fatec.projetointerdisciplinar.repository.PessoaRepository;
 import br.edu.fatec.projetointerdisciplinar.repository.ResponsavelAlunoRepository;
 import br.edu.fatec.projetointerdisciplinar.repository.ResponsavelRepository;
+import br.edu.fatec.projetointerdisciplinar.service.PortalResponsavelService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.Authentication;
@@ -45,6 +46,7 @@ public class DashboardResponsavelController {
     private final DatabaseViewRepository databaseViewRepository;
     private final AutorizadoBuscaRepository autorizadoBuscaRepository;
     private final ParentescoRepository parentescoRepository;
+    private final PortalResponsavelService portalResponsavelService;
 
     @GetMapping("/html/dashboard_responsavel.html")
     @Transactional(readOnly = true)
@@ -140,6 +142,23 @@ public class DashboardResponsavelController {
                 responsavelAlunoRepository.findByIdResponsavelCodigo(responsavel.getPessoaCodigo()));
         model.addAttribute("parentescos", parentescoRepository.findAll());
         return "html/adicionar_autorizado";
+    }
+
+    @GetMapping("/html/editar-autorizado/{codigo}")
+    @Transactional(readOnly = true)
+    public String editarAutorizado(
+            @PathVariable Integer codigo,
+            Authentication authentication,
+            Model model
+    ) {
+        try {
+            model.addAttribute("autorizado", portalResponsavelService.buscarAutorizadoParaEdicao(
+                    authentication.getName(), codigo));
+        } catch (IllegalArgumentException exception) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, exception.getMessage(), exception);
+        }
+        model.addAttribute("parentescos", parentescoRepository.findAll());
+        return "html/editar_autorizado";
     }
 
     @GetMapping("/html/aluno/{codigo}")

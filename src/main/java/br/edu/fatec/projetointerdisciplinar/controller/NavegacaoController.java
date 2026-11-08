@@ -26,7 +26,7 @@ public class NavegacaoController {
 
     @GetMapping("/Sobre")
     public String sobre() {
-        return "sobre"; // Aponta para templates/sobre.html
+        return "html/sobre";
     }
 
 

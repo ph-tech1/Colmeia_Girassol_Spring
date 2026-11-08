@@ -2,6 +2,7 @@ package br.edu.fatec.projetointerdisciplinar.service;
 
 import br.edu.fatec.projetointerdisciplinar.dto.AdicionarAutorizadoBuscaRequest;
 import br.edu.fatec.projetointerdisciplinar.dto.AdicionarCriancaRequest;
+import br.edu.fatec.projetointerdisciplinar.dto.AtualizarAutorizadoResponsavelRequest;
 import br.edu.fatec.projetointerdisciplinar.dto.AtualizarCriancaRequest;
 import br.edu.fatec.projetointerdisciplinar.dto.AtualizarPerfilResponsavelRequest;
 import br.edu.fatec.projetointerdisciplinar.dto.ConsultarAutorizadoRequest;
@@ -279,16 +280,73 @@ public class PortalResponsavelService {
 
     @Transactional
     public void desativarAutorizado(String cpfAutenticado, Integer autorizadoBuscaCodigo) {
+        AutorizadoBuscaEntity autorizacao = buscarAutorizacaoDoResponsavel(cpfAutenticado, autorizadoBuscaCodigo);
+        autorizacao.setAtivo(false);
+        autorizadoBuscaRepository.save(autorizacao);
+    }
+
+    @Transactional(readOnly = true)
+    public AutorizadoEdicao buscarAutorizadoParaEdicao(String cpfAutenticado, Integer autorizadoBuscaCodigo) {
+        AutorizadoBuscaEntity autorizacao = buscarAutorizacaoDoResponsavel(cpfAutenticado, autorizadoBuscaCodigo);
+        AutorizadoEntity autorizado = autorizacao.getAutorizado();
+        boolean dadosEditaveis = autorizado.getPessoa() == null;
+        return new AutorizadoEdicao(
+                autorizacao.getCodigo(),
+                autorizacao.getVinculo().getAluno().getNome(),
+                dadosEditaveis ? autorizado.getNome() : null,
+                dadosEditaveis ? autorizado.getRg() : null,
+                dadosEditaveis ? autorizado.getTelefone() : null,
+                autorizacao.getParentesco().getCodigo(),
+                dadosEditaveis);
+    }
+
+    @Transactional
+    public void atualizarAutorizado(
+            String cpfAutenticado,
+            Integer autorizadoBuscaCodigo,
+            AtualizarAutorizadoResponsavelRequest request
+    ) {
+        if (request == null || request.parentescoCodigo() == null) {
+            throw new IllegalArgumentException("Selecione o parentesco da pessoa autorizada.");
+        }
+        AutorizadoBuscaEntity autorizacao = buscarAutorizacaoDoResponsavel(cpfAutenticado, autorizadoBuscaCodigo);
+        ParentescoEntity parentesco = parentescoRepository.findById(request.parentescoCodigo())
+                .orElseThrow(() -> new IllegalArgumentException("Selecione um parentesco válido."));
+
+        AutorizadoEntity autorizado = autorizacao.getAutorizado();
+        if (autorizado.getPessoa() == null) {
+            String nome = request.nome() == null ? "" : request.nome().trim();
+            String rg = vazio(request.rg()) ? null : apenasDigitos(request.rg());
+            String telefone = apenasDigitos(request.telefone());
+            if (nome.length() < 3 || nome.length() > 100
+                    || (rg != null && rg.length() > 20)
+                    || telefone.length() < 10 || telefone.length() > 15) {
+                throw new IllegalArgumentException("Confira o nome, RG e telefone informados.");
+            }
+            autorizado.setNome(nome);
+            autorizado.setRg(rg);
+            autorizado.setTelefone(telefone);
+            autorizadoRepository.save(autorizado);
+        }
+
+        autorizacao.setParentesco(parentesco);
+        autorizadoBuscaRepository.save(autorizacao);
+    }
+
+    private AutorizadoBuscaEntity buscarAutorizacaoDoResponsavel(
+            String cpfAutenticado,
+            Integer autorizadoBuscaCodigo
+    ) {
         AutorizadoBuscaEntity autorizacao = autorizadoBuscaRepository.findById(autorizadoBuscaCodigo)
                 .orElseThrow(() -> new IllegalArgumentException("Autorização não encontrada."));
         ResponsavelEntity responsavel = buscarResponsavel(cpfAutenticado);
         Integer alunoCodigo = autorizacao.getVinculo().getAluno().getCodigo();
-        if (!responsavelAlunoRepository.findById(
+        if (!Boolean.TRUE.equals(autorizacao.getAtivo())
+                || !responsavelAlunoRepository.findById(
                 new ResponsavelAlunoId(responsavel.getPessoaCodigo(), alunoCodigo)).isPresent()) {
-            throw new IllegalArgumentException("Esta autorização não pertence a uma criança vinculada à sua conta.");
+            throw new IllegalArgumentException("Autorização não encontrada.");
         }
-        autorizacao.setAtivo(false);
-        autorizadoBuscaRepository.save(autorizacao);
+        return autorizacao;
     }
 
     private ResponsavelAlunoEntity validarVinculoResponsavel(String cpfAutenticado, Integer alunoCodigo) {
@@ -307,6 +365,17 @@ public class PortalResponsavelService {
         if (responsavelAlunoRepository.existsByResponsavel_Pessoa_CpfAndAluno_Codigo(cpf, alunoCodigo)) {
             throw new IllegalArgumentException("esta pessoa já é responsável por este aluno");
         }
+    }
+
+    public record AutorizadoEdicao(
+            Integer codigo,
+            String alunoNome,
+            String nome,
+            String rg,
+            String telefone,
+            Integer parentescoCodigo,
+            boolean dadosEditaveis
+    ) {
     }
 
     private void validarConsultaAutorizado(ConsultarAutorizadoRequest request) {

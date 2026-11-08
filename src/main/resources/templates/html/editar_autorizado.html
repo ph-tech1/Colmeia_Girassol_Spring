@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="_csrf" th:content="${_csrf.token}">
+    <meta name="_csrf_header" th:content="${_csrf.headerName}">
+    <script>try { document.documentElement.dataset.theme = localStorage.getItem('colmeia-theme') === 'dark' ? 'dark' : 'light'; } catch (error) { document.documentElement.dataset.theme = 'light'; }</script>
+    <title>Editar pessoa autorizada | Colmeia Girassol</title>
+    <link rel="icon" th:href="@{/images/abelha.png}">
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&family=Playfair+Display:wght@600;700&display=swap" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+    <link rel="stylesheet" th:href="@{/css/style.css(v='1.14.0')}">
+</head>
+<body class="responsavel-page">
+<nav class="hive-nav navbar" aria-label="Navegação do portal">
+    <div class="container">
+        <a class="navbar-brand hive-brand d-flex align-items-center gap-2" th:href="@{/html/dashboard_responsavel.html}">
+            <img th:src="@{/images/logo.png}" alt="" class="hive-brand-mark">
+            <span>Colmeia <strong>Girassol</strong></span>
+        </a>
+        <div class="d-flex align-items-center gap-2 ms-auto">
+            <button class="btn btn-outline-dark-blue theme-toggle" type="button" data-theme-toggle aria-label="Ativar modo escuro" aria-pressed="false" title="Ativar modo escuro">
+                <i class="fa-solid fa-moon" aria-hidden="true"></i>
+            </button>
+            <a class="btn btn-dark-blue rounded-pill px-3" th:href="@{/html/dashboard_responsavel.html#autorizados}">
+                <i class="fa-solid fa-arrow-left me-2" aria-hidden="true"></i><span class="d-none d-sm-inline">Voltar ao portal</span><span class="d-sm-none">Voltar</span>
+            </a>
+        </div>
+    </div>
+</nav>
+
+<main class="container py-5">
+    <a class="student-back-link d-inline-flex align-items-center gap-2 mb-4" th:href="@{/html/dashboard_responsavel.html#autorizados}">
+        <i class="fa-solid fa-chevron-left" aria-hidden="true"></i> Pessoas autorizadas
+    </a>
+    <header class="responsavel-form-hero profile-form-hero mb-4">
+        <div class="responsavel-form-hero-copy">
+            <div class="hive-eyebrow"><span></span> Cuidado compartilhado</div>
+            <h1 class="mt-2 mb-2">Editar pessoa autorizada</h1>
+            <p class="mb-0">Atualize os dados da autorização para <strong th:text="${autorizado.alunoNome}">sua criança</strong>.</p>
+        </div>
+    </header>
+
+    <section class="responsavel-form-card form-card" aria-labelledby="autorizadoEdicaoTitulo">
+        <div class="responsavel-form-card-aside profile-form-aside">
+            <span class="responsavel-form-aside-icon"><i class="fa-solid fa-user-shield" aria-hidden="true"></i></span>
+            <h2 class="h4 fw-bold mb-2">Segurança em primeiro lugar</h2>
+            <p>Mantenha os dados de contato atualizados para que a escola possa confirmar a autorização com tranquilidade.</p>
+            <div class="profile-form-note">
+                <i class="fa-solid fa-lock me-2" aria-hidden="true"></i>
+                A edição fica limitada às autorizações das crianças vinculadas à sua conta.
+            </div>
+        </div>
+        <div class="responsavel-form-card-body">
+            <div class="responsavel-form-section-heading">
+                <span class="responsavel-form-section-icon"><i class="fa-solid fa-address-card" aria-hidden="true"></i></span>
+                <div>
+                    <h2 id="autorizadoEdicaoTitulo" class="h4 fw-bold text-dark-blue mb-1">Dados da pessoa autorizada</h2>
+                    <p class="small text-muted mb-0">Atualize os campos necessários e salve as alterações.</p>
+                </div>
+            </div>
+            <form id="autorizadoEdicaoForm" novalidate
+                  th:attr="data-autorizado-codigo=${autorizado.codigo},data-success-url=@{/html/dashboard_responsavel.html#autorizados}">
+                <div class="responsavel-form-group-label"><i class="fa-solid fa-child-reaching me-2" aria-hidden="true"></i>Criança vinculada</div>
+                <p class="fw-semibold mb-4" th:text="${autorizado.alunoNome}">Nome da criança</p>
+
+                <div th:if="${autorizado.dadosEditaveis}" class="row g-3">
+                    <div class="col-md-6">
+                        <label for="autorizadoEdicaoNome" class="form-label fw-semibold">Nome completo <span class="text-warning">*</span></label>
+                        <input id="autorizadoEdicaoNome" name="nome" class="form-control" type="text"
+                               minlength="3" maxlength="100" autocomplete="name" required
+                               th:value="${autorizado.nome}">
+                        <div class="invalid-feedback"></div>
+                    </div>
+                    <div class="col-md-6">
+                        <label for="autorizadoEdicaoRg" class="form-label fw-semibold">RG</label>
+                        <input id="autorizadoEdicaoRg" name="rg" class="form-control rg-mask" type="text"
+                               maxlength="20" autocomplete="off" placeholder="Opcional" th:value="${autorizado.rg}">
+                        <div class="invalid-feedback"></div>
+                    </div>
+                    <div class="col-md-6">
+                        <label for="autorizadoEdicaoTelefone" class="form-label fw-semibold">Telefone <span class="text-warning">*</span></label>
+                        <input id="autorizadoEdicaoTelefone" name="telefone" class="form-control phone-mask" type="tel"
+                               inputmode="tel" maxlength="15" autocomplete="tel" required
+                               th:value="${autorizado.telefone}">
+                        <div class="invalid-feedback"></div>
+                    </div>
+                </div>
+                <div th:unless="${autorizado.dadosEditaveis}" class="alert alert-info" role="status">
+                    <i class="fa-solid fa-shield-halved me-2" aria-hidden="true"></i>
+                    Os dados pessoais dessa pessoa estão protegidos e não podem ser alterados por este formulário. Você ainda pode atualizar o parentesco desta autorização.
+                </div>
+
+                <div class="responsavel-form-group-label mt-4"><i class="fa-solid fa-people-arrows-left-right me-2" aria-hidden="true"></i>Vínculo com a criança</div>
+                <div class="col-md-8">
+                    <label for="autorizadoEdicaoParentesco" class="form-label fw-semibold">Grau de parentesco ou vínculo <span class="text-warning">*</span></label>
+                    <select id="autorizadoEdicaoParentesco" name="parentescoCodigo" class="form-select" required>
+                        <option value="" disabled>Selecione o vínculo</option>
+                        <option th:each="parentesco : ${parentescos}" th:value="${parentesco.codigo}"
+                                th:text="${parentesco.descricao}"
+                                th:selected="${parentesco.codigo == autorizado.parentescoCodigo}">Parentesco</option>
+                    </select>
+                    <div class="invalid-feedback"></div>
+                </div>
+
+                <div id="autorizadoEdicaoFeedback" class="alert d-none mt-4" role="alert"></div>
+                <div class="d-flex flex-wrap justify-content-end gap-2 mt-4">
+                    <a class="btn btn-outline-dark-blue rounded-pill px-4" th:href="@{/html/dashboard_responsavel.html#autorizados}">Cancelar</a>
+                    <button class="btn btn-dark-blue rounded-pill px-4" type="submit">
+                        <i class="fa-solid fa-check me-2" aria-hidden="true"></i>Salvar alterações
+                    </button>
+                </div>
+            </form>
+        </div>
+    </section>
+</main>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+<script th:src="@{/js/theme.js(v='1.4.0')}"></script>
+<script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.mask/1.14.16/jquery.mask.min.js"></script>
+<script th:src="@{/js/validation.js(v='1.2.0')}"></script>
+<script th:src="@{/js/responsavel-dashboard.js(v='1.7.0')}"></script>
+</body>
+</html>

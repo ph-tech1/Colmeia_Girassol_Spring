@@ -28,6 +28,7 @@ public class SecurityConfig {
                                 "/webjars/**", "/favicon.ico").permitAll()
                         .requestMatchers("/html/dashboard_responsavel.html").hasRole("RESPONSAVEL")
                         .requestMatchers("/html/adicionar-autorizado").hasRole("RESPONSAVEL")
+                        .requestMatchers("/html/editar-autorizado/**").hasRole("RESPONSAVEL")
                         .requestMatchers("/html/aluno/**").hasRole("RESPONSAVEL")
                         .requestMatchers("/html/dashboard_professor.html").hasRole("PROFESSOR")
                         .requestMatchers("/html/dashboard_admin.html", "/html/cadastro_professor.html",
