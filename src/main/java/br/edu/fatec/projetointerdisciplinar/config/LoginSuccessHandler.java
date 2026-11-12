@@ -36,7 +36,10 @@ public class LoginSuccessHandler implements AuthenticationSuccessHandler {
                 session.invalidate();
             }
             response.sendRedirect(request.getContextPath() + "/html/login.html?error&perfil="
-                    + ("PROFESSOR".equals(perfilSelecionado) ? "PROFESSOR" : "RESPONSAVEL"));
+                    + switch (perfilSelecionado == null ? "" : perfilSelecionado) {
+                        case "PROFESSOR" -> "PROFESSOR";
+                        default -> "RESPONSAVEL";
+                    });
         }
     }
 

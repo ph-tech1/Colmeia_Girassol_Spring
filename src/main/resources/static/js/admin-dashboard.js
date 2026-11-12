@@ -83,6 +83,10 @@
         }
 
         const response = await fetch(url, { ...options, headers });
+        if (response.url.includes('/html/login.html')) {
+            window.location.assign(response.url);
+            throw new Error('Sua sessão expirou. Entre novamente para continuar.');
+        }
         const contentType = response.headers.get('content-type') || '';
         let body = null;
         if (contentType.includes('application/json')) {

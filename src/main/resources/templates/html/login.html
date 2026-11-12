@@ -192,9 +192,11 @@
         const loginRoles = document.querySelectorAll('.login-role');
         const loginMode = document.getElementById('loginMode');
         const requestedMode = new URLSearchParams(window.location.search).get('perfil');
-        const initialMode = requestedMode === 'PROFESSOR' || window.location.hash === '#professor'
-            ? 'PROFESSOR'
-            : 'RESPONSAVEL';
+        const validModes = ['RESPONSAVEL', 'PROFESSOR'];
+        const hashMode = window.location.hash.slice(1).toUpperCase();
+        const initialMode = validModes.includes(requestedMode)
+            ? requestedMode
+            : validModes.includes(hashMode) ? hashMode : 'RESPONSAVEL';
 
         function selectLoginRole(selectedRole) {
             loginRoles.forEach(function (role) {

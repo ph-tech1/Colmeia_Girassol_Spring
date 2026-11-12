@@ -35,9 +35,9 @@ public class SecurityConfig {
                                 "/html/cadastro_turma.html", "/html/turma_alunos.html").hasRole("ADMIN")
                         .requestMatchers("/api/admin/**").hasRole("ADMIN")
                         .requestMatchers("/api/professor/**").hasRole("PROFESSOR")
-                        .requestMatchers(HttpMethod.PUT, "/api/autorizados/**").hasRole("SECRETARIA")
-                        .requestMatchers("/api/autorizados-busca/**").hasAnyRole("SECRETARIA", "ADMIN")
-                        .requestMatchers("/api/autorizados/**").hasAnyRole("SECRETARIA", "ADMIN")
+                        .requestMatchers(HttpMethod.PUT, "/api/autorizados/**").hasRole("ADMIN")
+                        .requestMatchers("/api/autorizados-busca/**").hasRole("ADMIN")
+                        .requestMatchers("/api/autorizados/**").hasRole("ADMIN")
                         .requestMatchers(HttpMethod.POST, "/api/matriculas/**").hasRole("ADMIN")
                         .requestMatchers(HttpMethod.PATCH, "/api/matriculas/**").hasRole("ADMIN")
                         .requestMatchers(HttpMethod.POST, "/api/professores/**").hasRole("ADMIN")
@@ -51,7 +51,15 @@ public class SecurityConfig {
                 .formLogin(form -> form
                         .loginPage("/Login")
                         .loginProcessingUrl("/login")
-                        .failureUrl("/html/login.html?error")
+                        .failureHandler((request, response, exception) -> {
+                            String perfil = switch (request.getParameter("perfil") == null
+                                    ? "" : request.getParameter("perfil")) {
+                                case "PROFESSOR" -> "PROFESSOR";
+                                default -> "RESPONSAVEL";
+                            };
+                            response.sendRedirect(request.getContextPath()
+                                    + "/html/login.html?error&perfil=" + perfil);
+                        })
                         .successHandler(new LoginSuccessHandler())
                         .permitAll())
                 .logout(logout -> logout

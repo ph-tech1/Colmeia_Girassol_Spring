@@ -181,7 +181,6 @@ Configure as variáveis de conexão com o banco na mesma sessão antes de inicia
 | Responsável | Portal da família | Perfil, crianças, matrícula e pessoas autorizadas |
 | Professor | Painel pedagógico | Planejamentos, frequência e diário de bordo |
 | Administrador | Painel administrativo | Professores, turmas e matrículas |
-| Secretaria | Operações de secretaria | Consulta e atualização de pessoas autorizadas |
 
 As permissões são aplicadas no servidor pelo Spring Security. Algumas rotas de API, como o envio de pré-matrícula, são públicas; as demais dependem do perfil e da operação autorizada. Consulte `SecurityConfig` e os controllers para os detalhes de cada rota.
 

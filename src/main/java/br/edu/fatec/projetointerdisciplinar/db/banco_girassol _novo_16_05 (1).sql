@@ -36,7 +36,6 @@ GO -----------------------------------------------------------------------------
             tipo_perfil IN (
                 'RESPONSAVEL',
                 'PROFESSOR',
-                'SECRETARIA',
                 'ADMIN'
             )
         )
