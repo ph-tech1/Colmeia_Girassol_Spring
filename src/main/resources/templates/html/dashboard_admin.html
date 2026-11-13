@@ -44,7 +44,6 @@
                             <li><a class="dropdown-item nav-link-custom py-2" data-section="matriculas"><i class="fa-solid fa-id-card me-2"></i>Matrículas</a></li>
                             <li><a class="dropdown-item nav-link-custom py-2" data-section="alunos-lista"><i class="fa-solid fa-user-graduate me-2"></i>Alunos</a></li>
                             <li><a class="dropdown-item nav-link-custom py-2" data-section="responsaveis-lista"><i class="fa-solid fa-users me-2"></i>Responsáveis</a></li>
-                            <li><a class="dropdown-item nav-link-custom py-2" data-section="diarios-lista"><i class="fa-solid fa-book me-2"></i>Diário de Bordo</a></li>
                             <li><hr class="dropdown-divider"></li>
                             <li><form th:action="@{/logout}" method="post">
                                 <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}">
@@ -69,7 +68,6 @@
                 <li class="nav-item"><a class="nav-link-custom" data-section="matriculas"><i class="fa-solid fa-id-card"></i><span>Matrículas</span></a></li>
                 <li class="nav-item"><a class="nav-link-custom" data-section="alunos-lista"><i class="fa-solid fa-user-graduate"></i><span>Alunos</span></a></li>
                 <li class="nav-item"><a class="nav-link-custom" data-section="responsaveis-lista"><i class="fa-solid fa-users"></i><span>Responsáveis</span></a></li>
-                <li class="nav-item"><a class="nav-link-custom" data-section="diarios-lista"><i class="fa-solid fa-book"></i><span>Diário de Bordo</span></a></li>
                 <li class="nav-item mt-5"><form th:action="@{/logout}" method="post">
                     <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}">
                     <button type="submit" class="nav-link-custom text-danger border-0 bg-transparent"><i class="fa-solid fa-right-from-bracket"></i><span>Sair</span></button>
@@ -79,7 +77,7 @@
 
         <!-- Main Content -->
         <main class="main-content" id="adminDashboard"
-              th:attr="data-alunos-url=@{/api/alunos},data-professores-url=@{/api/admin/professores},data-turmas-url=@{/api/turmas},data-matriculas-url=@{/api/matriculas},data-responsaveis-url=@{/api/responsaveis},data-vinculos-url=@{/api/responsaveis-alunos},data-diarios-url=@{/api/diarios-bordo},data-classroom-roster-url=@{/html/turma_alunos.html},data-classroom-edit-url=@{/html/cadastro_turma.html}">
+              th:attr="data-alunos-url=@{/api/alunos},data-professores-url=@{/api/admin/professores},data-turmas-url=@{/api/turmas},data-matriculas-url=@{/api/matriculas},data-responsaveis-url=@{/api/responsaveis},data-vinculos-url=@{/api/responsaveis-alunos},data-classroom-roster-url=@{/html/turma_alunos.html},data-classroom-edit-url=@{/html/cadastro_turma.html}">
             <header class="dashboard-header admin-dashboard-header" data-aos="fade-down">
                 <div>
                     <div class="admin-dashboard-kicker"><span aria-hidden="true"></span>Painel administrativo</div>
@@ -361,27 +359,6 @@
                             </tr>
                         </thead>
                         <tbody data-collection="responsaveis" data-columns="4"></tbody>
-                    </table>
-                </div>
-            </section>
-
-            <!-- Diário de Bordo (Histórico Geral) -->
-            <section id="diarios-lista" class="dashboard-section mb-5" data-aos="fade-up">
-                <div class="d-flex justify-content-between align-items-center mb-4">
-                    <h4 class="fw-bold text-dark-blue mb-0">Histórico do Diário de Bordo</h4>
-                </div>
-                <div class="table-custom">
-                    <table class="table table-hover mb-0">
-                        <thead>
-                            <tr>
-                                <th>Data</th>
-                                <th>Aluno</th>
-                                <th>Humor</th>
-                                <th>Alimentação</th>
-                                <th>Professor</th>
-                            </tr>
-                        </thead>
-                        <tbody data-collection="diarios" data-columns="5"></tbody>
                     </table>
                 </div>
             </section>

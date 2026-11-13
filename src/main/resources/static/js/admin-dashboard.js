@@ -8,8 +8,7 @@
         turmas: [],
         matriculas: [],
         responsaveis: [],
-        vinculos: [],
-        diarios: []
+        vinculos: []
     };
     const loadedCollections = new Set();
 
@@ -19,8 +18,7 @@
         turmas: dashboard.dataset.turmasUrl,
         matriculas: dashboard.dataset.matriculasUrl,
         responsaveis: dashboard.dataset.responsaveisUrl,
-        vinculos: dashboard.dataset.vinculosUrl,
-        diarios: dashboard.dataset.diariosUrl
+        vinculos: dashboard.dataset.vinculosUrl
     };
 
     const csrfToken = document.querySelector('meta[name="_csrf"]')?.content;
@@ -604,21 +602,6 @@
         ]));
     }
 
-    function renderDiarios() {
-        const tbody = document.querySelector('#diarios-lista tbody');
-        tbody.replaceChildren();
-        if (!data.diarios.length) return setTableState(tbody, 5, 'Nenhum registro no diário de bordo.');
-        [...data.diarios]
-            .sort((left, right) => String(right.dataRegistro).localeCompare(String(left.dataRegistro)))
-            .forEach(diario => appendRow(tbody, [
-            formatDate(diario.dataRegistro),
-            diario.matricula?.aluno?.nome,
-            diario.humor,
-            diario.alimentacao,
-            diario.matricula?.turma?.professor?.pessoa?.nome
-            ]));
-    }
-
     function renderDashboard() {
         renderOverview();
         renderProfessorTable();
@@ -626,7 +609,6 @@
         renderMatriculas();
         renderAlunos();
         renderResponsaveis();
-        renderDiarios();
     }
 
     async function refreshDashboard() {
@@ -780,7 +762,7 @@
         }
     }
 
-    document.querySelectorAll('#cadastro-professor tbody, #matriculas tbody, #alunos-lista tbody, #responsaveis-lista tbody, #diarios-lista tbody')
+    document.querySelectorAll('#cadastro-professor tbody, #matriculas tbody, #alunos-lista tbody, #responsaveis-lista tbody')
         .forEach(tbody => setTableState(tbody, Number(tbody.dataset.columns), 'Carregando dados...'));
 
     document.querySelector('#matriculas tbody').addEventListener('click', event => {
