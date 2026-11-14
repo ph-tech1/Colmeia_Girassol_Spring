@@ -13,7 +13,7 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
     <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
-    <link rel="stylesheet" th:href="@{/css/style.css(v='1.13.0')}">
+    <link rel="stylesheet" th:href="@{/css/style.css(v='1.13.2')}">
     <style>
         .step-header {
             background-color: var(--dark-blue);
@@ -339,14 +339,14 @@
                                 <div class="form-floating">
                                     <input type="text" class="form-control phone-mask" id="telTrabResp"
                                         placeholder=" ">
-                                    <label for="telTrabResp">Telefone do Trabalho</label>
+                                    <label for="telTrabResp">Telefone do Trabalho (Opcional)</label>
                                 </div>
                             </div>
                             <div class="col-md-12">
                                 <div class="form-floating">
                                     <input type="text" class="form-control" id="localTrabResp"
                                         placeholder="Local de Trabalho" maxlength="100">
-                                    <label for="localTrabResp">Local de Trabalho</label>
+                                    <label for="localTrabResp">Local de Trabalho (Opcional)</label>
                                 </div>
                             </div>
                         </div>
@@ -405,25 +405,58 @@
                                 <h6 class="fw-bold text-dark-blue mb-3 border-bottom pb-2">Informações Médicas
                                     Importantes</h6>
                             </div>
-                            <div class="col-md-12">
-                                <div class="form-floating">
-                                    <input type="text" class="form-control" id="alergias" placeholder="Alergias" maxlength="100">
-                                    <label for="alergias">Alergias (Deixe em branco se não houver)</label>
+                            <div class="col-md-6">
+                                <label for="alergias" class="form-label fw-semibold">Alergias (Opcional)</label>
+                                <div class="student-suggestion-field">
+                                    <input type="text" class="form-control" id="alergias" maxlength="100"
+                                        autocomplete="off" aria-describedby="sugestoesAlergiasAjuda">
+                                    <button class="student-suggestion-toggle" type="button" aria-label="Ver sugestões de alergias"
+                                        aria-expanded="false" aria-controls="sugestoesAlergias">
+                                        <i class="fa-solid fa-chevron-down" aria-hidden="true"></i>
+                                    </button>
+                                    <div id="sugestoesAlergias" class="student-suggestion-menu d-none" role="listbox" aria-label="Sugestões de alergias">
+                                        <button type="button" role="option" data-sugestao-campo="alergias">Leite</button>
+                                        <button type="button" role="option" data-sugestao-campo="alergias">Lactose</button>
+                                        <button type="button" role="option" data-sugestao-campo="alergias">Ovo</button>
+                                        <button type="button" role="option" data-sugestao-campo="alergias">Amendoim</button>
+                                        <button type="button" role="option" data-sugestao-campo="alergias">Castanhas</button>
+                                        <button type="button" role="option" data-sugestao-campo="alergias">Glúten</button>
+                                        <button type="button" role="option" data-sugestao-campo="alergias">Picada de inseto</button>
+                                    </div>
                                 </div>
+                                <div id="sugestoesAlergiasAjuda" class="form-text">Escolha uma sugestão ou digite outra alergia.</div>
+                            </div>
+                            <div class="col-md-6">
+                                <label for="restricoes" class="form-label fw-semibold">Restrições alimentares (Opcional)</label>
+                                <div class="student-suggestion-field">
+                                    <input type="text" class="form-control" id="restricoes" maxlength="100"
+                                        autocomplete="off" aria-describedby="sugestoesRestricoesAjuda">
+                                    <button class="student-suggestion-toggle" type="button" aria-label="Ver sugestões de restrições alimentares"
+                                        aria-expanded="false" aria-controls="sugestoesRestricoes">
+                                        <i class="fa-solid fa-chevron-down" aria-hidden="true"></i>
+                                    </button>
+                                    <div id="sugestoesRestricoes" class="student-suggestion-menu d-none" role="listbox" aria-label="Sugestões de restrições alimentares">
+                                        <button type="button" role="option" data-sugestao-campo="restricoes">Sem lactose</button>
+                                        <button type="button" role="option" data-sugestao-campo="restricoes">Sem glúten</button>
+                                        <button type="button" role="option" data-sugestao-campo="restricoes">Vegetariana</button>
+                                        <button type="button" role="option" data-sugestao-campo="restricoes">Vegana</button>
+                                        <button type="button" role="option" data-sugestao-campo="restricoes">Sem açúcar</button>
+                                        <button type="button" role="option" data-sugestao-campo="restricoes">Dieta pastosa</button>
+                                    </div>
+                                </div>
+                                <div id="sugestoesRestricoesAjuda" class="form-text">Escolha uma sugestão ou digite outra restrição.</div>
                             </div>
                             <div class="col-md-12">
-                                <div class="form-floating">
-                                    <input type="text" class="form-control" id="restricoes"
-                                        placeholder="Restrições Alimentares" maxlength="100">
-                                    <label for="restricoes">Restrições Alimentares (Deixe em branco se não
-                                        houver)</label>
-                                </div>
-                            </div>
-                            <div class="col-md-12">
-                                <div class="form-floating">
-                                    <textarea class="form-control" placeholder="Necessidades Especiais"
-                                        id="necessidades" style="height: 100px"></textarea>
-                                    <label for="necessidades">Necessidades Especiais</label>
+                                <label for="necessidades" class="form-label fw-semibold">Necessidades especiais (Opcional)</label>
+                                <textarea class="form-control" placeholder=" " id="necessidades"
+                                    style="height: 100px; resize: vertical;" maxlength="500"></textarea>
+                                <div class="form-text mb-2">Use uma opção comum ou descreva livremente o que a equipe precisa saber.</div>
+                                <div class="d-flex flex-wrap gap-2" aria-label="Sugestões de necessidades especiais">
+                                    <button type="button" class="btn btn-sm btn-outline-dark-blue rounded-pill" data-sugestao-necessidade="Nenhuma">Nenhuma</button>
+                                    <button type="button" class="btn btn-sm btn-outline-dark-blue rounded-pill" data-sugestao-necessidade="Acompanhamento individual">Acompanhamento individual</button>
+                                    <button type="button" class="btn btn-sm btn-outline-dark-blue rounded-pill" data-sugestao-necessidade="Apoio à comunicação">Apoio à comunicação</button>
+                                    <button type="button" class="btn btn-sm btn-outline-dark-blue rounded-pill" data-sugestao-necessidade="Apoio à mobilidade">Apoio à mobilidade</button>
+                                    <button type="button" class="btn btn-sm btn-outline-dark-blue rounded-pill" data-sugestao-necessidade="Sensibilidade sensorial">Sensibilidade sensorial</button>
                                 </div>
                             </div>
                         </div>
@@ -469,7 +502,7 @@
             }
         });
     </script>
-    <script th:src="@{/js/cadastro.js(v='1.0.0')}"></script>
+    <script th:src="@{/js/cadastro.js(v='1.0.1')}"></script>
 </body>
 
 </html>

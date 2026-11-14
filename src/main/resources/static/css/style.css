@@ -1183,6 +1183,10 @@ html[data-theme="dark"] body.login-page .form-control::placeholder,
 html[data-theme="dark"] body.cadastro-page .form-control::placeholder { color: #9aabb3; }
 html[data-theme="dark"] body.cadastro-page .form-floating label { color: #b7c5cb; }
 html[data-theme="dark"] body.cadastro-page .form-floating > label::after { background-color: #1c2931; }
+html[data-theme="dark"] body.cadastro-page .form-label,
+html[data-theme="dark"] body.cadastro-page .text-dark-blue {
+    color: #e5edf0 !important;
+}
 html[data-theme="dark"] body.cadastro-page .form-text,
 html[data-theme="dark"] body.cadastro-page .text-muted { color: #b7c5cb !important; }
 html[data-theme="dark"] body.cadastro-page .progress { background-color: #3a4a52; }
@@ -1774,6 +1778,13 @@ html[data-theme="dark"] body.responsavel-page .student-empty-state {
     border-color: rgba(229, 237, 240, 0.12);
     background: #1c2931;
 }
+html[data-theme="dark"] body.responsavel-page .student-stat-value {
+    color: #e5edf0;
+}
+html[data-theme="dark"] body.responsavel-page .student-stat-icon.stat-blue {
+    background: rgba(126, 200, 217, 0.18);
+    color: #9bd9e4;
+}
 html[data-theme="dark"] body.responsavel-page .enrollment-status--pending {
     border-color: rgba(242, 213, 68, 0.32);
     border-left-color: var(--yellow-main);
@@ -1923,25 +1934,46 @@ html[data-theme="dark"] body.responsavel-page .student-suggestion-toggle {
     color: #c4d3da;
 }
 
+html[data-theme="dark"] body.cadastro-page .student-suggestion-toggle {
+    color: #c4d3da;
+}
+
 html[data-theme="dark"] body.responsavel-page .student-suggestion-toggle:hover,
-html[data-theme="dark"] body.responsavel-page .student-suggestion-toggle:focus-visible {
+html[data-theme="dark"] body.responsavel-page .student-suggestion-toggle:focus-visible,
+html[data-theme="dark"] body.cadastro-page .student-suggestion-toggle:hover,
+html[data-theme="dark"] body.cadastro-page .student-suggestion-toggle:focus-visible {
     background: #344b55;
     color: #fff;
 }
 
-html[data-theme="dark"] body.responsavel-page .student-suggestion-menu {
+html[data-theme="dark"] body.responsavel-page .student-suggestion-menu,
+html[data-theme="dark"] body.cadastro-page .student-suggestion-menu {
     border-color: rgba(229, 237, 240, 0.15);
     background: #26343c;
     box-shadow: 0 0.75rem 1.75rem rgba(0, 0, 0, 0.4);
 }
 
-html[data-theme="dark"] body.responsavel-page .student-suggestion-menu button {
+html[data-theme="dark"] body.responsavel-page .student-suggestion-menu button,
+html[data-theme="dark"] body.cadastro-page .student-suggestion-menu button {
     color: #e5edf0;
 }
 
 html[data-theme="dark"] body.responsavel-page .student-suggestion-menu button:hover,
-html[data-theme="dark"] body.responsavel-page .student-suggestion-menu button:focus-visible {
+html[data-theme="dark"] body.responsavel-page .student-suggestion-menu button:focus-visible,
+html[data-theme="dark"] body.cadastro-page .student-suggestion-menu button:hover,
+html[data-theme="dark"] body.cadastro-page .student-suggestion-menu button:focus-visible {
     background: #344b55;
+}
+
+html[data-theme="dark"] body.cadastro-page [data-sugestao-necessidade] {
+    border-color: #93a8b2;
+    color: #e5edf0;
+}
+
+html[data-theme="dark"] body.cadastro-page [data-sugestao-necessidade]:hover,
+html[data-theme="dark"] body.cadastro-page [data-sugestao-necessidade]:focus-visible {
+    background: #344b55;
+    color: #fff;
 }
 
 @media (max-width: 991.98px) {

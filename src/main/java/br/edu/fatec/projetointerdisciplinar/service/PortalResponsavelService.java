@@ -21,6 +21,7 @@ import br.edu.fatec.projetointerdisciplinar.model.ResponsavelEntity;
 import br.edu.fatec.projetointerdisciplinar.repository.AlunoRepository;
 import br.edu.fatec.projetointerdisciplinar.repository.AutorizadoRepository;
 import br.edu.fatec.projetointerdisciplinar.repository.AutorizadoBuscaRepository;
+import br.edu.fatec.projetointerdisciplinar.repository.FrequenciaRepository;
 import br.edu.fatec.projetointerdisciplinar.repository.MatriculaRepository;
 import br.edu.fatec.projetointerdisciplinar.repository.PessoaRepository;
 import br.edu.fatec.projetointerdisciplinar.repository.ParentescoRepository;
@@ -45,6 +46,7 @@ public class PortalResponsavelService {
     private final AutorizadoRepository autorizadoRepository;
     private final ParentescoRepository parentescoRepository;
     private final MatriculaRepository matriculaRepository;
+    private final FrequenciaRepository frequenciaRepository;
 
     @Transactional
     public PessoaEntity atualizarPerfil(String cpfAutenticado, AtualizarPerfilResponsavelRequest request) {
@@ -171,7 +173,12 @@ public class PortalResponsavelService {
         matricula.setDataEnvio(LocalDateTime.now());
         matricula.setDataDecisao(null);
         matricula.setMotivoRejeicao(null);
-        matricula.setTurma(null);
+
+        boolean possuiHistoricoDeFrequencia = !frequenciaRepository.findByMatricula_Nr(matricula.getNr()).isEmpty();
+        if (!possuiHistoricoDeFrequencia) {
+            matricula.setTurma(null);
+        }
+
         matriculaRepository.save(matricula);
     }
 

@@ -14,6 +14,56 @@ document.addEventListener('DOMContentLoaded', () => {
     const progressBar = document.getElementById('matriculaProgressBar');
     let activeStep = 0;
 
+    function closeSuggestionMenus(except) {
+        form.querySelectorAll('.student-suggestion-toggle').forEach(toggle => {
+            if (toggle === except) return;
+            toggle.setAttribute('aria-expanded', 'false');
+            document.getElementById(toggle.getAttribute('aria-controls')).classList.add('d-none');
+        });
+    }
+
+    form.querySelectorAll('.student-suggestion-toggle').forEach(toggle => {
+        const menu = document.getElementById(toggle.getAttribute('aria-controls'));
+        const input = toggle.parentElement.querySelector('input');
+
+        toggle.addEventListener('click', () => {
+            const opening = toggle.getAttribute('aria-expanded') !== 'true';
+            closeSuggestionMenus(toggle);
+            toggle.setAttribute('aria-expanded', String(opening));
+            menu.classList.toggle('d-none', !opening);
+            if (opening) input.focus();
+        });
+
+        menu.querySelectorAll('[data-sugestao-campo]').forEach(option => {
+            option.addEventListener('click', () => {
+                const field = document.getElementById(option.dataset.sugestaoCampo);
+                field.value = option.textContent.trim();
+                field.dispatchEvent(new Event('input', { bubbles: true }));
+                toggle.setAttribute('aria-expanded', 'false');
+                menu.classList.add('d-none');
+                field.focus();
+            });
+        });
+    });
+
+    document.addEventListener('click', event => {
+        if (!event.target.closest('.student-suggestion-field')) closeSuggestionMenus();
+    });
+
+    const necessidades = document.getElementById('necessidades');
+    form.querySelectorAll('[data-sugestao-necessidade]').forEach(button => {
+        button.addEventListener('click', () => {
+            const suggestion = button.dataset.sugestaoNecessidade;
+            const current = necessidades.value.trim();
+            if (suggestion === 'Nenhuma' || current === 'Nenhuma') {
+                necessidades.value = suggestion;
+            } else if (!current.toLocaleLowerCase().includes(suggestion.toLocaleLowerCase())) {
+                necessidades.value = current ? `${current}, ${suggestion}` : suggestion;
+            }
+            necessidades.focus();
+        });
+    });
+
     form.querySelectorAll('[data-toggle-password]').forEach(toggle => {
         toggle.addEventListener('click', () => {
             const password = document.getElementById(toggle.dataset.togglePassword);
