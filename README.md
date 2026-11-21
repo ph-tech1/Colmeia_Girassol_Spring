@@ -128,13 +128,20 @@ Se a consulta retornar uma procedure, atualize-a executando o script do projeto.
 
 ### 3. Configure a conexão
 
-A configuração local padrão aponta para `localhost:1433`, banco `banco_girassol` e usuário `sa`. Informe a senha sem gravá-la no repositório. No PowerShell, por exemplo:
+A configuração local padrão aponta para `localhost:1433`, banco `banco_girassol` e usuário `sa`. A senha não possui valor fixado no repositório e deve ser informada por variável de ambiente antes de iniciar a aplicação. No PowerShell:
 
 ```powershell
 $env:SPRING_DATASOURCE_PASSWORD = "<sua-senha-forte>"
 ```
 
-Se a instância usar outro endereço, banco ou usuário, configure também `SPRING_DATASOURCE_URL` e `SPRING_DATASOURCE_USERNAME`. As variáveis valem para a sessão atual do PowerShell. A URL JDBC deve manter as opções TLS compatíveis com o ambiente (`encrypt` e `trustServerCertificate`).
+Se a instância usar outro endereço, banco ou usuário, configure também `SPRING_DATASOURCE_URL` e `SPRING_DATASOURCE_USERNAME`. Por exemplo:
+
+```powershell
+$env:SPRING_DATASOURCE_URL = "jdbc:sqlserver://localhost:1433;databaseName=banco_girassol;encrypt=true;trustServerCertificate=true"
+$env:SPRING_DATASOURCE_USERNAME = "sa"
+```
+
+As variáveis valem para a sessão atual do PowerShell. A URL JDBC deve manter as opções TLS compatíveis com o ambiente (`encrypt` e `trustServerCertificate`).
 
 ### 4. (Opcional) Cadastre um administrador inicial
 
