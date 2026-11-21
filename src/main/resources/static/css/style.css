@@ -913,6 +913,10 @@ html, body {
 }
 
 /* Nova linguagem visual da colmeia */
+html.hive-home-page {
+    scroll-behavior: smooth;
+}
+
 .hive-home {
     background: var(--cream);
     color: var(--dark-blue);
@@ -1031,6 +1035,8 @@ html, body {
 .hive-intro, .hive-classes { position: relative; z-index: 1; padding: 7rem 0; }
 .hive-intro { background: #fffdf8; }
 .hive-home h2 { font-size: clamp(2.5rem, 5vw, 4.4rem); line-height: 1.03; }
+.hive-pillars-lead { max-width: 680px; }
+.hive-pillars { position: relative; z-index: 1; overflow: hidden; padding: 7rem 0; background: radial-gradient(circle at 8% 15%, rgba(242, 213, 68, 0.2), transparent 22rem), radial-gradient(circle at 92% 85%, rgba(126, 200, 217, 0.2), transparent 24rem), linear-gradient(135deg, #fff8cc, #eef9fb); }
 .hive-value { height: 100%; padding: 2rem; border: 1px solid rgba(45, 68, 89, 0.08); border-radius: 22px; background: #fff; box-shadow: 0 16px 35px rgba(45, 68, 89, 0.06); transition: transform 0.3s ease, box-shadow 0.3s ease; }
 .hive-value:hover, .class-hive:hover { transform: translateY(-7px); box-shadow: var(--shadow-hover); }
 .hive-value::after { content: ''; display: block; width: 42px; height: 4px; margin-top: 1.5rem; border-radius: 10px; background: var(--yellow-main); }
@@ -1045,11 +1051,15 @@ html, body {
 .hive-story p { max-width: 580px; color: rgba(45, 68, 89, 0.82); line-height: 1.75; }
 
 .hive-classes { background: var(--light-blue-pale); }.class-hive { position: relative; height: 100%; min-height: 285px; padding: 2rem; border-radius: 22px; background: #fff; box-shadow: 0 12px 28px rgba(45, 68, 89, 0.07); transition: transform 0.3s ease, box-shadow 0.3s ease; overflow: hidden; }.class-hive::after { content: ''; position: absolute; right: -25px; bottom: -35px; width: 120px; height: 120px; border: 1px solid currentColor; border-radius: 50%; opacity: 0.18; }.class-number { color: var(--ink-soft); font-size: 0.75rem; font-weight: 700; letter-spacing: 0.12em; }.class-icon { display: block; margin: 2rem 0 1rem; color: #c49516; font-size: 2rem; }.class-blue .class-icon { color: #4d9bad; }.class-coral .class-icon { color: #d77d64; }.class-hive h3 { font-family: 'Playfair Display', Georgia, serif; font-size: 2rem; }.class-hive p { margin-bottom: 0.55rem; color: var(--dark-blue); font-weight: 600; }.class-hive small { color: var(--ink-soft); line-height: 1.55; }.class-yellow { background: #fff9d9; }.class-blue { background: #e9f8fb; }.class-coral { background: #fff0ea; }
-.hive-invite { position: relative; z-index: 1; padding: 5rem 0; background: #fffdf8; }.invite-panel { display: flex; align-items: center; justify-content: space-between; gap: 2rem; padding: 3.5rem; border-radius: 26px; background: linear-gradient(120deg, var(--dark-blue), #3e6575); color: #fff; box-shadow: var(--shadow-hover); }.invite-panel h2 { margin: 1rem 0 0; font-size: clamp(2rem, 4vw, 3.4rem); }.invite-panel .hive-eyebrow { color: var(--yellow-main); }
+.hive-invite { position: relative; z-index: 1; padding: 5rem 0; background: #fffdf8; }.invite-panel { display: flex; align-items: center; justify-content: space-between; gap: 2rem; padding: 3.5rem; border-radius: 26px; background: linear-gradient(120deg, #fff2a8, #f8df72); color: var(--dark-blue); box-shadow: var(--shadow-hover); }.invite-panel h2 { margin: 1rem 0 0; color: var(--dark-blue); font-size: clamp(2rem, 4vw, 3.4rem); }.invite-panel .hive-eyebrow { color: var(--dark-blue); }.invite-panel .hive-eyebrow span { background: var(--dark-blue); }
+.hive-home .footer-section { background: radial-gradient(circle at 80% 34%, rgba(126, 200, 217, 0.23), transparent 24rem), linear-gradient(135deg, #fff8cc 0%, var(--cream) 65%) !important; color: var(--dark-blue) !important; }
+.hive-home .footer-section .text-white { color: var(--dark-blue) !important; }
+.hive-home .footer-section .text-light { color: var(--ink-soft) !important; }
+.hive-home .footer-section hr { border-color: rgba(45, 68, 89, 0.25) !important; }
 .hive-modal { padding: 0.7rem; border-radius: 22px !important; }.hive-modal .modal-title { font-family: 'Playfair Display', Georgia, serif; font-size: 1.5rem; }.profile-choice { display: flex; align-items: center; gap: 0.9rem; padding: 1rem; margin: 0.65rem 0; border: 1px solid var(--line-soft); border-radius: 14px; color: var(--dark-blue); text-decoration: none; transition: all 0.25s ease; }.profile-choice > i:first-child { width: 38px; height: 38px; display: grid; place-items: center; border-radius: 11px; color: var(--dark-blue); background: var(--yellow-light); }.profile-choice span { flex: 1; }.profile-choice strong, .profile-choice small { display: block; }.profile-choice small { color: var(--ink-soft); }.profile-choice > i:last-child { color: #c49516; }.profile-choice:hover { border-color: var(--light-blue); transform: translateX(4px); box-shadow: 0 8px 18px rgba(45, 68, 89, 0.08); }
 
 @media (max-width: 768px) {
-    .hive-hero { min-height: auto; padding: 5rem 0 4rem; }.hive-hero h1 { font-size: 3.5rem; }.hero-illustration { max-width: 330px; margin-top: 2rem; }.floating-note { font-size: 0.72rem; }.note-one { left: 0; }.note-two { right: -2%; }.hive-intro, .hive-story, .hive-classes { padding: 4.5rem 0; }.invite-panel { align-items: flex-start; flex-direction: column; padding: 2rem; }.bee-trail { display: none; }
+    .hive-hero { min-height: auto; padding: 5rem 0 4rem; }.hive-hero h1 { font-size: 3.5rem; }.hero-illustration { max-width: 330px; margin-top: 2rem; }.floating-note { font-size: 0.72rem; }.note-one { left: 0; }.note-two { right: -2%; }.hive-intro, .hive-pillars, .hive-story, .hive-classes { padding: 4.5rem 0; }.invite-panel { align-items: flex-start; flex-direction: column; padding: 2rem; }.bee-trail { display: none; }
 }
 
 @media (max-width: 480px) { .hive-hero h1 { font-size: 2.8rem; }.hive-proof { margin-top: 2rem !important; }.hive-home h2 { font-size: 2.6rem; }.floating-note { padding: 0.5rem 0.7rem; }.note-one { top: 22%; }.note-three { bottom: 5%; } }
@@ -1104,6 +1114,16 @@ html[data-theme="dark"] body.hive-home .hive-hero {
     background: radial-gradient(circle at 80% 34%, rgba(73, 135, 151, 0.2), transparent 24rem), linear-gradient(135deg, #26333a 0%, #172129 70%);
 }
 
+html[data-theme="dark"] body.hive-home .footer-section {
+    background: radial-gradient(circle at 80% 34%, rgba(73, 135, 151, 0.2), transparent 24rem), linear-gradient(135deg, #26333a 0%, #172129 70%) !important;
+    color: #e5edf0 !important;
+}
+
+html[data-theme="dark"] body.hive-home .footer-section .text-white { color: #e5edf0 !important; }
+html[data-theme="dark"] body.hive-home .footer-section .text-light { color: #b7c5cb !important; }
+html[data-theme="dark"] body.hive-home .footer-section hr { border-color: rgba(229, 237, 240, 0.25) !important; }
+html[data-theme="dark"] body.hive-home .invite-panel h2 { color: var(--dark-blue); }
+
 html[data-theme="dark"] body.hive-home .hive-intro,
 html[data-theme="dark"] body.hive-home .hive-invite {
     background: #1c2931;
@@ -1113,6 +1133,10 @@ html[data-theme="dark"] body.hive-home .hive-classes {
     background: #202e36;
 }
 
+html[data-theme="dark"] body.hive-home .hive-pillars {
+    background: radial-gradient(ellipse at 50% 45%, rgba(73, 135, 151, 0.14), transparent 70%), linear-gradient(135deg, #1c2931 0%, #202e36 52%, #1c2931 100%);
+}
+
 html[data-theme="dark"] body.hive-home .hive-value,
 html[data-theme="dark"] body.hive-home .class-hive {
     border-color: rgba(229, 237, 240, 0.1);
@@ -1120,9 +1144,10 @@ html[data-theme="dark"] body.hive-home .class-hive {
     color: #e5edf0;
 }
 
-html[data-theme="dark"] body.hive-home .class-yellow { background: #383b31; }
-html[data-theme="dark"] body.hive-home .class-blue { background: #263b42; }
-html[data-theme="dark"] body.hive-home .class-coral { background: #3d302d; }
+html[data-theme="dark"] body.hive-home .class-number { color: #b7c5cb; }
+html[data-theme="dark"] body.hive-home .class-yellow .class-icon { color: #f2d544; }
+html[data-theme="dark"] body.hive-home .class-blue .class-icon { color: #7ec8d9; }
+html[data-theme="dark"] body.hive-home .class-coral .class-icon { color: #ef9b81; }
 
 html[data-theme="dark"] body.hive-home h1,
 html[data-theme="dark"] body.hive-home h2,
@@ -6417,5 +6442,21 @@ html[data-theme="dark"] body.professor-dashboard .professor-diary-donut > div {
     body.professor-dashboard .professor-diary-donut > div {
         width: 5rem;
         height: 5rem;
+    }
+}
+
+/* Transicoes globais suaves para hover, cores e movimentos. */
+*,
+*::before,
+*::after {
+    transition: color 220ms ease, background-color 220ms ease, border-color 220ms ease,
+        box-shadow 220ms ease, transform 220ms ease, opacity 220ms ease;
+}
+
+@media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+        transition-duration: 0.01ms !important;
     }
 }

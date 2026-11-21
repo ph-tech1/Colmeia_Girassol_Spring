@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="pt-BR">
+<html lang="pt-BR" class="hive-home-page">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -10,7 +10,7 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
     <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
-    <link rel="stylesheet" th:href="@{/css/style.css(v='1.9.0')}">
+    <link rel="stylesheet" th:href="@{/css/style.css(v='1.9.5')}">
 </head>
 <body class="hive-home">
 <div class="hive-atmosphere" aria-hidden="true">
@@ -23,7 +23,7 @@
         <a class="navbar-brand hive-brand d-flex align-items-center gap-2" th:href="@{/}"><img th:src="@{/images/logo.png}" alt="Colmeia Girassol" class="hive-brand-mark"><span>Colmeia <strong>Girassol</strong></span></a>
         <button class="navbar-toggler border-0 shadow-none" type="button" data-bs-toggle="collapse" data-bs-target="#mainNav" aria-label="Abrir menu"><i class="fa-solid fa-bars text-dark-blue"></i></button>
         <div class="collapse navbar-collapse" id="mainNav"><ul class="navbar-nav ms-auto align-items-lg-center gap-lg-4">
-            <li class="nav-item"><a class="nav-link" href="#essencia">Nossa essência</a></li><li class="nav-item"><a class="nav-link" href="#jornada">Jornada</a></li><li class="nav-item"><a class="nav-link" href="#turmas">Turmas</a></li>
+            <li class="nav-item"><a class="nav-link" href="#essencia">Nossa essência</a></li><li class="nav-item"><a class="nav-link" href="#pilares">Pilares</a></li><li class="nav-item"><a class="nav-link" href="#jornada">Jornada</a></li><li class="nav-item"><a class="nav-link" href="#turmas">Turmas</a></li>
             <li class="nav-item ms-lg-2"><button class="btn btn-outline-dark-blue theme-toggle" type="button" data-theme-toggle aria-label="Ativar modo escuro" aria-pressed="false" title="Ativar modo escuro"><i class="fa-solid fa-moon" aria-hidden="true"></i></button></li>
             <li class="nav-item ms-lg-2"><a class="btn btn-dark-blue rounded-pill px-4" th:href="@{/Login}"><i class="fa-solid fa-key me-2"></i>Portal da família</a></li>
         </ul></div>
@@ -37,14 +37,52 @@
     <div class="col-lg-6 text-center position-relative" data-aos="zoom-in" data-aos-delay="150"><div class="hero-honeycomb" aria-hidden="true"></div><div class="hero-illustration"><img th:src="@{/images/mascote.png}" alt="Mascote abelha da Colmeia Girassol" class="img-fluid"><span class="floating-note note-one"><i class="fa-solid fa-heart"></i> carinho</span><span class="floating-note note-two"><i class="fa-solid fa-wand-magic-sparkles"></i> brincar</span><span class="floating-note note-three"><i class="fa-solid fa-sun"></i> aprender</span></div></div>
 </div></div></header>
 <main>
-<section class="hive-intro" id="essencia"><div class="container"><div class="row align-items-end g-4 mb-5"><div class="col-lg-7" data-aos="fade-up"><div class="hive-eyebrow"><span></span> A nossa essência</div><h2>Uma escola com alma de <em>jardim.</em></h2></div><div class="col-lg-4 ms-auto" data-aos="fade-up" data-aos-delay="100"><p class="mb-0 text-secondary">Um segundo lar onde segurança, imaginação e aprendizagem caminham juntas todos os dias.</p></div></div>
-<div class="row g-4"><div class="col-md-4" data-aos="fade-up" data-aos-delay="100"><article class="hive-value value-yellow"><span class="value-icon"><i class="fa-solid fa-heart"></i></span><h3>Afeto que acolhe</h3><p>Relações seguras para cada criança se sentir vista, ouvida e pronta para explorar.</p></article></div><div class="col-md-4" data-aos="fade-up" data-aos-delay="180"><article class="hive-value value-blue"><span class="value-icon"><i class="fa-solid fa-wand-magic-sparkles"></i></span><h3>Curiosidade que guia</h3><p>Experiências lúdicas que transformam perguntas em descobertas cheias de sentido.</p></article></div><div class="col-md-4" data-aos="fade-up" data-aos-delay="260"><article class="hive-value value-dark"><span class="value-icon"><i class="fa-solid fa-seedling"></i></span><h3>Autonomia que floresce</h3><p>Um ambiente pensado para celebrar cada pequena conquista no caminho de crescer.</p></article></div></div></div></section>
+<section class="hive-intro" id="essencia">
+    <div class="container">
+        <div class="text-center mb-5" data-aos="fade-up">
+            <div class="hive-eyebrow justify-content-center"><span></span> A nossa essência <span></span></div>
+            <h2>Uma escola com alma de <em>jardim.</em></h2>
+            <p class="hive-pillars-lead text-secondary mx-auto mb-0">Um segundo lar onde segurança, imaginação e aprendizagem caminham juntas todos os dias.</p>
+        </div>
+        <div class="row g-4">
+            <div class="col-md-4" data-aos="fade-up" data-aos-delay="100">
+                <article class="class-hive class-yellow"><span class="class-number">01</span><i class="fa-solid fa-heart class-icon"></i><h3>Afeto que acolhe</h3><p>Relações seguras</p><small>Para cada criança se sentir vista, ouvida e pronta para explorar.</small></article>
+            </div>
+            <div class="col-md-4" data-aos="fade-up" data-aos-delay="180">
+                <article class="class-hive class-blue"><span class="class-number">02</span><i class="fa-solid fa-wand-magic-sparkles class-icon"></i><h3>Curiosidade que guia</h3><p>Aprender brincando</p><small>Experiências lúdicas que transformam perguntas em descobertas cheias de sentido.</small></article>
+            </div>
+            <div class="col-md-4" data-aos="fade-up" data-aos-delay="260">
+                <article class="class-hive class-coral"><span class="class-number">03</span><i class="fa-solid fa-seedling class-icon"></i><h3>Autonomia que floresce</h3><p>Conquistas no próprio ritmo</p><small>Um ambiente que celebra cada pequena conquista no caminho de crescer.</small></article>
+            </div>
+        </div>
+    </div>
+</section>
+<section class="hive-pillars" id="pilares">
+    <div class="container">
+        <div class="text-center mb-5" data-aos="fade-up">
+            <div class="hive-eyebrow justify-content-center"><span></span> O que nos guia <span></span></div>
+            <h2>Missão, visão e <em>propósito.</em></h2>
+            <p class="hive-pillars-lead text-secondary mx-auto mb-0">Princípios que inspiram o cuidado, a aprendizagem e cada descoberta na nossa colmeia.</p>
+        </div>
+        <div class="row g-4">
+            <div class="col-md-4" data-aos="fade-up">
+                <article class="class-hive class-yellow"><span class="class-number">01</span><i class="fa-solid fa-heart class-icon"></i><h3>Missão</h3><p>Cuidar com afeto</p><small>Proporcionar um ambiente seguro, lúdico e afetuoso, onde cada criança descobre seu potencial por meio de experiências significativas e aprendizado contínuo.</small></article>
+            </div>
+            <div class="col-md-4" data-aos="fade-up" data-aos-delay="100">
+                <article class="class-hive class-blue"><span class="class-number">02</span><i class="fa-solid fa-eye class-icon"></i><h3>Visão</h3><p>Inspirar novas descobertas</p><small>Ser referência em educação infantil, reconhecida pela excelência pedagógica, inovação e cuidado humanizado com o desenvolvimento integral da criança.</small></article>
+            </div>
+            <div class="col-md-4" data-aos="fade-up" data-aos-delay="200">
+                <article class="class-hive class-coral"><span class="class-number">03</span><i class="fa-solid fa-sun class-icon"></i><h3>Propósito</h3><p>Crescer juntos</p><small>Cultivar um espaço onde crianças, famílias e educadores crescem juntos, transformando o brincar e o afeto em caminhos para aprender e florescer.</small></article>
+            </div>
+        </div>
+    </div>
+</section>
 <section class="hive-story" id="jornada"><div class="container"><div class="row align-items-center g-5"><div class="col-lg-5" data-aos="fade-right"><div class="story-image"><img th:src="@{/images/escola_cartoon.png}" alt="Ilustração da escola Colmeia Girassol"><span class="story-stamp"><i class="fa-solid fa-sun"></i><strong>desde<br>2023</strong></span></div></div><div class="col-lg-6 ms-auto" data-aos="fade-left"><div class="hive-eyebrow"><span></span> De onde viemos</div><h2>O brincar foi a nossa primeira <em>semente.</em></h2><p>Começamos como um espaço de recreação, acompanhando de perto a alegria e o desenvolvimento de cada pequeno. Dessa convivência nasceu um sonho maior: criar uma escola onde aprender também fosse uma forma de ser feliz.</p><p>Hoje, nossa colmeia cresce com a mesma delicadeza do começo, somando intenção pedagógica, cuidado e muita imaginação.</p><a th:href="@{/Sobre}" class="btn btn-dark-blue rounded-pill px-4 mt-2">Conheça nossa história <i class="fa-solid fa-arrow-right ms-2"></i></a></div></div></div></section>
 <section class="hive-classes" id="turmas"><div class="container"><div class="text-center mb-5" data-aos="fade-up"><div class="hive-eyebrow justify-content-center"><span></span> Cada fase tem seu encanto <span></span></div><h2>Onde cada idade encontra seu <em>voo.</em></h2></div><div class="row g-4"><div class="col-md-4" data-aos="fade-up"><article class="class-hive class-yellow"><span class="class-number">01</span><i class="fa-solid fa-heart class-icon"></i><h3>Berçário</h3><p>De 4 meses a 1 ano</p><small>Colo, estímulos sensoriais e os primeiros passos com muita ternura.</small></article></div><div class="col-md-4" data-aos="fade-up" data-aos-delay="100"><article class="class-hive class-blue"><span class="class-number">02</span><i class="fa-solid fa-puzzle-piece class-icon"></i><h3>Maternal</h3><p>De 2 a 3 anos</p><small>Descobertas, fala, movimento e socialização por meio do brincar.</small></article></div><div class="col-md-4" data-aos="fade-up" data-aos-delay="200"><article class="class-hive class-coral"><span class="class-number">03</span><i class="fa-solid fa-pencil class-icon"></i><h3>Pré-escola</h3><p>De 4 a 5 anos</p><small>Imaginação, autonomia e preparação para os próximos grandes voos.</small></article></div></div></div></section>
-<section class="hive-invite"><div class="container"><div class="invite-panel" data-aos="zoom-in"><div><div class="hive-eyebrow"><span></span> Venha fazer parte</div><h2>Tem um lugar especial<br>esperando por vocês.</h2></div><a th:href="@{/Login}" class="btn btn-yellow-main btn-lg rounded-pill px-4">Entrar no portal <i class="fa-solid fa-arrow-right ms-2"></i></a></div></div></section>
+<section class="hive-invite"><div class="container"><div class="invite-panel" data-aos="zoom-in"><div><div class="hive-eyebrow"><span></span> Venha fazer parte</div><h2>Tem um lugar especial<br>esperando por vocês.</h2></div><a th:href="@{/Login}" class="btn btn-dark-blue btn-lg rounded-pill px-4">Entrar no portal <i class="fa-solid fa-arrow-right ms-2"></i></a></div></div></section>
 </main>
 <div id="footer-placeholder"></div>
 <div class="modal fade" id="modalCadastro" tabindex="-1" aria-labelledby="modalCadastroLabel" aria-hidden="true"><div class="modal-dialog modal-dialog-centered"><div class="modal-content hive-modal"><div class="modal-header border-0"><h5 class="modal-title" id="modalCadastroLabel">Escolha seu caminho</h5><button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Fechar"></button></div><div class="modal-body pt-0"><a th:href="@{/Login}" class="profile-choice"><i class="fa-solid fa-house-user"></i><span><strong>Sou responsável</strong><small>Acompanhar a jornada da criança</small></span><i class="fa-solid fa-arrow-right"></i></a><a th:href="@{/Login(tab='prof')}" class="profile-choice"><i class="fa-solid fa-chalkboard-user"></i><span><strong>Sou professor</strong><small>Entrar no espaço pedagógico</small></span><i class="fa-solid fa-arrow-right"></i></a></div></div></div></div>
-<script th:src="@{/js/theme.js(v='1.4.0')}"></script><script th:src="@{/js/components.js(v='1.1.0')}"></script><script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script><script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script><script>AOS.init({once: true, offset: 80});</script>
+<script th:src="@{/js/theme.js(v='1.4.0')}"></script><script th:src="@{/js/components.js(v='1.1.0')}"></script><script th:src="@{/js/index.js(v='1.0.0')}"></script><script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script><script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script><script>AOS.init({once: true, offset: 80});</script>
 </body>
 </html>
